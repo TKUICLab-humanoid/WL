@@ -34,14 +34,6 @@ class WeightLiftingInfo
 		int continuous_imu;
 		int continuous_stopdistance;
 		int tweak_stopdistance;
-		int continuous_second_speed;
-		int continuous_second_Y;
-		int continuous_second_theta;
-		int continuous_second_imu;
-		int continuous_third_speed;
-		int continuous_third_Y;
-		int continuous_third_theta;
-		int continuous_third_imu;
 		int Near_left;
 		int tweak_range;
 		int turn_left_X; 
@@ -51,7 +43,8 @@ class WeightLiftingInfo
 		int turn_right_Y; 
 		int turn_right_tweak;
 		int turn_tweak_imu;
-		int tweak_stra_step;
+		int tweak_stra_step_X;
+		int tweak_stra_step_Y;
 		int tweak_stra_theta;
 		int left_tweak_x_large;
 		int left_tweak_y_large;
