@@ -215,12 +215,12 @@ void WeightLifting::firstSpeedControl(void)		//control continuous_speed
 	if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial <= -1)
 	{
 		ROS_INFO("add theta");
-		con_fix = 2;
+		con_fix = 1;
 	}
 	else if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial >= 1)
 	{
 		ROS_INFO("sub theta");
-		con_fix = -5;
+		con_fix = -3;
 	}
 	else
 	{
@@ -350,8 +350,8 @@ bool  WeightLifting::strategyBody(void)
 			ros_com->sendBodySector(weightlifting_info->Firstlifting_sector);	
 			ROS_INFO(" FirstLifting ");
 			tool->Delay(8000);
-			//ros_com->sendBodySector(weightlifting_info->Firstlifting_sup_sector);	
-			tool->Delay(8000);
+			ros_com->sendBodySector(weightlifting_info->Firstlifting_sup_sector);	
+			tool->Delay(10000);
 			if(continuous_flag == false)
 			{	
 				ros_com->sendBodyAuto(weightlifting_info->speed,weightlifting_info->continuous_Y,0,weightlifting_info->continuous_theta, WalkingMode::ContinuousStep,SensorMode(weightlifting_info->continuous_imu));
@@ -376,12 +376,12 @@ bool  WeightLifting::strategyBody(void)
 			if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial <= -1)
 			{
 				ROS_INFO("add theta");
-				check_fix = 2;
+				check_fix = 1;
 			}
 			else if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial >= 1)
 			{
 				ROS_INFO("sub theta");
-				check_fix = -2;
+				check_fix = -1;
 			}
 			else
 			{
@@ -477,12 +477,12 @@ bool  WeightLifting::strategyBody(void)
 			if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial <= -1)
 			{
 				ROS_INFO("add theta");
-				final_fix = 2;
+				final_fix = 1;
 			}
 			else if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial >= 1)
 			{
 				ROS_INFO("sub theta");
-				final_fix = -2;
+				final_fix = -1;
 			}
 			else
 			{
