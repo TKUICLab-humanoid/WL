@@ -201,8 +201,8 @@ void WeightLifting::firstSpeedControl(void)		//control continuous_speed
 	else if((weightlifting_info->red[1][1]) <= 100){	//Boost
 		weightlifting_info->speed = weightlifting_info->speed+100;
 	}
-	else if	(weightlifting_info->speed > 800 && weightlifting_info->red[1][1] > 140){
-		weightlifting_info->speed = weightlifting_info->speed - 100;	//Slow down
+	else if	(weightlifting_info->speed > 1800 && weightlifting_info->red[1][1] > 120){
+		weightlifting_info->speed = weightlifting_info->speed - 300;	//Slow down
 		tool->Delay(40);
 	}
 	else{
@@ -443,7 +443,7 @@ bool  WeightLifting::strategyBody(void)
 				if(weightlifting_info->ccount > 1)
 				{
 					ROS_INFO("testotwo");
-					if(weightlifting_info->time_end - weightlifting_info->time_start > 90 && weightlifting_info->speed < 1000)
+					if(weightlifting_info->time_end - weightlifting_info->time_start > 90 && weightlifting_info->speed < 1200)
 					{
 						weightlifting_info->speed = weightlifting_info->speed + 50;
 						weightlifting_info->time_start = ros::WallTime::now().toSec()*1000;
