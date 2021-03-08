@@ -224,7 +224,7 @@ void WeightLifting::firstSpeedControl(void)		//control continuous_speed
 	else if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial >= 1)
 	{
 		ROS_INFO("sub theta");
-		con_fix = -3;
+		con_fix = -2;
 	}
 	else
 	{
@@ -271,7 +271,7 @@ bool  WeightLifting::strategyBody(void)
 				if(continuous_flag == true)
 				{
 					ros_com->sendContinuousValue(0,0,0,0,SensorMode::None);
-					ros_com->sendHeadMotor(HeadMotorID::VerticalID,1200,100);
+					ros_com->sendHeadMotor(HeadMotorID::VerticalID,1180,100);
 			        tool->Delay(1000);
 					ROS_INFO(" Stop ");//走到200時
 					weightlifting_info->BodyState = tweak;
@@ -308,7 +308,7 @@ bool  WeightLifting::strategyBody(void)
 			}
 			else
 			{
-				if (((weightlifting_info->red[0][0])+(weightlifting_info->red[1][0]))/2 >= weightlifting_info->tweak_range-8&& ((weightlifting_info->red[0][0])+(weightlifting_info->red[1][0]))/2 <= weightlifting_info->tweak_range+8)//直走,tweak_range中心=tweak_range,看情況增減
+				if (((weightlifting_info->red[0][0])+(weightlifting_info->red[1][0]))/2 >= weightlifting_info->tweak_range-7&& ((weightlifting_info->red[0][0])+(weightlifting_info->red[1][0]))/2 <= weightlifting_info->tweak_range+7)//直走,tweak_range中心=tweak_range,看情況增減
 				{		
 					if((weightlifting_info->red[1][1])<weightlifting_info->tweak_stopdistance&&strategy_info->getStrategyStart())
 					{
@@ -349,7 +349,7 @@ bool  WeightLifting::strategyBody(void)
 			break;
 
 		case FirstLifting: //拿起竿子
-			ros_com->sendHeadMotor(HeadMotorID::VerticalID,1350,100);	//move head's motor2 to 1360 with speed 100
+			ros_com->sendHeadMotor(HeadMotorID::VerticalID,1400,100);	//move head's motor2 to 1360 with speed 100
 			tool->Delay(2500);
 			ros_com->sendBodySector(weightlifting_info->Firstlifting_sector);	
 			ROS_INFO(" FirstLifting ");
@@ -360,7 +360,7 @@ bool  WeightLifting::strategyBody(void)
 			{	 
 				ros_com->sendBodyAuto(weightlifting_info->speed,weightlifting_info->continuous_Y,0,weightlifting_info->continuous_theta, WalkingMode::ContinuousStep,SensorMode(weightlifting_info->continuous_imu));
 				continuous_flag = true;
-				tool->Delay(3000);
+				tool->Delay(10000);
 			}
 			weightlifting_info->BodyState = checkmidline;
 			weightlifting_info->time_start = ros::WallTime::now().toSec()*1000;
