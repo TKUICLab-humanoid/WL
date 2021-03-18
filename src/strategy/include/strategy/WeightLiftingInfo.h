@@ -60,8 +60,10 @@ class WeightLiftingInfo
 		int speed;
 		int first_speed;
 		int speed_up;
+		int ccount;
 //===========================================================================
-		int point_pos[4][4]={{0}};
+		int white[4][4]={{0}};
+		int red[4][4]={{0}};
 		
 		int count;
 		double time_start;
