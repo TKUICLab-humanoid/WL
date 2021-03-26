@@ -208,9 +208,9 @@ void WeightLifting::firstSpeedControl(void)		//control continuous_speed
 	else{
 		
 	}
-	if	(weightlifting_info->speed > 800)
+	if	(weightlifting_info->speed > 1000)
 	{	//Speed limit
-		weightlifting_info->speed = 800;
+		weightlifting_info->speed = 1000;
 		tool->Delay(300);
 	}
 	ROS_INFO(" imu_initial %f",weightlifting_info->imu_initial);
@@ -224,7 +224,7 @@ void WeightLifting::firstSpeedControl(void)		//control continuous_speed
 	else if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial >= 1)
 	{
 		ROS_INFO("sub theta");
-		con_fix = -5;
+		con_fix = -1;
 	}
 	else
 	{
@@ -325,7 +325,7 @@ bool  WeightLifting::strategyBody(void)
 					{
 						ROS_INFO("EEEEEEEEEEEEEEEEEEE");
 						ros_com->sendBodyAuto(0,0,0,0, WalkingMode::ContinuousStep, SensorMode::None);
-						tool->Delay(1000);
+						tool->Delay(3000);
 						continuous_flag = false;
 						weightlifting_info->BodyState = FirstLifting;
 						tool->Delay(500);
