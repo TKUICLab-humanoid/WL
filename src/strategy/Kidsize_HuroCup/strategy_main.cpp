@@ -208,9 +208,9 @@ void WeightLifting::firstSpeedControl(void)		//control continuous_speed
 	else{
 		
 	}
-	if	(weightlifting_info->speed > 1000)
+	if	(weightlifting_info->speed > 800)
 	{	//Speed limit
-		weightlifting_info->speed = 1000;
+		weightlifting_info->speed = 800;
 		tool->Delay(300);
 	}
 	ROS_INFO(" imu_initial %f",weightlifting_info->imu_initial);
