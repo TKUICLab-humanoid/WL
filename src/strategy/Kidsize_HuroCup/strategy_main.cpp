@@ -208,9 +208,9 @@ void WeightLifting::firstSpeedControl(void)		//control continuous_speed
 	else{
 		
 	}
-	if	(weightlifting_info->speed > 800)
+	if	(weightlifting_info->speed > 1000)
 	{	//Speed limit
-		weightlifting_info->speed = 800;
+		weightlifting_info->speed = 1000;
 		tool->Delay(300);
 	}
 	ROS_INFO(" imu_initial %f",weightlifting_info->imu_initial);
@@ -224,7 +224,7 @@ void WeightLifting::firstSpeedControl(void)		//control continuous_speed
 	else if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial >= 1)
 	{
 		ROS_INFO("sub theta");
-		con_fix = -5;
+		con_fix = -1;
 	}
 	else
 	{
@@ -325,7 +325,7 @@ bool  WeightLifting::strategyBody(void)
 					{
 						ROS_INFO("EEEEEEEEEEEEEEEEEEE");
 						ros_com->sendBodyAuto(0,0,0,0, WalkingMode::ContinuousStep, SensorMode::None);
-						tool->Delay(1000);
+						tool->Delay(3000);
 						continuous_flag = false;
 						weightlifting_info->BodyState = FirstLifting;
 						tool->Delay(500);
@@ -370,6 +370,8 @@ bool  WeightLifting::strategyBody(void)
 				continuous_flag = true;
 				tool->Delay(8000);
 			}
+			ros_com->sendHeadMotor(HeadMotorID::VerticalID,1200,100);
+			tool->Delay(2500);
 			weightlifting_info->BodyState = checkmidline;
 			weightlifting_info->time_start = ros::WallTime::now().toSec()*1000;
 			weightlifting_info->time_end = ros::WallTime::now().toSec()*1000;
@@ -400,7 +402,7 @@ bool  WeightLifting::strategyBody(void)
 			{
 				check_fix = 0;
 			}
-			if((weightlifting_info->white[1][1]) > 210 && weightlifting_info->finallookline_flag)
+			if((weightlifting_info->white[1][1]) > 160 && weightlifting_info->finallookline_flag)
 			{
 				ROS_INFO("testthreeeeeeeeeeeeeeeeeeeeee");
 				weightlifting_info->closeimage = true;
@@ -412,7 +414,7 @@ bool  WeightLifting::strategyBody(void)
 				}
 				else if (weightlifting_info->time_end - weightlifting_info->time_start > 90 && weightlifting_info->speed > 0)
 				{
-					weightlifting_info->speed = weightlifting_info->speed - 27;
+					weightlifting_info->speed = weightlifting_info->speed - 40;
 					if(weightlifting_info->speed < 0)
 					{
 						weightlifting_info->speed = 0;
