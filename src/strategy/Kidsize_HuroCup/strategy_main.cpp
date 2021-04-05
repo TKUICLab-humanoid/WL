@@ -204,14 +204,14 @@ void WeightLifting::firstSpeedControl(void)		//control continuous_speed
 		weightlifting_info->speed = weightlifting_info->speed+100;
 		ROS_INFO("cccccccccccccccccccccccccccccccccccccccccccccccc");
 	}
-	else if	(weightlifting_info->speed > 300 && weightlifting_info->red[1][1] > 180){
-		weightlifting_info->speed = weightlifting_info->speed - 150;	//Slow down
+	else if	(weightlifting_info->speed > 300 && weightlifting_info->red[1][1] > 185){
+		weightlifting_info->speed = weightlifting_info->speed - 50;	//Slow down
 		tool->Delay(40);
 		ROS_INFO("aaaaaaaaaaaaaaaaaaaaa");
 	}	
-	if	(weightlifting_info->speed > 2000)
+	if	(weightlifting_info->speed > 1500)
 	{	//Speed limit
-		weightlifting_info->speed = 2000;
+		weightlifting_info->speed = 1500;
 		tool->Delay(300);
 	}
 	ROS_INFO(" imu_initial %f",weightlifting_info->imu_initial);
@@ -245,6 +245,7 @@ bool  WeightLifting::strategyBody(void)
 			//ros_com->sendBodySector(20);
 			//move head's motor2 to 1450 with speed 100
 			tool->Delay(1000);
+			ros_com->sendHeadMotor(HeadMotorID::HorizontalID,2022,100);
 			ros::spinOnce();
 			weightlifting_info->imu_initial=strategy_info->getIMUValue().Yaw;
 			ROS_INFO("%f",weightlifting_info->imu_initial);
@@ -365,9 +366,10 @@ bool  WeightLifting::strategyBody(void)
 			ROS_INFO(" FirstLifting ");
 			tool->Delay(8000);
 			ros_com->sendBodySector(weightlifting_info->Firstlifting_sup_sector);	
-			tool->Delay(10000);
+			tool->Delay(18000);
 			if(continuous_flag == false)
 			{	 
+				ROS_INFO(" speedddddddddddddddddddddddddddddddddddddddd = %d ",(weightlifting_info->speed));
 				ros_com->sendBodyAuto(weightlifting_info->speed,weightlifting_info->continuous_Y,0,weightlifting_info->continuous_theta, WalkingMode::ContinuousStep,SensorMode(weightlifting_info->continuous_imu));
 				continuous_flag = true;
 				tool->Delay(12000);
