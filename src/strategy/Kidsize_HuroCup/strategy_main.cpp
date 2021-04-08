@@ -205,13 +205,13 @@ void WeightLifting::firstSpeedControl(void)		//control continuous_speed
 		ROS_INFO("cccccccccccccccccccccccccccccccccccccccccccccccc");
 	}
 	else if	(weightlifting_info->speed > 300 && weightlifting_info->red[1][1] > 185){
-		weightlifting_info->speed = weightlifting_info->speed - 50;	//Slow down
+		weightlifting_info->speed = weightlifting_info->speed - 500;	//Slow down
 		tool->Delay(40);
 		ROS_INFO("aaaaaaaaaaaaaaaaaaaaa");
 	}	
-	if	(weightlifting_info->speed > 1500)
+	if	(weightlifting_info->speed > 2500)
 	{	//Speed limit
-		weightlifting_info->speed = 1500;
+		weightlifting_info->speed = 2500;
 		tool->Delay(300);
 	}
 	ROS_INFO(" imu_initial %f",weightlifting_info->imu_initial);
@@ -220,12 +220,12 @@ void WeightLifting::firstSpeedControl(void)		//control continuous_speed
 	if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial <= -1)
 	{
 		ROS_INFO("add theta");
-		con_fix = 2;
+		con_fix = 1;
 	}
 	else if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial >= 1)
 	{
 		ROS_INFO("sub theta");
-		con_fix = -1;
+		con_fix = -3;
 	}
 	else
 	{
@@ -370,9 +370,9 @@ bool  WeightLifting::strategyBody(void)
 			if(continuous_flag == false)
 			{	 
 				ROS_INFO(" speedddddddddddddddddddddddddddddddddddddddd = %d ",(weightlifting_info->speed));
-				ros_com->sendBodyAuto(weightlifting_info->speed,weightlifting_info->continuous_Y,0,weightlifting_info->continuous_theta, WalkingMode::ContinuousStep,SensorMode(weightlifting_info->continuous_imu));
+				ros_com->sendBodyAuto(weightlifting_info->continuous_speed,weightlifting_info->continuous_Y,0,weightlifting_info->continuous_theta, WalkingMode::ContinuousStep,SensorMode(weightlifting_info->continuous_imu));
 				continuous_flag = true;
-				tool->Delay(12000);
+				tool->Delay(5000);
 			}
 			weightlifting_info->BodyState = checkmidline;
 			weightlifting_info->time_start = ros::WallTime::now().toSec()*1000;
@@ -381,8 +381,9 @@ bool  WeightLifting::strategyBody(void)
 		
 		case checkmidline: //判斷中線距離
 			
+			ROS_INFO(" flagggggggggggggggggggggggggggggggg = %d ",(weightlifting_info->finallookline_flag));
 			ROS_INFO(" timeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee = %d ",(weightlifting_info->time_end - weightlifting_info->time_start));
-			ROS_INFO(" speedddddddddddddddddddddddddddddddddddddddd = %d ",(weightlifting_info->speed));
+			ROS_INFO(" speedddddddddddddddddddddddddddddddddddddddd = %d ",(weightlifting_info->continuous_speed));
 			int check_fix ;
 			ROS_INFO(" YMAXLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL = %d ",(weightlifting_info->white[1][1]));
 			weightlifting_info->time_end = ros::WallTime::now().toSec()*1000;
@@ -395,39 +396,39 @@ bool  WeightLifting::strategyBody(void)
 			if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial <= -1)
 			{
 				ROS_INFO("add theta");
-				check_fix = 4;
+				check_fix = 1;
 			}
 			else if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial >= 1)
 			{
 				ROS_INFO("sub theta");
-				check_fix = -1;
+				check_fix = -2;
 			}
 			else
 			{
 				check_fix = 0;
 			}
-			if((weightlifting_info->white[1][1]) > 125 && weightlifting_info->finallookline_flag)
+			if((weightlifting_info->white[1][1]) > 120 && weightlifting_info->finallookline_flag)
 			{
 				ROS_INFO("testthree");
 				weightlifting_info->closeimage = true;
-				if(weightlifting_info->time_end - weightlifting_info->time_start > 90 && weightlifting_info->speed > 1000)
+				if(weightlifting_info->time_end - weightlifting_info->time_start > 90 && weightlifting_info->continuous_speed > 1000)
 				{
-					weightlifting_info->speed = weightlifting_info->speed - 10;
+					weightlifting_info->continuous_speed = weightlifting_info->continuous_speed - 30;
 					weightlifting_info->time_start = ros::WallTime::now().toSec()*1000;
-					ros_com->sendContinuousValue(weightlifting_info->speed,weightlifting_info->continuous_Y,0,weightlifting_info->continuous_theta + check_fix,SensorMode(weightlifting_info->continuous_imu));
+					ros_com->sendContinuousValue(weightlifting_info->continuous_speed,weightlifting_info->continuous_Y,0,weightlifting_info->continuous_theta + check_fix,SensorMode(weightlifting_info->continuous_imu));
 				}
-				else if (weightlifting_info->time_end - weightlifting_info->time_start > 90 && weightlifting_info->speed > 0)
+				else if (weightlifting_info->time_end - weightlifting_info->time_start > 90 && weightlifting_info->continuous_speed > 0)
 				{
-					weightlifting_info->speed = weightlifting_info->speed - 50;
-					if(weightlifting_info->speed < 0)
+					weightlifting_info->continuous_speed = weightlifting_info->continuous_speed - 90;
+					if(weightlifting_info->continuous_speed < 0)
 					{
-						weightlifting_info->speed = 0;
+						weightlifting_info->continuous_speed = 0;
 					}
 						
 					weightlifting_info->time_start = ros::WallTime::now().toSec()*1000;	
-					ros_com->sendContinuousValue(weightlifting_info->speed,weightlifting_info->continuous_Y,0,weightlifting_info->continuous_theta + check_fix,SensorMode(weightlifting_info->continuous_imu));
+					ros_com->sendContinuousValue(weightlifting_info->continuous_speed,weightlifting_info->continuous_Y,0,weightlifting_info->continuous_theta + check_fix,SensorMode(weightlifting_info->continuous_imu));
 				}
-				else if (weightlifting_info->time_end - weightlifting_info->time_start > 90 && weightlifting_info->speed <= 0)
+				else if (weightlifting_info->time_end - weightlifting_info->time_start > 90 && weightlifting_info->continuous_speed <= 0)
 				{
 					weightlifting_info->BodyState = SecondLifting;
 					weightlifting_info->closeimage = false;
@@ -439,15 +440,15 @@ bool  WeightLifting::strategyBody(void)
 			{
 				ROS_INFO("testone");
 				weightlifting_info->finallookline_flag = true;
-				if(weightlifting_info->time_end - weightlifting_info->time_start > 90 && weightlifting_info->speed < 1200)
+				if(weightlifting_info->time_end - weightlifting_info->time_start > 90 && weightlifting_info->continuous_speed < 1200)
 				{
-					weightlifting_info->speed = weightlifting_info->speed + 50;
+					weightlifting_info->continuous_speed = weightlifting_info->continuous_speed + 50;
 					weightlifting_info->time_start = ros::WallTime::now().toSec()*1000;
-					ros_com->sendContinuousValue(weightlifting_info->speed,weightlifting_info->continuous_Y,0,weightlifting_info->continuous_theta + check_fix,SensorMode(weightlifting_info->continuous_imu));
+					ros_com->sendContinuousValue(weightlifting_info->continuous_speed,weightlifting_info->continuous_Y,0,weightlifting_info->continuous_theta + check_fix,SensorMode(weightlifting_info->continuous_imu));
 				}
 				else if(weightlifting_info->time_end - weightlifting_info->time_start > 90)
 				{
-					ros_com->sendContinuousValue(weightlifting_info->speed,weightlifting_info->continuous_Y,0,weightlifting_info->continuous_theta + check_fix,SensorMode(weightlifting_info->continuous_imu));
+					ros_com->sendContinuousValue(weightlifting_info->continuous_speed,weightlifting_info->continuous_Y,0,weightlifting_info->continuous_theta + check_fix,SensorMode(weightlifting_info->continuous_imu));
 					weightlifting_info->time_start = ros::WallTime::now().toSec()*1000;
 				}
 			}
@@ -457,20 +458,20 @@ bool  WeightLifting::strategyBody(void)
 				if(weightlifting_info->ccount > 1)
 				
 					ROS_INFO("testotwo");
-					if(weightlifting_info->time_end - weightlifting_info->time_start > 90 && weightlifting_info->speed < 1200)
+					if(weightlifting_info->time_end - weightlifting_info->time_start > 90 && weightlifting_info->continuous_speed < 1200)
 					{
-						weightlifting_info->speed = weightlifting_info->speed + 50;
+						weightlifting_info->continuous_speed = weightlifting_info->continuous_speed + 50;
 						weightlifting_info->time_start = ros::WallTime::now().toSec()*1000;
-						ros_com->sendContinuousValue(weightlifting_info->speed,weightlifting_info->continuous_Y,0,weightlifting_info->continuous_theta + check_fix,SensorMode(weightlifting_info->continuous_imu));
+						ros_com->sendContinuousValue(weightlifting_info->continuous_speed,weightlifting_info->continuous_Y,0,weightlifting_info->continuous_theta + check_fix,SensorMode(weightlifting_info->continuous_imu));
 					}
 					else if(weightlifting_info->time_end - weightlifting_info->time_start > 90)
 					{
-						ros_com->sendContinuousValue(weightlifting_info->speed,weightlifting_info->continuous_Y,0,weightlifting_info->continuous_theta + check_fix,SensorMode(weightlifting_info->continuous_imu));
+						ros_com->sendContinuousValue(weightlifting_info->continuous_speed,weightlifting_info->continuous_Y,0,weightlifting_info->continuous_theta + check_fix,SensorMode(weightlifting_info->continuous_imu));
 						weightlifting_info->time_start = ros::WallTime::now().toSec()*1000;
 					}
 				
 			}
-			ROS_INFO(" Speed = %d ",weightlifting_info->speed);
+			ROS_INFO(" Speed = %d ",weightlifting_info->continuous_speed);
 
 			break;
 
@@ -495,6 +496,7 @@ bool  WeightLifting::strategyBody(void)
 			
 			int final_fix ;
 			ROS_INFO(" initial %f",weightlifting_info->imu_initial);
+			ROS_INFO(" thetaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa %d",weightlifting_info->continuous_theta+ final_fix);
 			ros::spinOnce();
 			ROS_INFO("%f",strategy_info->getIMUValue().Yaw);
 			if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial <= -1)
