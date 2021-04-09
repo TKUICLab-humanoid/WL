@@ -208,9 +208,9 @@ void WeightLifting::firstSpeedControl(void)		//control continuous_speed
 	else{
 		
 	}
-	if	(weightlifting_info->speed > 1500)
+	if	(weightlifting_info->speed > 2000)
 	{	//Speed limit
-		weightlifting_info->speed = 1500;
+		weightlifting_info->speed = 2000;
 		tool->Delay(300);
 	}
 	ROS_INFO(" imu_initial %f",weightlifting_info->imu_initial);
@@ -370,7 +370,7 @@ bool  WeightLifting::strategyBody(void)
 			{	 
 				ros_com->sendBodyAuto(weightlifting_info->speed,weightlifting_info->continuous_Y,0,weightlifting_info->continuous_theta, WalkingMode::ContinuousStep,SensorMode(weightlifting_info->continuous_imu));
 				continuous_flag = true;
-				tool->Delay(8000);
+				tool->Delay(6000);
 			}
 			ros_com->sendHeadMotor(HeadMotorID::VerticalID,1200,100);
 			tool->Delay(2500);
@@ -404,7 +404,7 @@ bool  WeightLifting::strategyBody(void)
 			{
 				check_fix = 0;
 			}
-			if((weightlifting_info->white[1][1]) > 150 && weightlifting_info->finallookline_flag)
+			if((weightlifting_info->white[1][1]) > 160 && weightlifting_info->finallookline_flag)
 			{
 				ROS_INFO("testthreeeeeeeeeeeeeeeeeeeeee");
 				weightlifting_info->closeimage = true;
@@ -416,7 +416,7 @@ bool  WeightLifting::strategyBody(void)
 				}
 				else if (weightlifting_info->time_end - weightlifting_info->time_start > 90 && weightlifting_info->speed > 0)
 				{
-					weightlifting_info->speed = weightlifting_info->speed - 80;
+					weightlifting_info->speed = weightlifting_info->speed - 100;
 					if(weightlifting_info->speed < 0)
 					{
 						weightlifting_info->speed = 0;
