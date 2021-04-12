@@ -201,17 +201,19 @@ void WeightLifting::firstSpeedControl(void)		//control continuous_speed
 		ROS_INFO("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
 	}
 	else if((weightlifting_info->red[1][1]) <= 50){	//Boost
-		weightlifting_info->speed = weightlifting_info->speed+100;
+		weightlifting_info->speed = weightlifting_info->speed+10;
 		ROS_INFO("cccccccccccccccccccccccccccccccccccccccccccccccc");
 	}
 	else if	(weightlifting_info->speed > 300 && weightlifting_info->red[1][1] > 185){
-		weightlifting_info->speed = weightlifting_info->speed - 500;	//Slow down
+		weightlifting_info->speed = weightlifting_info->speed - 700;	//Slow down
 		tool->Delay(40);
 		ROS_INFO("aaaaaaaaaaaaaaaaaaaaa");
+	}
+	else{
 	}	
-	if	(weightlifting_info->speed > 2500)
+	if	(weightlifting_info->speed > 2000)
 	{	//Speed limit
-		weightlifting_info->speed = 2500;
+		weightlifting_info->speed = 2000;
 		tool->Delay(300);
 	}
 	ROS_INFO(" imu_initial %f",weightlifting_info->imu_initial);
@@ -401,7 +403,7 @@ bool  WeightLifting::strategyBody(void)
 			else if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial >= 1)
 			{
 				ROS_INFO("sub theta");
-				check_fix = -2;
+				check_fix = -3;
 			}
 			else
 			{
@@ -507,7 +509,7 @@ bool  WeightLifting::strategyBody(void)
 			else if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial >= 1)
 			{
 				ROS_INFO("sub theta");
-				final_fix = -1;
+				final_fix = -5;
 			}
 			else
 			{
