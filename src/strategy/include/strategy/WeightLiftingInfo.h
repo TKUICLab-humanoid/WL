@@ -36,12 +36,12 @@ class WeightLiftingInfo
 		int tweak_stopdistance;
 		int Near_left;
 		int tweak_range;
-		int turn_left_X; 
-		int turn_left_Y; 
-		int turn_left_tweak; 
-		int turn_right_X; 
-		int turn_right_Y; 
-		int turn_right_tweak;
+		int second_speed; 
+		int second_Y; 
+		int second_tweak; 
+		int third_speed; 
+		int third_Y; 
+		int third_tweak;
 		int turn_tweak_imu;
 		int tweak_stra_step_X;
 		int tweak_stra_step_Y;
