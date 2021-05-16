@@ -382,15 +382,15 @@ bool  WeightLifting::strategyBody(void)
 			tool->Delay(2500);
 			ros_com->sendBodySector(weightlifting_info->Firstlifting_sector);	
 			ROS_INFO(" FirstLifting ");
-			tool->Delay(26000);
+			tool->Delay(28000);
 			ros_com->sendBodySector(weightlifting_info->Firstlifting_sup_sector);	
-			tool->Delay(5000);
+			tool->Delay(2000);
 			if(continuous_flag == false)
 			{	 
 				ROS_INFO(" speedddddddddddddddddddddddddddddddddddddddd = %d ",(weightlifting_info->speed));
 				ros_com->sendBodyAuto(0,weightlifting_info->second_Y,0,weightlifting_info->second_tweak, WalkingMode::ContinuousStep,SensorMode(weightlifting_info->continuous_imu));
 				continuous_flag = true;
-				tool->Delay(5000);
+				tool->Delay(2000);
 			}
 			weightlifting_info->BodyState = checkmidline;
 			weightlifting_info->time_start = ros::WallTime::now().toSec()*1000;
@@ -437,7 +437,7 @@ bool  WeightLifting::strategyBody(void)
 				}
 				else if (weightlifting_info->time_end - weightlifting_info->time_start > 90 && weightlifting_info->second_speed > 0)
 				{
-					weightlifting_info->second_speed = weightlifting_info->second_speed - 150;
+					weightlifting_info->second_speed = weightlifting_info->second_speed - 80;
 					if(weightlifting_info->second_speed < 0)
 					{
 						weightlifting_info->second_speed = 0;
@@ -450,7 +450,7 @@ bool  WeightLifting::strategyBody(void)
 				{
 					weightlifting_info->BodyState = SecondLifting;
 					ros_com->sendContinuousValue(0,0,0,0,SensorMode(weightlifting_info->continuous_imu));
-					tool->Delay(4000);
+					tool->Delay(2000);
 					weightlifting_info->closeimage = false;
 					weightlifting_info->time_end = ros::WallTime::now().toSec()*1000;
 					weightlifting_info->time_start = ros::WallTime::now().toSec()*1000;
@@ -505,9 +505,9 @@ bool  WeightLifting::strategyBody(void)
 			}			
 				ros_com->sendBodySector(weightlifting_info->Secondlifting_sector);	
 				ROS_INFO(" SecondLifting ");
-				tool->Delay(6500);
+				tool->Delay(6000);
 				ros_com->sendBodySector(weightlifting_info->Secondlifting_sup_sector);	
-				tool->Delay(4500);		
+				tool->Delay(3000);		
 			weightlifting_info->finallookline_flag = false;
 			weightlifting_info->BodyState = WalkingOverTape;
 			break;
@@ -528,7 +528,7 @@ bool  WeightLifting::strategyBody(void)
 					tool->Delay(300);
 				}*/
 				ros_com->sendBodyAuto(weightlifting_info->third_speed,weightlifting_info->third_Y,0,weightlifting_info->third_tweak , WalkingMode::ContinuousStep,SensorMode(weightlifting_info->continuous_imu));//
-				tool->Delay(5000);
+				tool->Delay(2500);
 				continuous_flag = true;
 			}
 			if(continuous_flag == true)
