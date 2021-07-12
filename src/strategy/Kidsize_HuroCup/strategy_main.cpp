@@ -390,7 +390,7 @@ bool  WeightLifting::strategyBody(void)
 				ROS_INFO(" speedddddddddddddddddddddddddddddddddddddddd = %d ",(weightlifting_info->speed));
 				ros_com->sendBodyAuto(0,weightlifting_info->second_Y,0,weightlifting_info->second_tweak, WalkingMode::ContinuousStep,SensorMode(weightlifting_info->continuous_imu));
 				continuous_flag = true;
-				tool->Delay(5000);
+				//tool->Delay(5000);
 			}
 			weightlifting_info->BodyState = checkmidline;
 			weightlifting_info->time_start = ros::WallTime::now().toSec()*1000;
