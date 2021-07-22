@@ -505,9 +505,9 @@ bool  WeightLifting::strategyBody(void)
 			}			
 				ros_com->sendBodySector(weightlifting_info->Secondlifting_sector);	
 				ROS_INFO(" SecondLifting ");
-				tool->Delay(3500);
+				tool->Delay(4000);
 				ros_com->sendBodySector(weightlifting_info->Secondlifting_sup_sector);	
-				tool->Delay(2500);		
+				tool->Delay(3000);		
 			weightlifting_info->finallookline_flag = false;
 			weightlifting_info->BodyState = WalkingOverTape;
 			break;
@@ -528,7 +528,7 @@ bool  WeightLifting::strategyBody(void)
 					tool->Delay(300);
 				}*/
 				ros_com->sendBodyAuto(weightlifting_info->third_speed,weightlifting_info->third_Y,0,weightlifting_info->third_tweak , WalkingMode::ContinuousStep,SensorMode(weightlifting_info->continuous_imu));//
-				tool->Delay(2000);
+				tool->Delay(50);
 				continuous_flag = true;
 			}
 			if(continuous_flag == true)
