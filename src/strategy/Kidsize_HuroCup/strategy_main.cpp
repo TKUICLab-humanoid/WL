@@ -431,13 +431,13 @@ bool  WeightLifting::strategyBody(void)
 				weightlifting_info->closeimage = true;
 				if(weightlifting_info->time_end - weightlifting_info->time_start > 90 && weightlifting_info->second_speed > 1000)
 				{
-					weightlifting_info->second_speed = weightlifting_info->second_speed - 60;
+					weightlifting_info->second_speed = weightlifting_info->second_speed - 90;
 					weightlifting_info->time_start = ros::WallTime::now().toSec()*1000;
 					ros_com->sendContinuousValue(weightlifting_info->second_speed,weightlifting_info->second_Y,0,weightlifting_info->second_tweak + check_fix,SensorMode(weightlifting_info->continuous_imu));
 				}
 				else if (weightlifting_info->time_end - weightlifting_info->time_start > 90 && weightlifting_info->second_speed > 0)
 				{
-					weightlifting_info->second_speed = weightlifting_info->second_speed - 80;
+					weightlifting_info->second_speed = weightlifting_info->second_speed - 120;
 					if(weightlifting_info->second_speed < 0)
 					{
 						weightlifting_info->second_speed = 0;
