@@ -380,9 +380,11 @@ bool  WeightLifting::strategyBody(void)
 
 			ros_com->sendHeadMotor(HeadMotorID::VerticalID,1200,100);	//move head's motor2 to 1360 with speed 100
 			tool->Delay(2500);
+			ros_com->sendBodySector(29);
+			tool->Delay(2500);
 			ros_com->sendBodySector(weightlifting_info->Firstlifting_sector);	
 			ROS_INFO(" FirstLifting ");
-			tool->Delay(20600);
+			tool->Delay(27000);
 			ros_com->sendBodySector(weightlifting_info->Firstlifting_sup_sector);	
 			tool->Delay(5000);
 			if(continuous_flag == false)
@@ -425,7 +427,7 @@ bool  WeightLifting::strategyBody(void)
 			{
 				check_fix = 0;
 			}
-			if((weightlifting_info->white[1][1]) > 160 && weightlifting_info->finallookline_flag)
+			if((weightlifting_info->white[1][1]) > 180 && weightlifting_info->finallookline_flag)
 			{
 				ROS_INFO("testthreeeeeeeeeeeeeeeeeeeeee");
 				weightlifting_info->closeimage = true;
@@ -505,9 +507,9 @@ bool  WeightLifting::strategyBody(void)
 			}			
 				ros_com->sendBodySector(weightlifting_info->Secondlifting_sector);	
 				ROS_INFO(" SecondLifting ");
-				tool->Delay(4000);
+				tool->Delay(4500);
 				ros_com->sendBodySector(weightlifting_info->Secondlifting_sup_sector);	
-				tool->Delay(3000);		
+				tool->Delay(4000);		
 			weightlifting_info->finallookline_flag = false;
 			weightlifting_info->BodyState = WalkingOverTape;
 			break;
