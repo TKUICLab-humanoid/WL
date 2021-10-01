@@ -222,12 +222,12 @@ void WeightLifting::firstSpeedControl(void)		//control continuous_speed
 	if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial <= -1)
 	{
 		ROS_INFO("add theta");
-		con_fix = 1;
+		con_fix = 3;
 	}
 	else if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial >= 1)
 	{
 		ROS_INFO("sub theta");
-		con_fix = -2;
+		con_fix = -1;
 	}
 	else
 	{
@@ -421,7 +421,7 @@ bool  WeightLifting::strategyBody(void)
 			else if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial >= 1)
 			{
 				ROS_INFO("sub theta");
-				check_fix = -2;
+				check_fix = -1;
 			}
 			else
 			{
