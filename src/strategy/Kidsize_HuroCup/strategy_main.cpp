@@ -247,7 +247,7 @@ bool  WeightLifting::strategyBody(void)
 			//ros_com->sendBodySector(20);
 			//move head's motor2 to 1450 with speed 100
 			tool->Delay(1000);
-			ros_com->sendHeadMotor(HeadMotorID::HorizontalID,2022,100);
+			ros_com->sendHeadMotor(HeadMotorID::HorizontalID,2048,100);
 			ros::spinOnce();
 			weightlifting_info->imu_initial=strategy_info->getIMUValue().Yaw;
 			ROS_INFO("%f",weightlifting_info->imu_initial);
