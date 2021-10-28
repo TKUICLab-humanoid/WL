@@ -222,12 +222,12 @@ void WeightLifting::firstSpeedControl(void)		//control continuous_speed
 	if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial <= -1)
 	{
 		ROS_INFO("add theta");
-		con_fix = 1;
+		con_fix = 3;
 	}
 	else if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial >= 1)
 	{
 		ROS_INFO("sub theta");
-		con_fix = -2;
+		con_fix = -1;
 	}
 	else
 	{
@@ -247,7 +247,7 @@ bool  WeightLifting::strategyBody(void)
 			//ros_com->sendBodySector(20);
 			//move head's motor2 to 1450 with speed 100
 			tool->Delay(1000);
-			ros_com->sendHeadMotor(HeadMotorID::HorizontalID,2022,100);
+			ros_com->sendHeadMotor(HeadMotorID::HorizontalID,2048,100);
 			ros::spinOnce();
 			weightlifting_info->imu_initial=strategy_info->getIMUValue().Yaw;
 			ROS_INFO("%f",weightlifting_info->imu_initial);
@@ -381,7 +381,7 @@ bool  WeightLifting::strategyBody(void)
 			ros_com->sendHeadMotor(HeadMotorID::VerticalID,1200,100);	//move head's motor2 to 1360 with speed 100
 			tool->Delay(2500);
 			ros_com->sendBodySector(29);
-			tool->Delay(2500);
+			tool->Delay(2000);
 			ros_com->sendBodySector(weightlifting_info->Firstlifting_sector);	
 			ROS_INFO(" FirstLifting ");
 			tool->Delay(27000);
@@ -421,7 +421,7 @@ bool  WeightLifting::strategyBody(void)
 			else if(strategy_info->getIMUValue().Yaw - weightlifting_info->imu_initial >= 1)
 			{
 				ROS_INFO("sub theta");
-				check_fix = -2;
+				check_fix = -1;
 			}
 			else
 			{
@@ -507,7 +507,7 @@ bool  WeightLifting::strategyBody(void)
 			}			
 				ros_com->sendBodySector(weightlifting_info->Secondlifting_sector);	
 				ROS_INFO(" SecondLifting ");
-				tool->Delay(4500);
+				tool->Delay(6500);
 				ros_com->sendBodySector(weightlifting_info->Secondlifting_sup_sector);	
 				tool->Delay(4000);		
 			weightlifting_info->finallookline_flag = false;
