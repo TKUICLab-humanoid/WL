@@ -428,19 +428,19 @@ bool  WeightLifting::strategyBody(void)
 			{
 				check_fix = 0;
 			}
-			if((weightlifting_info->white[1][1]) > 180 && weightlifting_info->finallookline_flag)
+			if((weightlifting_info->white[1][1]) > 170 && weightlifting_info->finallookline_flag)
 			{
 				ROS_INFO("testthreeeeeeeeeeeeeeeeeeeeee");
 				weightlifting_info->closeimage = true;
 				if(weightlifting_info->time_end - weightlifting_info->time_start > 90 && weightlifting_info->second_speed > 1000)
 				{
-					weightlifting_info->second_speed = weightlifting_info->second_speed - 130;
+					weightlifting_info->second_speed = weightlifting_info->second_speed - 150;
 					weightlifting_info->time_start = ros::WallTime::now().toSec()*1000;
 					ros_com->sendContinuousValue(weightlifting_info->second_speed,weightlifting_info->second_Y,0,weightlifting_info->second_tweak + check_fix,SensorMode(weightlifting_info->continuous_imu));
 				}
 				else if (weightlifting_info->time_end - weightlifting_info->time_start > 90 && weightlifting_info->second_speed > 0)
 				{
-					weightlifting_info->second_speed = weightlifting_info->second_speed - 160;
+					weightlifting_info->second_speed = weightlifting_info->second_speed - 200;
 					if(weightlifting_info->second_speed < 0)
 					{
 						weightlifting_info->second_speed = 0;
