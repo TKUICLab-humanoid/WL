@@ -434,13 +434,13 @@ bool  WeightLifting::strategyBody(void)
 				weightlifting_info->closeimage = true;
 				if(weightlifting_info->time_end - weightlifting_info->time_start > 90 && weightlifting_info->second_speed > 1000)
 				{
-					weightlifting_info->second_speed = weightlifting_info->second_speed - 150;
+					weightlifting_info->second_speed = weightlifting_info->second_speed - 200;
 					weightlifting_info->time_start = ros::WallTime::now().toSec()*1000;
 					ros_com->sendContinuousValue(weightlifting_info->second_speed,weightlifting_info->second_Y,0,weightlifting_info->second_tweak + check_fix,SensorMode(weightlifting_info->continuous_imu));
 				}
 				else if (weightlifting_info->time_end - weightlifting_info->time_start > 90 && weightlifting_info->second_speed > 0)
 				{
-					weightlifting_info->second_speed = weightlifting_info->second_speed - 200;
+					weightlifting_info->second_speed = weightlifting_info->second_speed - 250;
 					if(weightlifting_info->second_speed < 0)
 					{
 						weightlifting_info->second_speed = 0;
@@ -501,7 +501,7 @@ bool  WeightLifting::strategyBody(void)
 		case SecondLifting://Lifting_up 二舉
 			
 			if(continuous_flag == true){
-				ros_com->sendBodyAuto(-200,50,0,0,WalkingMode::ContinuousStep, SensorMode::None);
+				ros_com->sendBodyAuto(0,0,0,0,WalkingMode::ContinuousStep, SensorMode::None);
 				ROS_INFO(" Stop ");
 				tool->Delay(3000);
 				continuous_flag = false;
@@ -543,7 +543,7 @@ bool  WeightLifting::strategyBody(void)
 					tool->Delay(5000);
 					change_flag =true; 
 				}*/
-				if(weightlifting_info->third_speed < 2001)
+				if(weightlifting_info->third_speed < 1801)
 				{	//Speed limit
 					ROS_INFO(" bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
 					weightlifting_info->third_speed = weightlifting_info->third_speed + 100;
