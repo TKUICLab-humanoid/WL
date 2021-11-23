@@ -276,7 +276,7 @@ bool  WeightLifting::strategyBody(void)
 			{
 				if(continuous_flag == true)
 				{
-					ros_com->sendContinuousValue(0,0,0,0,SensorMode::None);
+					ros_com->sendContinuousValue(0,0,10,0,SensorMode::None);
 					ros_com->sendHeadMotor(HeadMotorID::VerticalID,1180,100);
 			        tool->Delay(1000);
 					ROS_INFO(" Stop ");//走到200時
@@ -304,7 +304,7 @@ bool  WeightLifting::strategyBody(void)
 			{
 					
 				ROS_INFO("EEEEEEEEEEEEEEEEEEE");
-				ros_com->sendBodyAuto(0,0,0,0, WalkingMode::ContinuousStep, SensorMode::None);
+				ros_com->sendBodyAuto(0,0,7,0, WalkingMode::ContinuousStep, SensorMode::None);
 				tool->Delay(1000);
 				continuous_flag = false;
 				weightlifting_info->BodyState = FirstLifting;
@@ -386,7 +386,7 @@ bool  WeightLifting::strategyBody(void)
 			ROS_INFO(" FirstLifting ");
 			tool->Delay(27000);
 			ros_com->sendBodySector(weightlifting_info->Firstlifting_sup_sector);	
-			tool->Delay(5000);
+			tool->Delay(4000);
 			ros_com->sendSensorReset();
 			if(continuous_flag == false)
 			{	 
@@ -453,7 +453,7 @@ bool  WeightLifting::strategyBody(void)
 				{
 					weightlifting_info->BodyState = SecondLifting;
 					ros_com->sendContinuousValue(0,0,0,0,SensorMode(weightlifting_info->continuous_imu));
-					tool->Delay(1500);
+					tool->Delay(500);
 					weightlifting_info->closeimage = false;
 					weightlifting_info->time_end = ros::WallTime::now().toSec()*1000;
 					weightlifting_info->time_start = ros::WallTime::now().toSec()*1000;
@@ -543,7 +543,7 @@ bool  WeightLifting::strategyBody(void)
 					tool->Delay(5000);
 					change_flag =true; 
 				}*/
-				if(weightlifting_info->third_speed < 1801)
+				if(weightlifting_info->third_speed < 1901)
 				{	//Speed limit
 					ROS_INFO(" bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
 					weightlifting_info->third_speed = weightlifting_info->third_speed + 100;
