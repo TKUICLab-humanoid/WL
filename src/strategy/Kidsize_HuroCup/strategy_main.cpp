@@ -548,10 +548,10 @@ bool  WeightLifting::strategyBody(void)
 					tool->Delay(5000);
 					change_flag =true; 
 				}*/
-				if(weightlifting_info->third_speed < 1601)
+				if(weightlifting_info->third_speed < 2001)
 				{	//Speed limit
 					ROS_INFO(" bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
-					weightlifting_info->third_speed = weightlifting_info->third_speed + 100;
+					weightlifting_info->third_speed = weightlifting_info->third_speed + 50;
 					tool->Delay(300);
 				}
 				if((strategy_info-> color_mask_subject[6][0].YMax) > 150)
