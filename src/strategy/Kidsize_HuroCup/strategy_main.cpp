@@ -526,7 +526,7 @@ bool  WeightLifting::strategyBody(void)
 			/*ROS_INFO(" thetaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa %d",weightlifting_info->continuous_theta+ final_fix);*/
 			ros::spinOnce();
 			ROS_INFO("nowwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwIMU%f",strategy_info->getIMUValue().Yaw);
-			ros_com->sendSensorSet(0.08,0,0.05,0x20);
+			ros_com->sendSensorSet(0.1,0,0.07,0x20);
             ros_com->sendSensorSet(0.01,0,0.03,0x10);
 			if(continuous_flag == false)
 			{
@@ -548,7 +548,7 @@ bool  WeightLifting::strategyBody(void)
 					tool->Delay(5000);
 					change_flag =true; 
 				}*/
-				if(weightlifting_info->third_speed < 2001)
+				if(weightlifting_info->third_speed < 1501)
 				{	//Speed limit
 					ROS_INFO(" bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
 					weightlifting_info->third_speed = weightlifting_info->third_speed + 50;
