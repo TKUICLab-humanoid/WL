@@ -76,30 +76,30 @@ def imu():
     x=send.imu_value_Yaw
     print(x)
     if x>2: 
-      send.sendContinuousValue(500,0,0,-4,0)
+      send.sendContinuousValue(500,0,0,-7,0)
       print("turn right")
       
     elif x<-2:
-      send.sendContinuousValue(500,0,0,4,0)
+      send.sendContinuousValue(500,0,0,1,0)
       print("turn left")
 
     elif -2<=x and x<=2:
-      send.sendContinuousValue(800,0,0,0,0)
+      send.sendContinuousValue(800,0,0,-3,0)
       print("walk straight")
 
 def imu1_5():
     x=send.imu_value_Yaw
     print(x)
     if x>2: 
-      send.sendContinuousValue(500,0,0,-4,0)
+      send.sendContinuousValue(500,0,0,-7,0)
       print("turn right")
       
     elif x<-2 :
-      send.sendContinuousValue(500,0,0,4,0)
+      send.sendContinuousValue(500,0,0,1,0)
       print("turn left")
 
     elif -2<=x and x<=2 :
-      send.sendContinuousValue(500,0,0,0,0)
+      send.sendContinuousValue(500,0,0,-3,0)
       print("walk straight")
 
 def imu_2():
@@ -107,15 +107,15 @@ def imu_2():
     x+=yaw
     print(x)
     if x>3: 
-      send.sendContinuousValue(500,0,0,-5,0)
+      send.sendContinuousValue(500,0,0,-8,0)
       print("turn right 2")
       
     elif x<-3 :
-      send.sendContinuousValue(500,0,0,5,0)
+      send.sendContinuousValue(500,0,0,2,0)
       print("turn left 2")
 
     elif -3<=x and x<=3 :
-      send.sendContinuousValue(800,0,0,0,0)
+      send.sendContinuousValue(800,0,0,-3,0)
       print("walk straight 2")
 
 def afterbar():
@@ -140,7 +140,7 @@ if __name__ == '__main__':
         #pick_bar = True
         time.sleep(0.35)
         send.sendSensorReset()
-        send.sendHeadMotor(2,1350,10)
+        send.sendHeadMotor(2,1350,50)
         while not rospy.is_shutdown():
           if send.is_start == True:
             if lift_bar==False:  
@@ -170,11 +170,8 @@ if __name__ == '__main__':
                       print("stop")                                     
                       turn_off()
                       print('pick up')
-                      send.sendBodySector(1)
-                      send.sendBodySector(2)
-                      send.sendBodySector(3)
-                      send.sendBodySector(4)
-                      send.sendBodySector(5)
+                      time.sleep(0.35)
+                      send.sendBodySector(123)
                       time.sleep(3) 
                       yaw=afterbar()
                       time.sleep(1.5) 
