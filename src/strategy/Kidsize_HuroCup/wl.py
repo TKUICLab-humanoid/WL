@@ -140,39 +140,40 @@ if __name__ == '__main__':
         #pick_bar = True
         time.sleep(0.35)
         send.sendSensorReset()
-        send.sendHeadMotor(2,1350,50)
         while not rospy.is_shutdown():
           if send.is_start == True:
             if lift_bar==False:  
               if find_white_line==False:
                 if pick_bar==False:
                   if arrive==False:
+                    send.sendHeadMotor(2,1350,50)
                     print('move')
                     turn_on()
                     imu()
                     target_ymax,target_xmin=red_line()
                     print(target_ymax)
-                    if target_ymax>90 and target_ymax<120:
+                    if target_ymax>90 and target_ymax<110:
                       imu1_5()
                       target_ymax,target_xmin=red_line()
                       print(target_ymax)
-                    if target_ymax>120:
+                    if target_ymax>110:
                       arrive=True
                   if arrive==True:
-                    target_ymax,target_xmin=red_line()
-                    if target_xmin>131:
-                      send.sendContinuousValue(40,-500,0,0,0)
-                      print("right")
-                    elif target_xmin<129:
-                      send.sendContinuousValue(40,500,0,0,0)
-                      print("left")
-                    else :
+                    #target_ymax,target_xmin=red_line()
+                    #if target_xmin>131:
+                    #  send.sendContinuousValue(40,-500,0,0,0)
+                    #  print("right")
+                    #elif target_xmin<129:
+                    #  send.sendContinuousValue(40,500,0,0,0)
+                    #  print("left")
+                    #else :
                       print("stop")                                     
                       turn_off()
                       print('pick up')
-                      time.sleep(0.35)
-                      send.sendBodySector(123)
-                      time.sleep(3) 
+                      time.sleep(3)
+                      send.sendBodySector(100)
+                      time.sleep(48) 
+                      print("aaaaaaaaaaaaaaaaaaaaa")
                       yaw=afterbar()
                       time.sleep(1.5) 
                       pick_bar=True
@@ -193,6 +194,8 @@ if __name__ == '__main__':
                 white_ymax=white_line()
                 print(white_ymax)
                 if white_ymax<180:
+                  white_ymax=white_line()
+                  print(white_ymax)
                   print("moving to liftline 2.0")
                   imu_2()
                   #time.sleep(1) 
