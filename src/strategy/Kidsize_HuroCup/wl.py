@@ -57,7 +57,7 @@ def white_line():
     white_size = 0
     for white_cnt in range(send.color_mask_subject_cnts[6]): 
       white_line_wide=send.color_mask_subject_XMax[6][white_cnt]-send.color_mask_subject_XMin[6][white_cnt]  
-      if send.color_mask_subject_size[6][white_cnt]>500 and send.color_mask_subject_YMax[6][white_cnt]<175 and white_line_wide<270:
+      if send.color_mask_subject_size[6][white_cnt]>500 and white_line_wide<300 and send.color_mask_subject_YMin[6][white_cnt]<220:
         white_xmax = send.color_mask_subject_XMax[6][white_cnt]
         white_xmin = send.color_mask_subject_XMin[6][white_cnt]
         white_ymax = send.color_mask_subject_YMax[6][white_cnt]
@@ -70,7 +70,7 @@ def white_line():
       send.drawImageFunction(2,0,white_xmin,white_xmin,white_ymin,white_ymax,0,0,0)
       send.drawImageFunction(3,0,white_xmin,white_xmax,white_ymin,white_ymin,0,0,0)
       send.drawImageFunction(4,0,white_xmin,white_xmax,white_ymax,white_ymax,0,0,0)
-    return white_ymax
+    return white_ymax,white_ymin
 
 def imu():
     x=send.imu_value_Yaw
@@ -152,11 +152,11 @@ if __name__ == '__main__':
                     imu()
                     target_ymax,target_xmin=red_line()
                     print(target_ymax)
-                    if target_ymax>90 and target_ymax<110:
+                    if target_ymax>90 and target_ymax<95:
                       imu1_5()
                       target_ymax,target_xmin=red_line()
                       print(target_ymax)
-                    if target_ymax>110:
+                    if target_ymax>95:
                       arrive=True
                   if arrive==True:
                     #target_ymax,target_xmin=red_line()
@@ -171,7 +171,7 @@ if __name__ == '__main__':
                       turn_off()
                       print('pick up')
                       time.sleep(3)
-                      send.sendBodySector(100)
+                      send.sendBodySector(123)
                       time.sleep(48) 
                       print("aaaaaaaaaaaaaaaaaaaaa")
                       yaw=afterbar()
@@ -183,7 +183,7 @@ if __name__ == '__main__':
                   turn_on()
                   print("moving to liftline")
                   imu_2()
-                  white_ymax=white_line()
+                  white_ymax,white_ymin=white_line()
                   print(white_ymax)
                   if 0<white_ymax and white_ymax<50:
                     find_white_line=True
@@ -191,19 +191,21 @@ if __name__ == '__main__':
                     imu_2()
               if find_white_line==True: 
                 imu_2()
-                white_ymax=white_line()
-                print(white_ymax)
-                if white_ymax<180:
-                  white_ymax=white_line()
-                  print(white_ymax)
+                white_ymax,white_ymin=white_line()
+                print('aaaaaa',white_ymin)
+                if white_ymin<210:
+                  print('bbbbbbbb',white_ymin)
+                  white_ymax,white_ymin=white_line()
+                  print('ccccccc',white_ymin)
                   print("moving to liftline 2.0")
                   imu_2()
                   #time.sleep(1) 
                 else :                 
                   print('stop and lift')
                   turn_off()
-                  send.sendBodySector(6)
-                  time.sleep(3)
+                  time.sleep(2.5)
+                  send.sendBodySector(18)
+                  time.sleep(2.5)
                   yaw=afterbar()
                   time.sleep(2)
                   lift_bar=True
