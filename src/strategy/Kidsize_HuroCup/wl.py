@@ -76,30 +76,30 @@ def imu():
     x=send.imu_value_Yaw
     print(x)
     if x>2: 
-      send.sendContinuousValue(500,0,0,-7,0)
+      send.sendContinuousValue(500,-450,0,-10,0)
       print("turn right")
       
     elif x<-2:
-      send.sendContinuousValue(500,0,0,1,0)
+      send.sendContinuousValue(500,-450,0,-2,0)
       print("turn left")
 
     elif -2<=x and x<=2:
-      send.sendContinuousValue(800,0,0,-3,0)
+      send.sendContinuousValue(800,-450,0,-6,0)
       print("walk straight")
 
 def imu1_5():
     x=send.imu_value_Yaw
     print(x)
     if x>2: 
-      send.sendContinuousValue(500,0,0,-7,0)
+      send.sendContinuousValue(500,-450,0,-10,0)
       print("turn right")
       
     elif x<-2 :
-      send.sendContinuousValue(500,0,0,1,0)
+      send.sendContinuousValue(500,-450,0,-2,0)
       print("turn left")
 
     elif -2<=x and x<=2 :
-      send.sendContinuousValue(500,0,0,-3,0)
+      send.sendContinuousValue(500,0,0,-6,0)
       print("walk straight")
 
 def imu_2():
@@ -107,15 +107,15 @@ def imu_2():
     x+=yaw
     print(x)
     if x>3: 
-      send.sendContinuousValue(500,0,0,-8,0)
+      send.sendContinuousValue(500,-450,0,-11,0)
       print("turn right 2")
       
     elif x<-3 :
-      send.sendContinuousValue(500,0,0,2,0)
+      send.sendContinuousValue(500,-450,0,-1,0)
       print("turn left 2")
 
     elif -3<=x and x<=3 :
-      send.sendContinuousValue(800,0,0,-3,0)
+      send.sendContinuousValue(800,-450,0,-6,0)
       print("walk straight 2")
 
 def afterbar():
@@ -172,7 +172,7 @@ if __name__ == '__main__':
                       print('pick up')
                       time.sleep(3)
                       send.sendBodySector(123)
-                      time.sleep(48) 
+                      time.sleep(27) 
                       print("aaaaaaaaaaaaaaaaaaaaa")
                       yaw=afterbar()
                       time.sleep(1.5) 
