@@ -8,8 +8,23 @@ find_white_line = False
 pick_bar =False
 lift_bar = False
 Body_Auto = False
-yaw = 0
 arrive = False
+yaw = 0
+
+x=900
+y=-200
+z=0
+theta=-1
+
+x2=500
+y2=0
+z2=0
+theta2=0
+
+x3=500
+y3=0
+z3=0
+theta3=0
 
 def turn_on():
     global Body_Auto
@@ -47,7 +62,7 @@ def red_line():
       send.drawImageFunction(2,0,target_xmin,target_xmin,target_ymin,target_ymax,0,0,0)
       send.drawImageFunction(3,0,target_xmin,target_xmax,target_ymin,target_ymin,0,0,0)
       send.drawImageFunction(4,0,target_xmin,target_xmax,target_ymax,target_ymax,0,0,0)
-    return target_ymax ,target_xmin
+    return target_ymax ,target_ymin ,target_xmax ,target_xmin
 
 def white_line():
     white_xmax = 0
@@ -57,7 +72,7 @@ def white_line():
     white_size = 0
     for white_cnt in range(send.color_mask_subject_cnts[6]): 
       white_line_wide=send.color_mask_subject_XMax[6][white_cnt]-send.color_mask_subject_XMin[6][white_cnt]  
-      if send.color_mask_subject_size[6][white_cnt]>500 and white_line_wide<300 and send.color_mask_subject_YMin[6][white_cnt]<220:
+      if send.color_mask_subject_size[6][white_cnt]>500 and white_line_wide<300 and send.color_mask_subject_YMax[6][white_cnt]>70:
         white_xmax = send.color_mask_subject_XMax[6][white_cnt]
         white_xmin = send.color_mask_subject_XMin[6][white_cnt]
         white_ymax = send.color_mask_subject_YMax[6][white_cnt]
@@ -73,50 +88,83 @@ def white_line():
     return white_ymax,white_ymin
 
 def imu():
-    x=send.imu_value_Yaw
-    print(x)
-    if x>2: 
-      send.sendContinuousValue(500,-450,0,-10,0)
+    target_ymax,target_ymin,target_xmax,target_xmin=red_line()
+    target_middle=(target_xmax+target_xmin)/2
+    if target_middle>160:
+      fix=1
+    if target_middle<160:
+      fix=-1
+    else :
+      fix=0
+    yaw_1=send.imu_value_Yaw
+    print(yaw_1)
+    if yaw_1>2: 
+      send.sendContinuousValue(x,y,z,theta-4+fix,0)
       print("turn right")
       
-    elif x<-2:
-      send.sendContinuousValue(500,-450,0,-2,0)
+    elif yaw_1<-2:
+      send.sendContinuousValue(x,y,z,theta+4+fix,0)
       print("turn left")
 
-    elif -2<=x and x<=2:
-      send.sendContinuousValue(800,-450,0,-6,0)
+    elif -2<=yaw_1 and yaw_1<=2:
+      send.sendContinuousValue(x+400,y,z,theta+fix,0)
       print("walk straight")
 
 def imu1_5():
-    x=send.imu_value_Yaw
-    print(x)
-    if x>2: 
-      send.sendContinuousValue(500,-450,0,-10,0)
+    target_ymax,target_ymin,target_xmax,target_xmin=red_line()
+    target_middle=(target_xmax+target_xmin)/2
+    if target_middle>160:
+      fix=1
+    if target_middle<160:
+      fix=-1
+    else :
+      fix=0
+    yaw_1=send.imu_value_Yaw
+    print(yaw_1)
+    if yaw_1>2: 
+      send.sendContinuousValue(x,y,z,theta-4+fix,0)
       print("turn right")
       
-    elif x<-2 :
-      send.sendContinuousValue(500,-450,0,-2,0)
+    elif yaw_1<-2:
+      send.sendContinuousValue(x,y,z,theta+4+fix,0)
       print("turn left")
 
-    elif -2<=x and x<=2 :
-      send.sendContinuousValue(500,0,0,-6,0)
+    elif -2<=yaw_1 and yaw_1<=2:
+      send.sendContinuousValue(x,y,z,theta+fix,0)
       print("walk straight")
 
 def imu_2():
-    x=send.imu_value_Yaw
-    x+=yaw
-    print(x)
-    if x>3: 
-      send.sendContinuousValue(500,-450,0,-11,0)
+    yaw_1=send.imu_value_Yaw
+    yaw_1+=yaw
+    print(yaw_1)
+    if yaw_1>3: 
+      send.sendContinuousValue(x2,y2,z2,theta2-5,0)
       print("turn right 2")
       
-    elif x<-3 :
-      send.sendContinuousValue(500,-450,0,-1,0)
+    elif yaw_1<-3 :
+      send.sendContinuousValue(x2,y2,z2,theta2+5,0)
       print("turn left 2")
 
-    elif -3<=x and x<=3 :
-      send.sendContinuousValue(800,-450,0,-6,0)
+    elif -3<=yaw_1 and yaw_1<=3 :
+      send.sendContinuousValue(x2+300,y2,z2,theta2,0)
       print("walk straight 2")
+
+def imu_3():
+    yaw_1=send.imu_value_Yaw
+    yaw_1+=yaw
+    print(yaw_1)
+    if yaw_1>3: 
+      send.sendContinuousValue(x3,y3,z3,theta3-5,0)
+      print("turn right 2")
+      
+    elif yaw_1<-3 :
+      send.sendContinuousValue(x3,y3,z3,theta3+5,0)
+      print("turn left 2")
+
+    elif -3<=yaw_1 and yaw_1<=3 :
+      send.sendContinuousValue(x3+300,y3,z3,theta3,0)
+      print("walk straight 2")
+
 
 def afterbar():
     print('revise')
@@ -124,6 +172,7 @@ def afterbar():
     time.sleep(0.35)
     send.sendSensorReset()
     return yaw
+
 
 
   
@@ -137,7 +186,7 @@ if __name__ == '__main__':
     try:
         #find_white_line=True
         #lift=True
-        #pick_bar = True
+        pick_bar = True
         time.sleep(0.35)
         send.sendSensorReset()
         while not rospy.is_shutdown():
@@ -150,42 +199,39 @@ if __name__ == '__main__':
                     print('move')
                     turn_on()
                     imu()
-                    target_ymax,target_xmin=red_line()
+                    target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                     print(target_ymax)
-                    if target_ymax>90 and target_ymax<95:
+                    if target_ymax>80 and target_ymax<93:
                       imu1_5()
-                      target_ymax,target_xmin=red_line()
+                      target_ymax ,target_ymin ,target_xmax ,target_xmin=red_line()
                       print(target_ymax)
-                    if target_ymax>95:
+                    if target_ymax>=93:
                       arrive=True
                   if arrive==True:
-                    #target_ymax,target_xmin=red_line()
-                    #if target_xmin>131:
-                    #  send.sendContinuousValue(40,-500,0,0,0)
-                    #  print("right")
-                    #elif target_xmin<129:
-                    #  send.sendContinuousValue(40,500,0,0,0)
-                    #  print("left")
-                    #else :
                       print("stop")                                     
                       turn_off()
                       print('pick up')
                       time.sleep(3)
                       send.sendBodySector(123)
-                      time.sleep(27) 
-                      print("aaaaaaaaaaaaaaaaaaaaa")
+                      time.sleep(24) 
                       yaw=afterbar()
                       time.sleep(1.5) 
                       pick_bar=True
+                      
                 if pick_bar==True:
-                  #time.sleep(3)
-                  #if white_ymax==0:
+                  send.sendHeadMotor(2,1250,50)
+                  time.sleep(1) 
                   turn_on()
                   print("moving to liftline")
                   imu_2()
                   white_ymax,white_ymin=white_line()
-                  print(white_ymax)
-                  if 0<white_ymax and white_ymax<50:
+                  print('aaabbb',white_ymin)
+                  if white_ymin >200:
+                    print("1")
+                    send.sendHeadMotor(2,1350,50)
+                    print("2")
+                    time.sleep(1)
+                    print("3") 
                     find_white_line=True
                   else:
                     imu_2()
@@ -196,7 +242,6 @@ if __name__ == '__main__':
                 if white_ymin<210:
                   print('bbbbbbbb',white_ymin)
                   white_ymax,white_ymin=white_line()
-                  print('ccccccc',white_ymin)
                   print("moving to liftline 2.0")
                   imu_2()
                   #time.sleep(1) 
@@ -212,7 +257,7 @@ if __name__ == '__main__':
             elif lift_bar==True:
               print('keep going to endline')
               turn_on()
-              imu_2()      
+              imu_3()      
               #time.sleep(1)
               print('end')
           if send.is_start == False:
@@ -221,6 +266,3 @@ if __name__ == '__main__':
                      
     except rospy.ROSInterruptException:
         pass
-
-
-
