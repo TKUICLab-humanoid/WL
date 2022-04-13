@@ -11,20 +11,20 @@ Body_Auto = False
 arrive = False
 yaw = 0
 
-x=900
-y=-200
+x=500
+y=-300
 z=0
 theta=-1
 
 x2=500
-y2=0
+y2=-200
 z2=0
-theta2=0
+theta2=-2
 
 x3=500
-y3=0
+y3=-200
 z3=0
-theta3=0
+theta3=-2
 
 def turn_on():
     global Body_Auto
@@ -72,7 +72,7 @@ def white_line():
     white_size = 0
     for white_cnt in range(send.color_mask_subject_cnts[6]): 
       white_line_wide=send.color_mask_subject_XMax[6][white_cnt]-send.color_mask_subject_XMin[6][white_cnt]  
-      if send.color_mask_subject_size[6][white_cnt]>500 and white_line_wide<300 and send.color_mask_subject_YMax[6][white_cnt]>70:
+      if send.color_mask_subject_size[6][white_cnt]>200 and white_line_wide<300 and send.color_mask_subject_YMax[6][white_cnt]>70:
         white_xmax = send.color_mask_subject_XMax[6][white_cnt]
         white_xmin = send.color_mask_subject_XMin[6][white_cnt]
         white_ymax = send.color_mask_subject_YMax[6][white_cnt]
@@ -186,10 +186,11 @@ if __name__ == '__main__':
     try:
         #find_white_line=True
         #lift=True
-        pick_bar = True
+        #pick_bar = True
         time.sleep(0.35)
         send.sendSensorReset()
         while not rospy.is_shutdown():
+          send.sendHeadMotor(2,1350,50)
           if send.is_start == True:
             if lift_bar==False:  
               if find_white_line==False:
@@ -213,22 +214,24 @@ if __name__ == '__main__':
                       print('pick up')
                       time.sleep(3)
                       send.sendBodySector(123)
-                      time.sleep(24) 
+                      time.sleep(24.6) 
                       yaw=afterbar()
-                      time.sleep(1.5) 
+                      time.sleep(1.5)
+                      send.sendHeadMotor(2,1250,50) 
+                      time.sleep(1)
                       pick_bar=True
                       
                 if pick_bar==True:
-                  send.sendHeadMotor(2,1250,50)
+                  send.sendHeadMotor(2,1150,50)
                   time.sleep(1) 
                   turn_on()
                   print("moving to liftline")
                   imu_2()
                   white_ymax,white_ymin=white_line()
                   print('aaabbb',white_ymin)
-                  if white_ymin >200:
+                  if white_ymin >180:
                     print("1")
-                    send.sendHeadMotor(2,1350,50)
+                    send.sendHeadMotor(2,1250,50)
                     print("2")
                     time.sleep(1)
                     print("3") 
@@ -249,11 +252,13 @@ if __name__ == '__main__':
                   print('stop and lift')
                   turn_off()
                   time.sleep(2.5)
-                  send.sendBodySector(18)
-                  time.sleep(2.5)
+                  send.sendBodySector(456)
+                  time.sleep(6.5)
                   yaw=afterbar()
                   time.sleep(2)
                   lift_bar=True
+                  print(send.imu_value_Pitch)
+                  time.sleep(2)
             elif lift_bar==True:
               print('keep going to endline')
               turn_on()
