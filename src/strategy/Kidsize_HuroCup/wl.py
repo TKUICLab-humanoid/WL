@@ -14,17 +14,17 @@ yaw = 0
 x=500
 y=-300
 z=0
-theta=-1
+theta=0
 
 x2=500
 y2=-200
 z2=0
-theta2=-2
+theta2=-4
 
 x3=500
-y3=-200
+y3=-100
 z3=0
-theta3=-2
+theta3=-1
 
 def turn_on():
     global Body_Auto
@@ -107,7 +107,7 @@ def imu():
       print("turn left")
 
     elif -2<=yaw_1 and yaw_1<=2:
-      send.sendContinuousValue(x+400,y,z,theta+fix,0)
+      send.sendContinuousValue(x+300,y,z,theta+fix,0)
       print("walk straight")
 
 def imu1_5():
@@ -146,7 +146,7 @@ def imu_2():
       print("turn left 2")
 
     elif -3<=yaw_1 and yaw_1<=3 :
-      send.sendContinuousValue(x2+300,y2,z2,theta2,0)
+      send.sendContinuousValue(x2+600,y2,z2,theta2,0)
       print("walk straight 2")
 
 def imu_3():
@@ -162,7 +162,7 @@ def imu_3():
       print("turn left 2")
 
     elif -3<=yaw_1 and yaw_1<=3 :
-      send.sendContinuousValue(x3+300,y3,z3,theta3,0)
+      send.sendContinuousValue(x3+700,y3,z3,theta3,0)
       print("walk straight 2")
 
 
@@ -202,11 +202,11 @@ if __name__ == '__main__':
                     imu()
                     target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                     print(target_ymax)
-                    if target_ymax>80 and target_ymax<93:
+                    if target_ymax>80 and target_ymax<90:
                       imu1_5()
                       target_ymax ,target_ymin ,target_xmax ,target_xmin=red_line()
                       print(target_ymax)
-                    if target_ymax>=93:
+                    if target_ymax>=90:
                       arrive=True
                   if arrive==True:
                       print("stop")                                     
