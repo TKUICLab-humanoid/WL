@@ -11,20 +11,20 @@ Body_Auto = False
 arrive = False
 yaw = 0
 
-x=500
-y=-300
+x=1500
+y=100
 z=0
-theta=0
+theta=-2
 
-x2=500
-y2=-200
+x2=1000
+y2=100
 z2=0
-theta2=-4
+theta2=-2
 
-x3=500
-y3=-100
+x3=1000
+y3=-0
 z3=0
-theta3=-1
+theta3=0
 
 def turn_on():
     global Body_Auto
@@ -107,7 +107,7 @@ def imu():
       print("turn left")
 
     elif -2<=yaw_1 and yaw_1<=2:
-      send.sendContinuousValue(x+300,y,z,theta+fix,0)
+      send.sendContinuousValue(x,y,z,theta+fix,0)
       print("walk straight")
 
 def imu1_5():
@@ -146,7 +146,7 @@ def imu_2():
       print("turn left 2")
 
     elif -3<=yaw_1 and yaw_1<=3 :
-      send.sendContinuousValue(x2+600,y2,z2,theta2,0)
+      send.sendContinuousValue(x2,y2,z2,theta2,0)
       print("walk straight 2")
 
 def imu_3():
@@ -162,7 +162,7 @@ def imu_3():
       print("turn left 2")
 
     elif -3<=yaw_1 and yaw_1<=3 :
-      send.sendContinuousValue(x3+700,y3,z3,theta3,0)
+      send.sendContinuousValue(x3,y3,z3,theta3,0)
       print("walk straight 2")
 
 
@@ -214,7 +214,7 @@ if __name__ == '__main__':
                       print('pick up')
                       time.sleep(3)
                       send.sendBodySector(123)
-                      time.sleep(24.6) 
+                      time.sleep(8) 
                       yaw=afterbar()
                       time.sleep(1.5)
                       send.sendHeadMotor(2,1250,50) 
@@ -253,7 +253,7 @@ if __name__ == '__main__':
                   turn_off()
                   time.sleep(2.5)
                   send.sendBodySector(456)
-                  time.sleep(6.5)
+                  time.sleep(3)
                   yaw=afterbar()
                   time.sleep(2)
                   lift_bar=True
