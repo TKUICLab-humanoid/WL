@@ -12,14 +12,14 @@ arrive = False
 yaw = 0
 
 x=1500
-y=100
+y=-100
 z=0
-theta=-2
+theta=0
 
 x2=1000
-y2=100
+y2=0
 z2=0
-theta2=-2
+theta2=-1
 
 x3=1000
 y3=-0
@@ -28,16 +28,21 @@ theta3=0
 
 def turn_on():
     global Body_Auto
+    # time.sleep(0.8)
+    print("o===",Body_Auto)
     if Body_Auto==True:
       pass
     elif Body_Auto==False:
-      send.sendBodyAuto(0,0,0,0,1,0)
+      time.sleep(0.7)
+      send.sendBodyAuto(200,0,0,0,1,0)
       Body_Auto=True
 
 def turn_off():
     global Body_Auto
+    # time.sleep(0.8)
+    print("F===",Body_Auto)
     if Body_Auto==True:
-      send.sendBodyAuto(0,0,0,0,1,0)
+      send.sendBodyAuto(200,0,0,0,1,0)
       Body_Auto=False
     elif Body_Auto==False:
       pass
@@ -138,15 +143,15 @@ def imu_2():
     yaw_1+=yaw
     print(yaw_1)
     if yaw_1>3: 
-      send.sendContinuousValue(x2,y2,z2,theta2-5,0)
+      send.sendContinuousValue(x,y,z,theta-10,0)
       print("turn right 2")
       
     elif yaw_1<-3 :
-      send.sendContinuousValue(x2,y2,z2,theta2+5,0)
+      send.sendContinuousValue(x,y,z,theta,0)
       print("turn left 2")
 
     elif -3<=yaw_1 and yaw_1<=3 :
-      send.sendContinuousValue(x2,y2,z2,theta2,0)
+      send.sendContinuousValue(x+300,y,z,theta-5,0)
       print("walk straight 2")
 
 def imu_3():
@@ -189,9 +194,10 @@ if __name__ == '__main__':
         #pick_bar = True
         time.sleep(0.35)
         send.sendSensorReset()
+        send.sendHeadMotor(2,1450,50)
         while not rospy.is_shutdown():
-          send.sendHeadMotor(2,1350,50)
           if send.is_start == True:
+            print(Body_Auto)
             if lift_bar==False:  
               if find_white_line==False:
                 if pick_bar==False:
@@ -202,11 +208,11 @@ if __name__ == '__main__':
                     imu()
                     target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                     print(target_ymax)
-                    if target_ymax>80 and target_ymax<90:
+                    if target_ymax>120 and target_ymax<140:
                       imu1_5()
                       target_ymax ,target_ymin ,target_xmax ,target_xmin=red_line()
                       print(target_ymax)
-                    if target_ymax>=90:
+                    if target_ymax>=140:
                       arrive=True
                   if arrive==True:
                       print("stop")                                     
@@ -214,17 +220,17 @@ if __name__ == '__main__':
                       print('pick up')
                       time.sleep(3)
                       send.sendBodySector(123)
-                      time.sleep(8) 
+                      time.sleep(9) 
                       yaw=afterbar()
                       time.sleep(1.5)
                       send.sendHeadMotor(2,1250,50) 
                       time.sleep(1)
-                      pick_bar=True
-                      
+                      pick_bar=True                      
                 if pick_bar==True:
                   send.sendHeadMotor(2,1150,50)
                   time.sleep(1) 
                   turn_on()
+                  time.sleep(0.5)
                   print("moving to liftline")
                   imu_2()
                   white_ymax,white_ymin=white_line()
@@ -242,7 +248,7 @@ if __name__ == '__main__':
                 imu_2()
                 white_ymax,white_ymin=white_line()
                 print('aaaaaa',white_ymin)
-                if white_ymin<210:
+                if white_ymin<220:
                   print('bbbbbbbb',white_ymin)
                   white_ymax,white_ymin=white_line()
                   print("moving to liftline 2.0")
@@ -252,6 +258,7 @@ if __name__ == '__main__':
                   print('stop and lift')
                   turn_off()
                   time.sleep(2.5)
+                  turn_off()
                   send.sendBodySector(456)
                   time.sleep(3)
                   yaw=afterbar()
@@ -262,11 +269,14 @@ if __name__ == '__main__':
             elif lift_bar==True:
               print('keep going to endline')
               turn_on()
+              time.sleep(0.5)
               imu_3()      
               #time.sleep(1)
               print('end')
           if send.is_start == False:
             turn_off()
+            print("AA")
+            time.sleep(0.5)
             
                      
     except rospy.ROSInterruptException:

@@ -110,24 +110,17 @@ class Sendmessage:
         MotorData.Speed = Speed
         self.single_motor_data_pub.publish(MotorData)
 
-    # def sendSensorSet(self,R,P,Y,DesireSet,IMUReset,ForceState,GainSet):
-    #     msg = SensorSet()
-    #     msg.sensor_P = P * 1000
-    #     msg.sensor_I = I * 1000
-    #     msg.sensor_D = D * 1000
-    #     msg.sensor_modeset = modeset
-    #     self.sensor_pub.publish(msg)
+    def sendSensorSet(self,P,I,D,modeset):
+        msg = SensorSet()
+        msg.sensor_P = P * 1000
+        msg.sensor_I = I * 1000
+        msg.sensor_D = D * 1000
+        msg.sensor_modeset = modeset
+        self.sensor_pub.publish(msg)
 
     def sendSensorReset(self):
         msg = SensorSet()
-        msg.Roll = 0 
-        msg.Pitch = 0
-        msg.Yaw = 0
-        msg.DesireSet =False
-        msg.IMUReset = True
-        msg.ForceState = False
-        msg.GainSet = False
-        # msg.sensor_modeset = 0x02
+        msg.sensor_modeset = 0x02
         self.sensor_pub.publish(msg)
 
     def strategy(self):
