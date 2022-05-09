@@ -195,6 +195,7 @@ if __name__ == '__main__':
         time.sleep(0.35)
         send.sendSensorReset()
         send.sendHeadMotor(2,1450,50)
+        r = rospy.Rate(5) #5hz
         while not rospy.is_shutdown():
           if send.is_start == True:
             print(Body_Auto)
@@ -276,7 +277,7 @@ if __name__ == '__main__':
           if send.is_start == False:
             turn_off()
             print("AA")
-            time.sleep(0.5)
+          r.sleep()  
             
                      
     except rospy.ROSInterruptException:
