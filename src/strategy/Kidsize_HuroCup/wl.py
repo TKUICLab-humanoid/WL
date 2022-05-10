@@ -12,17 +12,17 @@ arrive = False
 yaw = 0
 
 x=1500
-y=-100
+y=0
 z=0
-theta=0
+theta=-3
 
 x2=1000
 y2=0
 z2=0
-theta2=-1
+theta2=3
 
 x3=1000
-y3=-0
+y3=100
 z3=0
 theta3=0
 
@@ -77,7 +77,7 @@ def white_line():
     white_size = 0
     for white_cnt in range(send.color_mask_subject_cnts[6]): 
       white_line_wide=send.color_mask_subject_XMax[6][white_cnt]-send.color_mask_subject_XMin[6][white_cnt]  
-      if send.color_mask_subject_size[6][white_cnt]>200 and white_line_wide<300 and send.color_mask_subject_YMax[6][white_cnt]>70:
+      if send.color_mask_subject_size[6][white_cnt]>200 and send.color_mask_subject_YMax[6][white_cnt]>70:
         white_xmax = send.color_mask_subject_XMax[6][white_cnt]
         white_xmin = send.color_mask_subject_XMin[6][white_cnt]
         white_ymax = send.color_mask_subject_YMax[6][white_cnt]
@@ -85,7 +85,7 @@ def white_line():
         white_size = send.color_mask_subject_size[6][white_cnt]
      #print(target_xmax,target_xmin)
      #print(target_ymax,target_ymin)
-     #print(target_size)
+     # print(white_size)
       send.drawImageFunction(1,0,white_xmax,white_xmax,white_ymin,white_ymax,0,0,0)
       send.drawImageFunction(2,0,white_xmin,white_xmin,white_ymin,white_ymax,0,0,0)
       send.drawImageFunction(3,0,white_xmin,white_xmax,white_ymin,white_ymin,0,0,0)
@@ -140,35 +140,38 @@ def imu1_5():
 
 def imu_2():
     yaw_1=send.imu_value_Yaw
+    #print("cccccc",yaw_1) 
+    #time.sleep(0.5)
     yaw_1+=yaw
     print(yaw_1)
-    if yaw_1>3: 
-      send.sendContinuousValue(x,y,z,theta-10,0)
+    if yaw_1>2: 
+      send.sendContinuousValue(x,y,z,theta2-3,0)
       print("turn right 2")
       
-    elif yaw_1<-3 :
-      send.sendContinuousValue(x,y,z,theta,0)
+    elif yaw_1<-2 :
+      send.sendContinuousValue(x,y,z,theta2+3,0)
       print("turn left 2")
 
-    elif -3<=yaw_1 and yaw_1<=3 :
-      send.sendContinuousValue(x+300,y,z,theta-5,0)
+    elif -2<=yaw_1 and yaw_1<=2 :
+      send.sendContinuousValue(x,y,z,theta2,0)
       print("walk straight 2")
+    #print("gggggg",theta)  
 
 def imu_3():
     yaw_1=send.imu_value_Yaw
     yaw_1+=yaw
     print(yaw_1)
     if yaw_1>3: 
-      send.sendContinuousValue(x3,y3,z3,theta3-5,0)
-      print("turn right 2")
+      send.sendContinuousValue(x3,y3,z3,theta3-4,0)
+      print("turn right 3")
       
     elif yaw_1<-3 :
-      send.sendContinuousValue(x3,y3,z3,theta3+5,0)
-      print("turn left 2")
+      send.sendContinuousValue(x3,y3,z3,theta3+4,0)
+      print("turn left 3")
 
     elif -3<=yaw_1 and yaw_1<=3 :
       send.sendContinuousValue(x3,y3,z3,theta3,0)
-      print("walk straight 2")
+      print("walk straight 3")
 
 
 def afterbar():
@@ -190,7 +193,7 @@ if __name__ == '__main__':
 
     try:
         #find_white_line=True
-        #lift=True
+        #lift_bar=True
         #pick_bar = True
         time.sleep(0.35)
         send.sendSensorReset()
@@ -209,34 +212,37 @@ if __name__ == '__main__':
                     imu()
                     target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                     print(target_ymax)
-                    if target_ymax>120 and target_ymax<140:
+                    if target_ymax>130 and target_ymax<145:
                       imu1_5()
                       target_ymax ,target_ymin ,target_xmax ,target_xmin=red_line()
                       print(target_ymax)
-                    if target_ymax>=140:
+                    if target_ymax>=145:
                       arrive=True
                   if arrive==True:
                       print("stop")                                     
                       turn_off()
                       print('pick up')
-                      time.sleep(3)
+                      time.sleep(1.5)
                       send.sendBodySector(123)
-                      time.sleep(9) 
+                      time.sleep(9)
+                      print("111",yaw) 
                       yaw=afterbar()
+                      print("222",yaw) 
                       time.sleep(1.5)
                       send.sendHeadMotor(2,1250,50) 
                       time.sleep(1)
                       pick_bar=True                      
                 if pick_bar==True:
-                  send.sendHeadMotor(2,1150,50)
+                  send.sendHeadMotor(2,1250,50)
                   time.sleep(1) 
                   turn_on()
-                  time.sleep(0.5)
+                  time.sleep(1)
                   print("moving to liftline")
-                  imu_2()
                   white_ymax,white_ymin=white_line()
+                  time.sleep(0.5)
+                  imu_2()
                   print('aaabbb',white_ymin)
-                  if white_ymin >180:
+                  if white_ymin<50 and white_ymin>20:
                     print("1")
                     send.sendHeadMotor(2,1250,50)
                     print("2")
@@ -246,10 +252,11 @@ if __name__ == '__main__':
                   else:
                     imu_2()
               if find_white_line==True: 
-                imu_2()
                 white_ymax,white_ymin=white_line()
+                time.sleep(0.35)
+                imu_2()
                 print('aaaaaa',white_ymin)
-                if white_ymin<220:
+                if white_ymin<195:
                   print('bbbbbbbb',white_ymin)
                   white_ymax,white_ymin=white_line()
                   print("moving to liftline 2.0")
