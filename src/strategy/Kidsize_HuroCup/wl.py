@@ -14,15 +14,15 @@ yaw = 0
 x=1500
 y=0
 z=0
-theta=-3
+theta=0
 
 x2=1000
 y2=0
 z2=0
-theta2=3
+theta2=0
 
 x3=1000
-y3=100
+y3=0
 z3=0
 theta3=0
 
@@ -242,7 +242,7 @@ if __name__ == '__main__':
                   time.sleep(0.5)
                   imu_2()
                   print('aaabbb',white_ymin)
-                  if white_ymin<50 and white_ymin>20:
+                  if white_ymin<60 and white_ymin>40:
                     print("1")
                     send.sendHeadMotor(2,1250,50)
                     print("2")
@@ -267,13 +267,13 @@ if __name__ == '__main__':
                   turn_off()
                   time.sleep(2.5)
                   turn_off()
-                  send.sendBodySector(456)
-                  time.sleep(3)
+                  send.sendBodySector(4567)
+                  time.sleep(4.6)
                   yaw=afterbar()
-                  time.sleep(2)
+                  time.sleep(1.5)
                   lift_bar=True
                   print(send.imu_value_Pitch)
-                  time.sleep(2)
+                  time.sleep(1.5)
             elif lift_bar==True:
               print('keep going to endline')
               turn_on()
@@ -281,6 +281,8 @@ if __name__ == '__main__':
               imu_3()      
               #time.sleep(1)
               print('end')
+            #white_ymax,white_ymin=white_line()
+            #print(white_ymin)
           if send.is_start == False:
             turn_off()
             print("AA")
