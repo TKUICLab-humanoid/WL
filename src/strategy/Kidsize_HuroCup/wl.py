@@ -14,19 +14,19 @@ lift_line =False
 yaw = 0
 
 x=1500
-y=0
+y=-400
 z=0
-theta=0
+theta=2
 
 x2=1000
-y2=0
+y2=-100
 z2=0
-theta2=0
+theta2=2
 
 x3=1000
-y3=0
+y3=-100
 z3=0
-theta3=0
+theta3=2
 
 def turn_on():
     global Body_Auto
@@ -241,7 +241,7 @@ if __name__ == '__main__':
                         turn_off()
                         print('pick up')
                         time.sleep(1.5)
-                        send.sendBodySector(123)
+                        send.sendBodySector(1234)
                         time.sleep(9)
                         print("111",yaw) 
                         yaw=afterbar()
@@ -286,7 +286,7 @@ if __name__ == '__main__':
                   turn_off()
                   time.sleep(2.5)
                   turn_off()
-                  send.sendBodySector(456)
+                  send.sendBodySector(5678)
                   time.sleep(4.6)
                   yaw=afterbar()
                   time.sleep(1.5)
