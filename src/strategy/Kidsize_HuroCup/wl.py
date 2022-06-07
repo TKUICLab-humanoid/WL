@@ -14,19 +14,19 @@ lift_line =False
 yaw = 0
 
 x=1500
-y=-400
+y=-300
 z=0
-theta=2
+theta=1
 
-x2=1000
-y2=-100
+x2=1500
+y2=0
 z2=0
-theta2=2
+theta2=1
 
-x3=1000
-y3=-100
+x3=1500
+y3=0
 z3=0
-theta3=2
+theta3=0
 
 def turn_on():
     global Body_Auto
@@ -79,7 +79,7 @@ def white_line():
     white_size = 0
     for white_cnt in range(send.color_mask_subject_cnts[6]): 
       white_line_wide=send.color_mask_subject_XMax[6][white_cnt]-send.color_mask_subject_XMin[6][white_cnt]  
-      if send.color_mask_subject_size[6][white_cnt]>500 and send.color_mask_subject_YMax[6][white_cnt]>10:
+      if send.color_mask_subject_size[6][white_cnt]>500 and send.color_mask_subject_YMax[6][white_cnt]<160:
         white_xmax = send.color_mask_subject_XMax[6][white_cnt]
         white_xmin = send.color_mask_subject_XMin[6][white_cnt]
         white_ymax = send.color_mask_subject_YMax[6][white_cnt]
@@ -217,7 +217,7 @@ if __name__ == '__main__':
             print(Body_Auto)
             if lift_bar==False: 
               if lift_line==False: 
-                if find_white_line==False:
+                #if find_white_line==False:
                   if pick_bar==False:
                     if arrive==False:
                       if imu_reset==False:
@@ -230,12 +230,22 @@ if __name__ == '__main__':
                         imu()
                         target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                         print(target_ymax)
-                        if target_ymax>130 and target_ymax<145:
+                        if target_ymax>130 and target_ymax<148:
                           imu1_5()
                           target_ymax ,target_ymin ,target_xmax ,target_xmin=red_line()
                           print(target_ymax)
-                        if target_ymax>=145:
-                          arrive=correct_target()
+                        if target_ymax>=148:
+                       #  target_ymax,target_ymin,target_xmax,target_xmin=red_line()
+                       #  red_middle=float(target_xmax+target_xmin)/2
+                       #  print('middle=',red_middle)
+                       #  if red_middle>172:
+                       #    send.sendContinuousValue(0,-500,0,0,0)
+                       #    print('move right')
+                       #  if red_middle<157:
+                       #    send.sendContinuousValue(0,500,0,0,0)
+                       #    print('move left')
+                       #  if red_middle>157 and red_middle<172:
+                         arrive=True
                     if arrive==True:
                         print("stop")                                     
                         turn_off()
@@ -257,31 +267,33 @@ if __name__ == '__main__':
                     time.sleep(1)
                     print("moving to liftline")
                     white_ymax,white_ymin=white_line()
-                    time.sleep(0.5)
+                    time.sleep(0.35)
                     imu_2()
-                    print('find',white_ymin)
-                    if white_ymin<60 and white_ymin>40:
+                    print('find',white_ymax)
+                    if white_ymax>40 and white_ymax<120:
                       print("1")
                       print("2")
                       time.sleep(1)
                       print("3") 
-                      find_white_line=True
+                      lift_line=True
                     else:
                       imu_2()
-                if find_white_line==True: 
-                  white_ymax,white_ymin=white_line()
-                  time.sleep(0.35)
-                  print('distance',white_ymin)
-                  if white_ymin>120:
-                    send.sendHeadMotor(2,1200,50)
-                    time.sleep(1)
-                    lift_line=True
-                  else :
-                    imu_2()  
+                #if find_white_line==True: 
+                #  white_ymax,white_ymin=white_line()
+                #  time.sleep(0.35)
+                #  print('distance',white_ymin)
+                #  if white_ymax>90:
+                #    send.sendHeadMotor(2,1200,50)
+                #    time.sleep(1)
+                #    lift_line=True
+                #  else :
+                #    imu_2()  
               if lift_line==True:
+                send.sendHeadMotor(2,1300,80)
+                time.sleep(0.5)
                 white_ymax,white_ymin=white_line()
-                print('distance 2=',white_ymin)
-                if white_ymin<30 and white_ymin>15:
+                print('distance 2=',white_ymax)
+                if white_ymax>25 and white_ymax<40:
                   print('stop and lift')
                   turn_off()
                   time.sleep(2.5)
