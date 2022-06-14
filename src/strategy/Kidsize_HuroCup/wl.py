@@ -14,19 +14,19 @@ lift_line =False
 yaw = 0
 
 x=1500
-y=-300
+y=700
 z=0
-theta=1
+theta=-1
 
 x2=1500
-y2=0
+y2=200
 z2=0
-theta2=1
+theta2=0
 
 x3=1500
-y3=0
+y3=300
 z3=0
-theta3=0
+theta3=-2
 
 def turn_on():
     global Body_Auto
@@ -230,11 +230,11 @@ if __name__ == '__main__':
                         imu()
                         target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                         print(target_ymax)
-                        if target_ymax>130 and target_ymax<148:
+                        if target_ymax>130 and target_ymax<135:
                           imu1_5()
                           target_ymax ,target_ymin ,target_xmax ,target_xmin=red_line()
                           print(target_ymax)
-                        if target_ymax>=148:
+                        if target_ymax>=135:
                        #  target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                        #  red_middle=float(target_xmax+target_xmin)/2
                        #  print('middle=',red_middle)
@@ -261,8 +261,6 @@ if __name__ == '__main__':
                         time.sleep(1)
                         pick_bar=True                      
                   if pick_bar==True:
-                    send.sendHeadMotor(2,1250,50)
-                    time.sleep(1) 
                     turn_on()
                     time.sleep(1)
                     print("moving to liftline")
@@ -293,7 +291,7 @@ if __name__ == '__main__':
                 time.sleep(0.5)
                 white_ymax,white_ymin=white_line()
                 print('distance 2=',white_ymax)
-                if white_ymax>25 and white_ymax<40:
+                if white_ymax>22 and white_ymax<40:
                   print('stop and lift')
                   turn_off()
                   time.sleep(2.5)
