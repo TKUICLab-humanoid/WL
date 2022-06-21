@@ -14,17 +14,17 @@ lift_line =False
 yaw = 0
 
 x=1500
-y=700
+y=-300
 z=0
-theta=-1
+theta=0
 
 x2=1500
-y2=200
+y2=-200
 z2=0
 theta2=0
 
 x3=1500
-y3=300
+y3=-200
 z3=0
 theta3=-2
 
@@ -230,22 +230,22 @@ if __name__ == '__main__':
                         imu()
                         target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                         print(target_ymax)
-                        if target_ymax>130 and target_ymax<135:
+                        if target_ymax>110 and target_ymax<115:
                           imu1_5()
                           target_ymax ,target_ymin ,target_xmax ,target_xmin=red_line()
                           print(target_ymax)
-                        if target_ymax>=135:
-                       #  target_ymax,target_ymin,target_xmax,target_xmin=red_line()
-                       #  red_middle=float(target_xmax+target_xmin)/2
-                       #  print('middle=',red_middle)
-                       #  if red_middle>172:
-                       #    send.sendContinuousValue(0,-500,0,0,0)
-                       #    print('move right')
-                       #  if red_middle<157:
-                       #    send.sendContinuousValue(0,500,0,0,0)
-                       #    print('move left')
-                       #  if red_middle>157 and red_middle<172:
-                         arrive=True
+                        if target_ymax>=115:
+                         target_ymax,target_ymin,target_xmax,target_xmin=red_line()
+                         red_middle=float(target_xmax+target_xmin)/2
+                         print('middle=',red_middle)
+                         if red_middle<162:
+                           send.sendContinuousValue(-350,300,0,0,2)
+                           print('move left')
+                         if red_middle>167:
+                           send.sendContinuousValue(-300,-400,0,0,-5)
+                           print('move right')
+                         if red_middle>162 and red_middle<167:
+                           arrive=True
                     if arrive==True:
                         print("stop")                                     
                         turn_off()
@@ -257,7 +257,7 @@ if __name__ == '__main__':
                         yaw=afterbar()
                         print("222",yaw) 
                         time.sleep(1.5)
-                        send.sendHeadMotor(2,1250,50) 
+                        send.sendHeadMotor(2,1300,50) 
                         time.sleep(1)
                         pick_bar=True                      
                   if pick_bar==True:
@@ -268,7 +268,7 @@ if __name__ == '__main__':
                     time.sleep(0.35)
                     imu_2()
                     print('find',white_ymax)
-                    if white_ymax>40 and white_ymax<120:
+                    if white_ymax>70 and white_ymax<120:
                       print("1")
                       print("2")
                       time.sleep(1)
@@ -287,11 +287,9 @@ if __name__ == '__main__':
                 #  else :
                 #    imu_2()  
               if lift_line==True:
-                send.sendHeadMotor(2,1300,80)
-                time.sleep(0.5)
                 white_ymax,white_ymin=white_line()
                 print('distance 2=',white_ymax)
-                if white_ymax>22 and white_ymax<40:
+                if white_ymax>5 and white_ymax<40:
                   print('stop and lift')
                   turn_off()
                   time.sleep(2.5)
@@ -315,8 +313,10 @@ if __name__ == '__main__':
             turn_off()
             print("AA")
             white_ymax,white_ymin=white_line()
-            print('middle=',white_ymax)
-            print('middle=',white_ymin)
+            print('w=',white_ymax)
+            target_ymax,target_ymin,target_xmax,target_xmin=red_line()
+            red_middle=float(target_xmax+target_xmin)/2
+            print('r=',red_middle)
           r.sleep()  
             
                      
