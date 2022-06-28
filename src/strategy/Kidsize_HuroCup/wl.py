@@ -10,21 +10,22 @@ lift_bar = False
 Body_Auto = False
 arrive = False
 imu_reset = False
-lift_line =False
+lift_line = False
+correct = False
 yaw = 0
 
 x=1500
-y=-300
+y=0
 z=0
 theta=0
 
 x2=1500
-y2=-200
+y2=100
 z2=0
-theta2=0
+theta2=-2
 
 x3=1500
-y3=-200
+y3=-100
 z3=0
 theta3=-2
 
@@ -220,32 +221,35 @@ if __name__ == '__main__':
                 #if find_white_line==False:
                   if pick_bar==False:
                     if arrive==False:
-                      if imu_reset==False:
-                        send.sendSensorReset()
-                        imu_reset=True
-                      if imu_reset==True:
-                        send.sendHeadMotor(2,1350,50)
-                        print('move')
-                        turn_on()
-                        imu()
-                        target_ymax,target_ymin,target_xmax,target_xmin=red_line()
-                        print(target_ymax)
-                        if target_ymax>110 and target_ymax<115:
-                          imu1_5()
-                          target_ymax ,target_ymin ,target_xmax ,target_xmin=red_line()
+                      if correct==False:
+                        if imu_reset==False:
+                          send.sendSensorReset()
+                          imu_reset=True
+                        if imu_reset==True:
+                          send.sendHeadMotor(2,1350,50)
+                          print('move')
+                          turn_on()
+                          imu()
+                          target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                           print(target_ymax)
-                        if target_ymax>=115:
-                         target_ymax,target_ymin,target_xmax,target_xmin=red_line()
-                         red_middle=float(target_xmax+target_xmin)/2
-                         print('middle=',red_middle)
-                         if red_middle<162:
-                           send.sendContinuousValue(-350,300,0,0,2)
-                           print('move left')
-                         if red_middle>167:
-                           send.sendContinuousValue(-300,-400,0,0,-5)
-                           print('move right')
-                         if red_middle>162 and red_middle<167:
-                           arrive=True
+                          if target_ymax>115 and target_ymax<120:
+                            imu1_5()
+                            target_ymax ,target_ymin ,target_xmax ,target_xmin=red_line()
+                            print(target_ymax)
+                          if target_ymax>=120:
+                            correct=True
+                      if correct==True:
+                        target_ymax,target_ymin,target_xmax,target_xmin=red_line()
+                        red_middle=float(target_xmax+target_xmin)/2
+                        print('middle=',red_middle)
+                        if red_middle<162:
+                          send.sendContinuousValue(-300,400,0,3,0)
+                          print('move left')
+                        if red_middle>167:
+                          send.sendContinuousValue(-400,-500,0,-3,0)
+                          print('move right')
+                        if red_middle>162 and red_middle<167:
+                          arrive=True
                     if arrive==True:
                         print("stop")                                     
                         turn_off()
@@ -322,3 +326,4 @@ if __name__ == '__main__':
                      
     except rospy.ROSInterruptException:
         pass
+
