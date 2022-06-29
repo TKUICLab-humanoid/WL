@@ -15,17 +15,17 @@ correct = False
 yaw = 0
 
 x=1500
-y=0
+y=-100
 z=0
 theta=0
 
 x2=1500
-y2=100
+y2=0
 z2=0
 theta2=-2
 
 x3=1500
-y3=-100
+y3=-200
 z3=0
 theta3=-2
 
@@ -232,18 +232,18 @@ if __name__ == '__main__':
                           imu()
                           target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                           print(target_ymax)
-                          if target_ymax>115 and target_ymax<120:
+                          if target_ymax>115 and target_ymax<123:
                             imu1_5()
                             target_ymax ,target_ymin ,target_xmax ,target_xmin=red_line()
                             print(target_ymax)
-                          if target_ymax>=120:
+                          if target_ymax>=123:
                             correct=True
                       if correct==True:
                         target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                         red_middle=float(target_xmax+target_xmin)/2
                         print('middle=',red_middle)
                         if red_middle<162:
-                          send.sendContinuousValue(-300,400,0,3,0)
+                          send.sendContinuousValue(-400,400,0,1,0)
                           print('move left')
                         if red_middle>167:
                           send.sendContinuousValue(-400,-500,0,-3,0)
@@ -256,7 +256,7 @@ if __name__ == '__main__':
                         print('pick up')
                         time.sleep(1.5)
                         send.sendBodySector(1234)
-                        time.sleep(9)
+                        time.sleep(12)
                         print("111",yaw) 
                         yaw=afterbar()
                         print("222",yaw) 
@@ -299,7 +299,7 @@ if __name__ == '__main__':
                   time.sleep(2.5)
                   turn_off()
                   send.sendBodySector(5678)
-                  time.sleep(4.6)
+                  time.sleep(8.3)
                   yaw=afterbar()
                   time.sleep(1.5)
                   lift_bar=True
