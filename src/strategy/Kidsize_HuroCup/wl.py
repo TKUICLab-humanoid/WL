@@ -15,17 +15,17 @@ correct = False
 yaw = 0
 
 x=1500
-y=-100
+y=-200
 z=0
-theta=-1
+theta=0
 
 x2=1500
-y2=100
+y2=0
 z2=0
-theta2=-2
+theta2=0
 
 x3=1500
-y3=0
+y3=-100
 z3=0
 theta3=-1
 
@@ -242,20 +242,20 @@ if __name__ == '__main__':
                         target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                         red_middle=float(target_xmax+target_xmin)/2
                         print('middle=',red_middle)
-                        if red_middle<162:
+                        if red_middle<160:
                           send.sendContinuousValue(-400,400,0,2,0)
                           print('move left')
-                        if red_middle>167:
-                          send.sendContinuousValue(-400,-500,0,-3,0)
+                        if red_middle>163:
+                          send.sendContinuousValue(-400,-600,0,-3,0)
                           print('move right')
-                        if red_middle>162 and red_middle<167:
+                        if red_middle>160 and red_middle<163:
                           arrive=True
                     if arrive==True:
                         print("stop")                                     
                         turn_off()
                         print('pick up')
                         time.sleep(1.5)
-                        send.sendBodySector(641)
+                        send.sendBodySector(741)
                         time.sleep(12)
                         print("111",yaw) 
                         yaw=afterbar()
@@ -298,7 +298,7 @@ if __name__ == '__main__':
                   turn_off()
                   time.sleep(2.5)
                   turn_off()
-                  send.sendBodySector(642)
+                  send.sendBodySector(742)
                   time.sleep(8.3)
                   yaw=afterbar()
                   time.sleep(1.5)
@@ -326,4 +326,3 @@ if __name__ == '__main__':
                      
     except rospy.ROSInterruptException:
         pass
-
