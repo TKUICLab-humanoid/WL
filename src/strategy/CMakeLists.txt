@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
 	message_generation
 	roscpp
 	roslib
+	rospy
 	sensor_msgs
 	std_msgs
 	tku_msgs
@@ -52,13 +53,4 @@ catkin_package(
  	#roscpp
 )
 
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-)
-add_executable(strategy Kidsize_HuroCup/strategy_main.cpp
-	Kidsize_HuroCup/WeightLiftingInfo.cpp
-)
-add_dependencies(strategy ${catkin_EXPORTED_TARGETS})
-target_link_libraries(strategy ${catkin_LIBRARIES} ${TKU_LIBRARIES} ${STRATEGYBASE_LIBRARIES})
 
