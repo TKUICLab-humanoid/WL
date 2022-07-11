@@ -15,19 +15,19 @@ correct = False
 yaw = 0
 
 x=1500
-y=-200
+y=-100
 z=0
 theta=0
 
 x2=1500
-y2=0
+y2=300
 z2=0
-theta2=0
+theta2=-3
 
 x3=1500
 y3=-100
 z3=0
-theta3=-1
+theta3=-3
 
 def turn_on():
     global Body_Auto
@@ -242,13 +242,13 @@ if __name__ == '__main__':
                         target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                         red_middle=float(target_xmax+target_xmin)/2
                         print('middle=',red_middle)
-                        if red_middle<160:
-                          send.sendContinuousValue(-400,400,0,2,0)
+                        if red_middle<158:
+                          send.sendContinuousValue(-250,400,0,0,0)
                           print('move left')
-                        if red_middle>163:
-                          send.sendContinuousValue(-400,-600,0,-3,0)
+                        if red_middle>162:
+                          send.sendContinuousValue(-400,-600,0,-4,0)
                           print('move right')
-                        if red_middle>160 and red_middle<163:
+                        if red_middle>156 and red_middle<160:
                           arrive=True
                     if arrive==True:
                         print("stop")                                     
