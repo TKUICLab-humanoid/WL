@@ -16,19 +16,30 @@ correct = False
 yaw = 0
 
 x=1500
-y=100
+y=-200
 z=0
-theta=3
+theta=4
 
 x2=1500
 y2=0
 z2=0
-theta2=2
+theta2=4
 
 x3=1500
-y3=100
+y3=0
 z3=0
-theta3=2
+theta3=4
+
+target_left=154
+target_right=157
+
+red_middle2=161.5
+
+pick1=6411
+pick2=6412
+pick3=6413
+
+lift=642
 
 def turn_on():
     global Body_Auto
@@ -244,13 +255,13 @@ if __name__ == '__main__':
                           target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                           red_middle=float(target_xmax+target_xmin)/2
                           print('middle=',red_middle)
-                          if red_middle<170:
-                            send.sendContinuousValue(-150,600,0,4,0)
+                          if red_middle<target_left:
+                            send.sendContinuousValue(-200,600,0,5,0)
                             print('move left')
-                          if red_middle>174:
-                            send.sendContinuousValue(-200,-500,0,3,0)
+                          if red_middle>target_right:
+                            send.sendContinuousValue(-300,-800,0,4,0)
                             print('move right')
-                          if red_middle>170 and red_middle<174:
+                          if red_middle>target_left and red_middle<target_right:
                             arrive=True
                       if arrive==True:
                        print("stop")                                     
@@ -258,11 +269,11 @@ if __name__ == '__main__':
                        time.sleep(0.5)
                        print('down')
                        time.sleep(0.35)
-                       send.sendBodySector(7411)
+                       send.sendBodySector(pick1)
                        time.sleep(4)
                        target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                        red_middle=round((target_xmax+target_xmin)/2)                        
-                       distance=round(168.5-red_middle)
+                       distance=round(red_middle2-red_middle)
                        if distance>32:
                          distance=32
                        else :
@@ -283,7 +294,7 @@ if __name__ == '__main__':
                     if arrive2==True:  
                       print('pick up')
                       time.sleep(1.5)
-                      send.sendBodySector(7413)
+                      send.sendBodySector(pick2)
                       time.sleep(3)
                       print('fix=',distance)
                       time.sleep(0.35)
@@ -296,7 +307,7 @@ if __name__ == '__main__':
                           send.sendBodySector(32)
                           time.sleep(0.2)
                       time.sleep(0.4) 
-                      send.sendBodySector(7415)
+                      send.sendBodySector(pick3)
                       time.sleep(2.2)  
                       print("111",yaw) 
                       yaw=afterbar()
@@ -329,7 +340,7 @@ if __name__ == '__main__':
                   turn_off()
                   time.sleep(2.5)
                   turn_off()
-                  send.sendBodySector(642)
+                  send.sendBodySector(lift)
                   time.sleep(8.3)
                   yaw=afterbar()
                   time.sleep(1.5)
