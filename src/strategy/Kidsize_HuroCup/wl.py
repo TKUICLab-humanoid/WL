@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 #coding=utf-8
+from xml.etree.ElementTree import XML
 import rospy
 import numpy as np
 from Python_API import Sendmessage
@@ -16,30 +17,40 @@ correct = False
 yaw = 0
 
 x=1500
-y=-200
+y=100
 z=0
-theta=4
+theta=3
 
 x2=1500
-y2=0
+y2=-100
 z2=0
 theta2=4
 
 x3=1500
-y3=0
+y3=-100
 z3=0
 theta3=4
 
-target_left=154
-target_right=157
+xl=-200
+yl=-600
+zl=0
+tl=4
 
-red_middle2=161.5
+xr=-300
+yr=-600
+zr=0
+tr=4
 
-pick1=6411
-pick2=6412
-pick3=6413
+target_left=159
+target_right=162
 
-lift=642
+red_middle2=159.5
+
+pick1=3411
+pick2=3412
+pick3=3413
+
+lift=342
 
 def turn_on():
     global Body_Auto
@@ -256,10 +267,10 @@ if __name__ == '__main__':
                           red_middle=float(target_xmax+target_xmin)/2
                           print('middle=',red_middle)
                           if red_middle<target_left:
-                            send.sendContinuousValue(-200,600,0,5,0)
+                            send.sendContinuousValue(xl,yl,zl,tl,0)
                             print('move left')
                           if red_middle>target_right:
-                            send.sendContinuousValue(-300,-800,0,4,0)
+                            send.sendContinuousValue(xr,yr,zr,tr,0)
                             print('move right')
                           if red_middle>target_left and red_middle<target_right:
                             arrive=True
