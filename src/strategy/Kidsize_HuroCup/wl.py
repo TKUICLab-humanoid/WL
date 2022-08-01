@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 #coding=utf-8
+from xml.etree.ElementTree import XML
 import rospy
 import numpy as np
 from Python_API import Sendmessage
@@ -9,25 +10,47 @@ pick_bar =False
 lift_bar = False
 Body_Auto = False
 arrive = False
+arrive2 = False
 imu_reset = False
 lift_line = False
 correct = False
 yaw = 0
 
 x=1500
-y=-200
+y=-100
 z=0
-theta=0
+theta=3
 
 x2=1500
-y2=0
+y2=-250
 z2=0
-theta2=0
+theta2=4
 
 x3=1500
-y3=-100
+y3=-250
 z3=0
-theta3=-1
+theta3=4
+
+xl=-250
+yl=600
+zl=0
+tl=5
+
+xr=-300
+yr=-800
+zr=0
+tr=4
+
+target_left=155
+target_right=158
+
+red_middle2=158.5
+
+pick1=7411
+pick2=7412
+pick3=7413
+
+lift=742
 
 def turn_on():
     global Body_Auto
@@ -220,50 +243,90 @@ if __name__ == '__main__':
               if lift_line==False: 
                 #if find_white_line==False:
                   if pick_bar==False:
-                    if arrive==False:
-                      if correct==False:
-                        if imu_reset==False:
-                          send.sendSensorReset()
-                          imu_reset=True
-                        if imu_reset==True:
-                          send.sendHeadMotor(2,1350,50)
-                          print('move')
-                          turn_on()
-                          imu()
-                          target_ymax,target_ymin,target_xmax,target_xmin=red_line()
-                          print(target_ymax)
-                          if target_ymax>115 and target_ymax<123:
-                            imu1_5()
-                            target_ymax ,target_ymin ,target_xmax ,target_xmin=red_line()
+                    if arrive2==False:
+                      if arrive==False:
+                        if correct==False:
+                          if imu_reset==False:
+                            send.sendSensorReset()
+                            imu_reset=True
+                          if imu_reset==True:
+                            send.sendHeadMotor(2,1350,50)
+                            print('move')
+                            turn_on()
+                            imu()
+                            target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                             print(target_ymax)
-                          if target_ymax>=123:
-                            correct=True
-                      if correct==True:
-                        target_ymax,target_ymin,target_xmax,target_xmin=red_line()
-                        red_middle=float(target_xmax+target_xmin)/2
-                        print('middle=',red_middle)
-                        if red_middle<160:
-                          send.sendContinuousValue(-400,400,0,2,0)
-                          print('move left')
-                        if red_middle>163:
-                          send.sendContinuousValue(-400,-600,0,-3,0)
-                          print('move right')
-                        if red_middle>160 and red_middle<163:
-                          arrive=True
-                    if arrive==True:
-                        print("stop")                                     
-                        turn_off()
-                        print('pick up')
-                        time.sleep(1.5)
-                        send.sendBodySector(741)
-                        time.sleep(12)
-                        print("111",yaw) 
-                        yaw=afterbar()
-                        print("222",yaw) 
-                        time.sleep(1.5)
-                        send.sendHeadMotor(2,1300,50) 
-                        time.sleep(1)
-                        pick_bar=True                      
+                            if target_ymax>115 and target_ymax<123:
+                              imu1_5()
+                              target_ymax ,target_ymin ,target_xmax ,target_xmin=red_line()
+                              print(target_ymax)
+                            if target_ymax>=123:
+                              correct=True
+                        if correct==True:
+                          target_ymax,target_ymin,target_xmax,target_xmin=red_line()
+                          red_middle=float(target_xmax+target_xmin)/2
+                          print('middle=',red_middle)
+                          if red_middle<target_left:
+                            send.sendContinuousValue(xl,yl,zl,tl,0)
+                            print('move left')
+                          if red_middle>target_right:
+                            send.sendContinuousValue(xr,yr,zr,tr,0)
+                            print('move right')
+                          if red_middle>target_left and red_middle<target_right:
+                            arrive=True
+                      if arrive==True:
+                       print("stop")                                     
+                       turn_off()
+                       time.sleep(0.5)
+                       print('down')
+                       time.sleep(0.35)
+                       send.sendBodySector(pick1)
+                       time.sleep(4)
+                       target_ymax,target_ymin,target_xmax,target_xmin=red_line()
+                       red_middle=round((target_xmax+target_xmin)/2)                        
+                       distance2=round(red_middle2-red_middle)
+                       if distance2>32:
+                         distance=32
+                       else :
+                         distance=distance2
+                       time.sleep(0.5)
+                       print('fix=',distance)
+                       time.sleep(0.5)
+                       if distance>0:
+                         for d in range(distance):
+                           send.sendBodySector(32)
+                           time.sleep(0.2)
+                       if distance<0:  
+                         for d in range(distance):
+                           send.sendBodySector(31)
+                           time.sleep(0.2)
+                       time.sleep(0.4)    
+                       arrive2=True
+                    if arrive2==True:  
+                      print('pick up')
+                      time.sleep(1.5)
+                      send.sendBodySector(pick2)
+                      time.sleep(3)
+                      print('fix=',distance)
+                      time.sleep(0.35)
+                      if distance>0:
+                        for d in range(distance):
+                          send.sendBodySector(31)
+                          time.sleep(0.2)
+                      if distance<0:  
+                        for d in range(distance):
+                          send.sendBodySector(32)
+                          time.sleep(0.2)
+                      time.sleep(0.4) 
+                      send.sendBodySector(pick3)
+                      time.sleep(2.2)  
+                      print("111",yaw) 
+                      yaw=afterbar()
+                      print("222",yaw) 
+                      time.sleep(1.5)
+                      send.sendHeadMotor(2,1300,50) 
+                      time.sleep(1)
+                      pick_bar=True                      
                   if pick_bar==True:
                     turn_on()
                     time.sleep(1)
@@ -280,16 +343,6 @@ if __name__ == '__main__':
                       lift_line=True
                     else:
                       imu_2()
-                #if find_white_line==True: 
-                #  white_ymax,white_ymin=white_line()
-                #  time.sleep(0.35)
-                #  print('distance',white_ymin)
-                #  if white_ymax>90:
-                #    send.sendHeadMotor(2,1200,50)
-                #    time.sleep(1)
-                #    lift_line=True
-                #  else :
-                #    imu_2()  
               if lift_line==True:
                 white_ymax,white_ymin=white_line()
                 print('distance 2=',white_ymax)
@@ -298,7 +351,7 @@ if __name__ == '__main__':
                   turn_off()
                   time.sleep(2.5)
                   turn_off()
-                  send.sendBodySector(742)
+                  send.sendBodySector(lift)
                   time.sleep(8.3)
                   yaw=afterbar()
                   time.sleep(1.5)
