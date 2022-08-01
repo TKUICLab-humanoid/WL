@@ -27,7 +27,7 @@ z2=0
 theta2=4
 
 x3=1500
-y3=-100
+y3=-250
 z3=0
 theta3=4
 
@@ -51,6 +51,7 @@ pick2=3412
 pick3=3413
 
 lift=342
+
 
 def turn_on():
     global Body_Auto
