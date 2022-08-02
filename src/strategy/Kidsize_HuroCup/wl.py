@@ -17,40 +17,40 @@ correct = False
 yaw = 0
 
 x=1500
-y=100
+y=-100
 z=0
-theta=3
+theta=4
 
 x2=1500
 y2=-100
 z2=0
-theta2=4
+theta2=3
 
-x3=1500
-y3=-250
-z3=0
-theta3=4
+x3=1500  
+y3=-200
+z3=0  
+theta3=3
 
 xl=-200
-yl=-600
+yl=600  
 zl=0
-tl=4
+tl=5
 
 xr=-300
-yr=-600
+yr=-800
 zr=0
 tr=4
 
-target_left=159
-target_right=162
+target_left=158
+target_right=161
 
 red_middle2=159.5
 
-pick1=3411
-pick2=3412
-pick3=3413
+pick1=6411
+pick2=6412
+pick3=6413
 
-lift=342
+lift=642
 
 
 def turn_on():
@@ -285,11 +285,11 @@ if __name__ == '__main__':
                        time.sleep(4)
                        target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                        red_middle=round((target_xmax+target_xmin)/2)                        
-                       distance=round(red_middle2-red_middle)
-                       if distance>32:
+                       distance2=round(red_middle2-red_middle)
+                       if distance2>32:
                          distance=32
                        else :
-                         distance=distance
+                         distance=distance2
                        time.sleep(0.5)
                        print('fix=',distance)
                        time.sleep(0.5)
