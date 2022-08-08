@@ -19,38 +19,38 @@ yaw = 0
 x=1500
 y=-100
 z=0
-theta=4
+theta=3
 
 x2=1500
-y2=-100
+y2=100
 z2=0
-theta2=3
+theta2=-2
 
 x3=1500  
-y3=-200
+y3=0
 z3=0  
-theta3=3
+theta3=2
 
-xl=-200
+xl=-50
 yl=600  
 zl=0
-tl=5
+tl=4
 
-xr=-300
+xr=-100
 yr=-800
 zr=0
-tr=4
+tr=0
 
-target_left=158
-target_right=161
+target_left=157
+target_right=160
 
-red_middle2=159.5
+red_middle2=161.5
 
-pick1=6411
-pick2=6412
-pick3=6413
+pick1=7411
+pick2=7412
+pick3=7413
 
-lift=642
+lift=742
 
 
 def turn_on():
@@ -81,7 +81,7 @@ def red_line():
     target_ymin = 0
     target_size = 0
     for red_cnt in range(send.color_mask_subject_cnts[5]):    
-      if send.color_mask_subject_size[5][red_cnt]>120:
+      if send.color_mask_subject_size[5][red_cnt]>300:
         target_xmax = send.color_mask_subject_XMax[5][red_cnt]
         target_xmin = send.color_mask_subject_XMin[5][red_cnt]
         target_ymax = send.color_mask_subject_YMax[5][red_cnt]
@@ -89,7 +89,7 @@ def red_line():
         target_size = send.color_mask_subject_size[5][red_cnt]
         #print(target_xmax,target_xmin)
       print(target_ymax)
-     #print(target_size)
+      print(target_size)
       send.drawImageFunction(1,0,target_xmax,target_xmax,target_ymin,target_ymax,0,0,0)
       send.drawImageFunction(2,0,target_xmin,target_xmin,target_ymin,target_ymax,0,0,0)
       send.drawImageFunction(3,0,target_xmin,target_xmax,target_ymin,target_ymin,0,0,0)
