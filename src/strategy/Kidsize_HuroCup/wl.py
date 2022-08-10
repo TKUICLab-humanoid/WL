@@ -17,40 +17,40 @@ correct = False
 yaw = 0
 
 x=1500
-y=-100
+y=-300
 z=0
-theta=3
+theta=2
 
 x2=1500
-y2=100
+y2=200
 z2=0
-theta2=-2
+theta2=0
 
 x3=1500  
-y3=0
+y3=-100
 z3=0  
-theta3=2
+theta3=0
 
-xl=-50
+xl=-250
 yl=600  
 zl=0
-tl=4
+tl=1
 
-xr=-100
-yr=-800
+xr=-200
+yr=-900
 zr=0
 tr=0
 
-target_left=157
-target_right=160
+target_left=159
+target_right=162
 
-red_middle2=161.5
+red_middle2=164.5
 
-pick1=7411
-pick2=7412
-pick3=7413
+pick1=6411
+pick2=6412
+pick3=6413
 
-lift=742
+lift=642
 
 
 def turn_on():
@@ -288,6 +288,8 @@ if __name__ == '__main__':
                        distance2=round(red_middle2-red_middle)
                        if distance2>32:
                          distance=32
+                       elif distance2<-32:
+                         distance=-32
                        else :
                          distance=distance2
                        time.sleep(0.5)
