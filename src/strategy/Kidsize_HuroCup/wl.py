@@ -17,40 +17,40 @@ correct = False
 yaw = 0
 
 x=1500
-y=100
+y=-100
 z=0
-theta=-1
+theta=0
 
 x2=1500
-y2=100
+y2=-200
 z2=0
 theta2=-1
 
 x3=1500  
-y3=-100
+y3=-200
 z3=0  
-theta3=0
+theta3=-1
 
 xl=-250
-yl=600  
+yl=700  
 zl=0
 tl=4
 
 xr=-250
 yr=-900
 zr=0
-tr=-4
+tr=-1
 
-target_left=162
-target_right=165
+target_left=159
+target_right=162
 
-red_middle2=164.5
+red_middle2=162.5
 
-pick1=3411
-pick2=3412
-pick3=3413
+pick1=7411
+pick2=7412
+pick3=7413
 
-lift=342
+lift=742
 
 
 def turn_on():
