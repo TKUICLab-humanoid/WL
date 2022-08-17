@@ -17,14 +17,14 @@ correct = False
 yaw = 0
 
 x=1500
-y=-100
+y=-300
 z=0
-theta=0
+theta=1
 
 x2=1500
-y2=-200
+y2=-100
 z2=0
-theta2=-1
+theta2=0
 
 x3=1500  
 y3=-200
@@ -39,18 +39,18 @@ tl=4
 xr=-250
 yr=-900
 zr=0
-tr=-1
+tr=-2
 
-target_left=159
-target_right=162
+target_left=162
+target_right=165
 
-red_middle2=162.5
+red_middle2=166.5
 
 pick1=7411
 pick2=7412
-pick3=7413
+pick3=8413
 
-lift=742
+lift=842
 
 
 def turn_on():
@@ -248,6 +248,8 @@ if __name__ == '__main__':
                       if arrive==False:
                         if correct==False:
                           if imu_reset==False:
+                            send.sendBodySector(666)
+                            time.sleep(2)
                             send.sendSensorReset()
                             imu_reset=True
                           if imu_reset==True:
@@ -257,11 +259,11 @@ if __name__ == '__main__':
                             imu()
                             target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                             print(target_ymax)
-                            if target_ymax>115 and target_ymax<123:
+                            if target_ymax>115 and target_ymax<128:
                               imu1_5()
                               target_ymax ,target_ymin ,target_xmax ,target_xmin=red_line()
                               print(target_ymax)
-                            if target_ymax>=123:
+                            if target_ymax>=128:
                               correct=True
                         if correct==True:
                           target_ymax,target_ymin,target_xmax,target_xmin=red_line()
