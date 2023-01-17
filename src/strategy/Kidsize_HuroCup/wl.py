@@ -22,35 +22,35 @@ z=0
 theta=1
 
 x2=1500
-y2=-100
+y2=-600
 z2=0
 theta2=0
 
 x3=1500  
-y3=-200
+y3=-700
 z3=0  
-theta3=-1
+theta3=0
 
 xl=-250
 yl=700  
 zl=0
 tl=4
 
-xr=-250
+xr=-150
 yr=-900
 zr=0
-tr=-2
+tr=-3
 
-target_left=162
+target_left=161
 target_right=165
 
-red_middle2=166.5
+red_middle2=162.5
 
 pick1=7411
 pick2=7412
-pick3=8413
+pick3=7413
 
-lift=842
+lift=742
 
 
 def turn_on():
@@ -259,11 +259,11 @@ if __name__ == '__main__':
                             imu()
                             target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                             print(target_ymax)
-                            if target_ymax>115 and target_ymax<128:
+                            if target_ymax>115 and target_ymax<126:
                               imu1_5()
                               target_ymax ,target_ymin ,target_xmax ,target_xmin=red_line()
                               print(target_ymax)
-                            if target_ymax>=128:
+                            if target_ymax>=126:
                               correct=True
                         if correct==True:
                           target_ymax,target_ymin,target_xmax,target_xmin=red_line()
