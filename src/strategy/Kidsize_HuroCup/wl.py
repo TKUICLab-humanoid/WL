@@ -61,6 +61,7 @@ def turn_on():
       pass
     elif Body_Auto==False:
       time.sleep(0.7)
+      send.sendSensorReset()
       send.sendBodyAuto(200,0,0,0,1,0)
       Body_Auto=True
 
@@ -69,6 +70,7 @@ def turn_off():
     # time.sleep(0.8)
     print("F===",Body_Auto)
     if Body_Auto==True:
+      send.sendSensorReset()
       send.sendBodyAuto(200,0,0,0,1,0)
       Body_Auto=False
     elif Body_Auto==False:
@@ -255,6 +257,7 @@ if __name__ == '__main__':
                           if imu_reset==True:
                             send.sendHeadMotor(2,1350,50)
                             print('move')
+                            send.sendSensorReset()
                             turn_on()
                             imu()
                             target_ymax,target_ymin,target_xmax,target_xmin=red_line()
@@ -333,6 +336,7 @@ if __name__ == '__main__':
                       time.sleep(1)
                       pick_bar=True                      
                   if pick_bar==True:
+                    send.sendSensorReset()
                     turn_on()
                     time.sleep(1)
                     print("moving to liftline")
@@ -367,6 +371,7 @@ if __name__ == '__main__':
                   imu_2()
             elif lift_bar==True:
               print('keep going to endline')
+              send.sendSensorReset()
               turn_on()
               time.sleep(0.5)
               imu_3()      
