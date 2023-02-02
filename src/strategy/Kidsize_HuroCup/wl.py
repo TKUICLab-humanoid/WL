@@ -15,37 +15,53 @@ imu_reset = False
 lift_line = False
 correct = False
 yaw = 0
-
-x=1500
+# imu   imu1_5   imu_2
+x=1250
 y=-300
 z=0
 theta=1
-
+# /////No use/////
 x2=1500
 y2=-600
 z2=0
 theta2=0
-
-x3=1500  
-y3=-700
+# imu_3
+x3=1250  
+y3=-900
 z3=0  
 theta3=0
-
+# 以下變數用於機器人在 "拾起線"時的左右移動，用於 "correct==true" 
 xl=-250
-yl=700  
+yl=300  #100
 zl=0
-tl=4
+tl=0
 
-xr=-150
-yr=-900
+xr=-250
+yr=-200 #-500
 zr=0
-tr=-3
-
+tr=0
+# 理想中間值，用於 "correct==true" 區域，與上方 xl, yl, ..., xr, yr, ...等等做搭配
 target_left=161
 target_right=165
-
+# 理想中間值，當機器人抓到槓鈴，此變數用於判斷是否執行磁區 31or32 進行微調
 red_middle2=162.5
 
+# 停下/判斷距離設定，用於 拾起線 距離區間停下判斷
+pickup_distance1=149  # 此數值應小於 pickup_distance2
+pickup_distance2=160  # 停下數值改這個.126
+
+# 判斷距離設定，用於 舉起線 距離區間停下判斷
+liftup_distance1=70   # 此數值應小於 liftup_distance2
+liftup_distance2=120  # 這兩個數值進行第一階段判斷，判斷成功後(lift_line=True)進行第二階段
+
+liftup_distance3=5    # 距離在此區間便停下；此數值應小於 liftup_distance4
+liftup_distance4=40   # 
+
+# 頭部馬達角度設定
+head_motor_angle1=1456    # 初始位置
+head_motor_angle2=1337    # 最一開始移動後的位置
+head_motor_angle3=1337    # 拾起槓鈴後的位置
+# 磁區變數設定
 pick1=7411
 pick2=7412
 pick3=7413
@@ -133,11 +149,11 @@ def imu():
     yaw_1=send.imu_value_Yaw
     print(yaw_1)
     if yaw_1>2: 
-      send.sendContinuousValue(x,y,z,theta-4+fix,0)
+      send.sendContinuousValue(x,y,z,theta-1+fix,0)
       print("turn right")
       
     elif yaw_1<-2:
-      send.sendContinuousValue(x,y,z,theta+4+fix,0)
+      send.sendContinuousValue(x,y,z,theta+1+fix,0)
       print("turn left")
 
     elif -2<=yaw_1 and yaw_1<=2:
@@ -156,11 +172,11 @@ def imu1_5():
     yaw_1=send.imu_value_Yaw
     print(yaw_1)
     if yaw_1>2: 
-      send.sendContinuousValue(x,y,z,theta-4+fix,0)
+      send.sendContinuousValue(x,y,z,theta-1+fix,0)
       print("turn right")
       
     elif yaw_1<-2:
-      send.sendContinuousValue(x,y,z,theta+4+fix,0)
+      send.sendContinuousValue(x,y,z,theta+1+fix,0)
       print("turn left")
 
     elif -2<=yaw_1 and yaw_1<=2:
@@ -174,11 +190,11 @@ def imu_2():
     yaw_1+=yaw
     print(yaw_1)
     if yaw_1>2: 
-      send.sendContinuousValue(x,y,z,theta2-3,0)
+      send.sendContinuousValue(x,y,z,theta2-1,0)
       print("turn right 2")
       
     elif yaw_1<-2 :
-      send.sendContinuousValue(x,y,z,theta2+3,0)
+      send.sendContinuousValue(x,y,z,theta2+1,0)
       print("turn left 2")
 
     elif -2<=yaw_1 and yaw_1<=2 :
@@ -191,11 +207,11 @@ def imu_3():
     yaw_1+=yaw
     print(yaw_1)
     if yaw_1>3: 
-      send.sendContinuousValue(x3,y3,z3,theta3-4,0)
+      send.sendContinuousValue(x3,y3,z3,theta3-1,0)
       print("turn right 3")
       
     elif yaw_1<-3 :
-      send.sendContinuousValue(x3,y3,z3,theta3+4,0)
+      send.sendContinuousValue(x3,y3,z3,theta3+1,0)
       print("turn left 3")
 
     elif -3<=yaw_1 and yaw_1<=3 :
@@ -237,7 +253,7 @@ if __name__ == '__main__':
         #pick_bar = True
         time.sleep(0.35)
         send.sendSensorReset()
-        send.sendHeadMotor(2,1450,50)
+        send.sendHeadMotor(2,head_motor_angle1,50)
         r = rospy.Rate(5) #5hz
         while not rospy.is_shutdown():
           if send.is_start == True:
@@ -250,23 +266,23 @@ if __name__ == '__main__':
                       if arrive==False:
                         if correct==False:
                           if imu_reset==False:
-                            send.sendBodySector(666)
-                            time.sleep(2)
+                            # send.sendBodySector(666)
+                            # time.sleep(2)
                             send.sendSensorReset()
                             imu_reset=True
                           if imu_reset==True:
-                            send.sendHeadMotor(2,1350,50)
+                            send.sendHeadMotor(2,head_motor_angle2,50)
                             print('move')
                             send.sendSensorReset()
                             turn_on()
                             imu()
                             target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                             print(target_ymax)
-                            if target_ymax>115 and target_ymax<126:
+                            if target_ymax>pickup_distance1 and target_ymax<pickup_distance2:
                               imu1_5()
                               target_ymax ,target_ymin ,target_xmax ,target_xmin=red_line()
                               print(target_ymax)
-                            if target_ymax>=126:
+                            if target_ymax>=pickup_distance2:
                               correct=True
                         if correct==True:
                           target_ymax,target_ymin,target_xmax,target_xmin=red_line()
@@ -286,6 +302,7 @@ if __name__ == '__main__':
                        time.sleep(0.5)
                        print('down')
                        time.sleep(0.35)
+                       print('你蹲太下面了喔！！！！！！')
                        send.sendBodySector(pick1)
                        time.sleep(4)
                        target_ymax,target_ymin,target_xmax,target_xmin=red_line()
@@ -330,21 +347,21 @@ if __name__ == '__main__':
                       time.sleep(2.2)  
                       print("111",yaw) 
                       yaw=afterbar()
-                      print("222",yaw) 
+                      print("222",yaw)
                       time.sleep(1.5)
-                      send.sendHeadMotor(2,1300,50) 
+                      send.sendHeadMotor(2,head_motor_angle3,50) 
                       time.sleep(1)
                       pick_bar=True                      
                   if pick_bar==True:
                     send.sendSensorReset()
                     turn_on()
                     time.sleep(1)
-                    print("moving to liftline")
+                    print("move to liftline")
                     white_ymax,white_ymin=white_line()
                     time.sleep(0.35)
                     imu_2()
                     print('find',white_ymax)
-                    if white_ymax>70 and white_ymax<120:
+                    if white_ymax>liftup_distance1 and white_ymax<liftup_distance2:
                       print("1")
                       print("2")
                       time.sleep(1)
@@ -355,7 +372,7 @@ if __name__ == '__main__':
               if lift_line==True:
                 white_ymax,white_ymin=white_line()
                 print('distance 2=',white_ymax)
-                if white_ymax>5 and white_ymax<40:
+                if white_ymax>liftup_distance3 and white_ymax<liftup_distance4:
                   print('stop and lift')
                   turn_off()
                   time.sleep(2.5)
