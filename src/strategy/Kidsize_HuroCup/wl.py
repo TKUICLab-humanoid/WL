@@ -17,9 +17,11 @@ correct = False
 yaw = 0
 
 # 原地步態數值
-X_origin=0
-Y_origin=0
-Theta_origin=0
+X_origin=-200
+Y_origin=-200
+Theta_origin=-1
+
+
 Theta_fix=0         # 用於imu修正，進入判斷式才給值
 
 Theta_LfixValue=4   # 用於imu修正，進入判斷式將此值丟給Theta_fix
@@ -31,7 +33,7 @@ X_backward=-800
 Y_left=400
 Y_right=-400
 
-Theta_trunleft=5    # 只用於原地左轉
+Theta_trunleft=4    # 只用於原地左轉
 Theta_trunright=-4  # 只用於原地右轉
 
 # 原地踏步左右轉數值
@@ -74,8 +76,8 @@ target_right=165
 red_middle2=162.5
 
 # 停下/判斷距離設定，用於 拾起線 距離區間停下判斷
-pickup_distance1=169  # 此數值應小於 pickup_distance2
-pickup_distance2=180  # 停下數值改這個.126
+pickup_distance1=189  # 此數值應小於 pickup_distance2
+pickup_distance2=200  # 停下數值改這個.126
 
 pickup_distance3=210  # 
 pickup_distance4=230  # 太近數值判定，用於第二階段原地左右旋轉
@@ -95,6 +97,8 @@ head_motor_angle3=1377    # 拾起槓鈴後的位置
 pick1=7411
 pick2=7412
 pick3=7413
+
+#pick4=7414
 
 lift=742
 
@@ -168,7 +172,7 @@ def white_line():
       send.drawImageFunction(4,0,white_xmin,white_xmax,white_ymax,white_ymax,0,0,0)
     return white_ymax,white_ymin
 
-def imu():
+def imu():  #一開始走路在用的，還不在紅模範圍
     target_ymax,target_ymin,target_xmax,target_xmin=red_line()
     target_xmiddle=(target_xmax+target_xmin)/2
     target_ymiddle=(target_ymax+target_ymin)/2
@@ -185,18 +189,18 @@ def imu():
     if yaw_1>2 and (240-target_ymiddle)>(240-target_ymax): 
       Theta_fix=Theta_RfixValue
       send.sendContinuousValue(x,y,0,theta+Theta_fix+fix,0) #theta-2
-      print("turn right")
+      print(" ONE 右轉")
       
     elif yaw<-2 and (240-target_ymiddle)>(240-target_ymax):
       Theta_fix=Theta_LfixValue
       send.sendContinuousValue(x,y,0,theta+Theta_fix+fix,0) #theta+2
-      print("turn left")
+      print(" ONE 左轉")
 
     elif -2<=yaw_1 and yaw_1<=2:
       send.sendContinuousValue(x,y,0,theta+fix,0)   #theta+1 or-1
-      print("walk straight")
+      print(" ONE 直走")
 
-def imu1_5():
+def imu1_5(): #已經靠近紅模，還沒到停下的程度
     target_ymax,target_ymin,target_xmax,target_xmin=red_line()
     target_xmiddle=(target_xmax+target_xmin)/2
     target_ymiddle=(target_ymax+target_ymin)/2
@@ -211,16 +215,16 @@ def imu1_5():
     if yaw_1>2 and (240-target_ymiddle)>(240-target_ymax): 
       Theta_fix=Theta_RfixValue
       send.sendContinuousValue(x,y,0,theta+Theta_fix+fix,0)
-      print("turn right")
+      print(" ONE FIVE 右轉")
       
     elif yaw<-2 and (240-target_ymiddle)>(240-target_ymax):
       Theta_fix=Theta_LfixValue
       send.sendContinuousValue(x,y,0,theta+Theta_fix+fix,0)
-      print("turn left")
+      print(" ONE FIVE 左轉")
 
     elif -2<=yaw_1 and yaw_1<=2:
       send.sendContinuousValue(x,y,0,theta+fix,0)
-      print("walk straight")
+      print(" ONE FIVE 直走")
 
 # def imu():
 #     target_ymax,target_ymin,target_xmax,target_xmin=red_line()
@@ -273,45 +277,51 @@ def imu1_5():
 #       send.sendContinuousValue(x,y,0,theta+fix,0)
 #       print("walk straight")
 
-def imu_2():
+def imu_2():  #拾起線到舉起線在用的
+    white_ymax,white_ymin=white_line()
+    white_ymiddle=(white_ymax+white_ymin)/2
+
     yaw_1=send.imu_value_Yaw
     #print("cccccc",yaw_1) 
     #time.sleep(0.5)
     yaw_1+=yaw
     print("yaw_1= ",yaw_1)
-    if yaw_1>2 and (240-target_ymiddle)>(240-target_ymax): 
-      Theta_fix=-1
+    if yaw_1>2 and (240-white_ymiddle)>(240-white_ymax): 
+      Theta_fix=Theta_RfixValue
       send.sendContinuousValue(x,y,0,theta2+Theta_fix,0)
-      print("右轉")
-      
-    elif yaw_1>2 and (240-target_ymiddle)>(240-target_ymax) :
-      Theta_fix=1
-      send.sendContinuousValue(x,y,0,theta2+Theta_fix,0)
-      print("左轉")
+      print(" TWO 右轉")
 
+    elif yaw_1<-2 and (240-white_ymiddle)>(240-white_ymax):
+      Theta_fix=Theta_LfixValue
+      send.sendContinuousValue(x,y,0,theta2+Theta_fix,0)
+      print(" TWO 左轉")
+    
     elif -2<=yaw_1 and yaw_1<=2 :
       send.sendContinuousValue(x,y,0,theta2,0)
-      print("直走")
+      print(" TWO 直走")
     #print("gggggg",theta)  
 
-def imu_3():
+def imu_3():  #舉起線到終點線在用的
     yaw_1=send.imu_value_Yaw
     yaw_1+=yaw
     print("yaw_1= ",yaw_1)
     if yaw_1>3: 
       Theta_fix=-1
-      send.sendContinuousValue(x3,y3,0,theta3-Theta_fix,0)
-      print("turn right 3")
-
+      send.sendContinuousValue(x3,y3,0,theta3+Theta_fix,0)
+      print(" THREE 右轉")
+    if yaw_1<-3: 
+      Theta_fix=1
+      send.sendContinuousValue(x3,y3,0,theta3+Theta_fix,0)
+      print(" THREE 左轉")
+    elif -3<=yaw_1 and yaw_1<=3: 
+      send.sendContinuousValue(x3,y3,0,theta3,0)
+      print(" THREE 直走")
 def afterbar():
     print('revise')
     yaw=send.imu_value_Yaw
     time.sleep(0.35)
     send.sendSensorReset()
     return yaw
-      
-# /////No use/////
-    return arrive
   
 def print_section():
     print("=========================")
@@ -454,6 +464,12 @@ if __name__ == '__main__':
                       time.sleep(1.5)
                       send.sendHeadMotor(2,head_motor_angle3,50) 
                       time.sleep(1)
+                      
+                      # print("調整起步磁區")
+                      # send.sendBodySector(pick4)
+                      # time.sleep(5)
+                      # print("起步磁區調整完畢，準備出發")
+
                       pick_bar=True     
                       print('舉起線在哪!?')                 
                   if pick_bar==True:
