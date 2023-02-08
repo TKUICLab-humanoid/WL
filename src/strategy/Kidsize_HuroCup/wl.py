@@ -28,7 +28,7 @@ Theta_LfixValue=4   # 用於imu修正，進入判斷式將此值丟給Theta_fix
 Theta_RfixValue=-3  # 用於imu修正，進入判斷式將此值丟給Theta_fix
 
 # 前進，左右踏，左右旋調整   imu
-X_forward=1500
+X_forward=1800
 X_backward=-800
 Y_left=400
 Y_right=-400
@@ -181,17 +181,18 @@ def imu():  #一開始走路在用的，還不在紅模範圍
       fix=1
     if target_xmiddle<160:
       fix=-1
-    else :
+    else:
       fix=0
     yaw_1=send.imu_value_Yaw
     print("yaw_1= ",yaw_1)
+    print("target_xmiddle=",target_xmiddle)
 
-    if yaw_1>2 and (240-target_ymiddle)>(240-target_ymax): 
+    if yaw_1>2 : 
       Theta_fix=Theta_RfixValue
       send.sendContinuousValue(x,y,0,theta+Theta_fix+fix,0) #theta-2
       print(" ONE 右轉")
       
-    elif yaw<-2 and (240-target_ymiddle)>(240-target_ymax):
+    elif yaw_1<-2 :
       Theta_fix=Theta_LfixValue
       send.sendContinuousValue(x,y,0,theta+Theta_fix+fix,0) #theta+2
       print(" ONE 左轉")
@@ -212,12 +213,12 @@ def imu1_5(): #已經靠近紅模，還沒到停下的程度
       fix=0
     yaw_1=send.imu_value_Yaw
     print("yaw_1= ",yaw_1)
-    if yaw_1>2 and (240-target_ymiddle)>(240-target_ymax): 
+    if yaw_1>2 : 
       Theta_fix=Theta_RfixValue
       send.sendContinuousValue(x,y,0,theta+Theta_fix+fix,0)
       print(" ONE FIVE 右轉")
       
-    elif yaw<-2 and (240-target_ymiddle)>(240-target_ymax):
+    elif yaw_1<-2 :
       Theta_fix=Theta_LfixValue
       send.sendContinuousValue(x,y,0,theta+Theta_fix+fix,0)
       print(" ONE FIVE 左轉")
@@ -286,18 +287,18 @@ def imu_2():  #拾起線到舉起線在用的
     #time.sleep(0.5)
     yaw_1+=yaw
     print("yaw_1= ",yaw_1)
-    if yaw_1>2 and (240-white_ymiddle)>(240-white_ymax): 
+    if yaw_1>2: 
       Theta_fix=Theta_RfixValue
-      send.sendContinuousValue(x,y,0,theta2+Theta_fix,0)
+      send.sendContinuousValue(x+500,y-300,0,theta2+Theta_fix-1,0)
       print(" TWO 右轉")
 
-    elif yaw_1<-2 and (240-white_ymiddle)>(240-white_ymax):
+    elif yaw_1<-2:
       Theta_fix=Theta_LfixValue
-      send.sendContinuousValue(x,y,0,theta2+Theta_fix,0)
+      send.sendContinuousValue(x+500,y+300,0,theta2+Theta_fix+1,0)
       print(" TWO 左轉")
     
     elif -2<=yaw_1 and yaw_1<=2 :
-      send.sendContinuousValue(x,y,0,theta2,0)
+      send.sendContinuousValue(x+1000,y,0,theta2,0)
       print(" TWO 直走")
     #print("gggggg",theta)  
 
@@ -307,11 +308,11 @@ def imu_3():  #舉起線到終點線在用的
     print("yaw_1= ",yaw_1)
     if yaw_1>3: 
       Theta_fix=-1
-      send.sendContinuousValue(x3,y3,0,theta3+Theta_fix,0)
+      send.sendContinuousValue(x3,y3-300,0,theta3+Theta_fix-1,0)
       print(" THREE 右轉")
     if yaw_1<-3: 
       Theta_fix=1
-      send.sendContinuousValue(x3,y3,0,theta3+Theta_fix,0)
+      send.sendContinuousValue(x3,y3+300,0,theta3+Theta_fix+1,0)
       print(" THREE 左轉")
     elif -3<=yaw_1 and yaw_1<=3: 
       send.sendContinuousValue(x3,y3,0,theta3,0)
@@ -355,7 +356,7 @@ if __name__ == '__main__':
                           if imu_reset==True:
                             send.sendHeadMotor(2,head_motor_angle2,50)
                             print('前前前前前前前前前進進進進進進進進進')
-                            send.sendSensorReset()
+                            # send.sendSensorReset()
                             turn_on()
                             imu()
                             target_ymax,target_ymin,target_xmax,target_xmin=red_line()
@@ -385,7 +386,7 @@ if __name__ == '__main__':
                           red_middle=float(target_xmax+target_xmin)/2
                           print('紅色中心點= ',red_middle)
                           if red_middle<target_left:
-                            send.sendContinuousValue(xl,yl,0,tl+Theta_LfixValue,0)
+                            send.sendContinuousValue(xl,yl,0,tl,0)
                             print('左左左左左左左左左左左左左左左左左左左')
                           elif red_middle>target_right:
                             send.sendContinuousValue(xr,yr,0,tr,0)
@@ -471,9 +472,10 @@ if __name__ == '__main__':
                       # print("起步磁區調整完畢，準備出發")
 
                       pick_bar=True     
-                      print('舉起線在哪!?')                 
+                      print('舉起線在哪!?')
+                      # send.sendSensorReset()
                   if pick_bar==True:
-                    send.sendSensorReset()
+                    # send.sendSensorReset()
                     time.sleep(0.1)
                     turn_on()
                     print_section()
@@ -505,13 +507,14 @@ if __name__ == '__main__':
                   lift_bar=True
                   print("imu_value_Pitch= ",send.imu_value_Pitch)
                   time.sleep(1.5)
+                  # send.sendSensorReset()
                 else :          
                   print('imu_2微調')       
                   imu_2()
             elif lift_bar==True:
               print_section()
               print('======終點我來了======')
-              send.sendSensorReset()
+              # send.sendSensorReset()
               turn_on()
               time.sleep(0.5)
               imu_3()      
