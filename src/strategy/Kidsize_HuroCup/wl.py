@@ -30,8 +30,8 @@ Theta_RfixValue=-3  # 用於imu修正，進入判斷式將此值丟給Theta_fix
 # 前進，左右踏，左右旋調整   imu
 X_forward=1800
 X_backward=-800
-Y_left=400
-Y_right=-400
+Y_left=500
+Y_right=-500
 
 Theta_trunleft=4    # 只用於原地左轉
 Theta_trunright=-4  # 只用於原地右轉
@@ -76,8 +76,8 @@ target_right=165
 red_middle2=162.5
 
 # 停下/判斷距離設定，用於 拾起線 距離區間停下判斷
-pickup_distance1=189  # 此數值應小於 pickup_distance2
-pickup_distance2=200  # 停下數值改這個.126
+pickup_distance1=179  # 此數值應小於 pickup_distance2
+pickup_distance2=190  # 停下數值改這個.126
 
 pickup_distance3=210  # 
 pickup_distance4=230  # 太近數值判定，用於第二階段原地左右旋轉
@@ -285,34 +285,34 @@ def imu_2():  #拾起線到舉起線在用的
     yaw_1=send.imu_value_Yaw
     #print("cccccc",yaw_1) 
     #time.sleep(0.5)
-    yaw_1+=yaw
+    # yaw_1+=yaw
     print("yaw_1= ",yaw_1)
     if yaw_1>2: 
       Theta_fix=Theta_RfixValue
-      send.sendContinuousValue(x+500,y-300,0,theta2+Theta_fix-1,0)
+      send.sendContinuousValue(x+200,y,0,theta2+Theta_fix-1,0)
       print(" TWO 右轉")
 
     elif yaw_1<-2:
       Theta_fix=Theta_LfixValue
-      send.sendContinuousValue(x+500,y+300,0,theta2+Theta_fix+1,0)
+      send.sendContinuousValue(x+200,y,0,theta2+Theta_fix+2,0)
       print(" TWO 左轉")
     
     elif -2<=yaw_1 and yaw_1<=2 :
-      send.sendContinuousValue(x+1000,y,0,theta2,0)
+      send.sendContinuousValue(x+200,y,0,theta2,0)
       print(" TWO 直走")
     #print("gggggg",theta)  
 
 def imu_3():  #舉起線到終點線在用的
     yaw_1=send.imu_value_Yaw
-    yaw_1+=yaw
+    # yaw_1+=yaw
     print("yaw_1= ",yaw_1)
     if yaw_1>3: 
       Theta_fix=-1
-      send.sendContinuousValue(x3,y3-300,0,theta3+Theta_fix-1,0)
+      send.sendContinuousValue(x3+100,y3-400,0,theta3+Theta_fix-1,0)
       print(" THREE 右轉")
     if yaw_1<-3: 
       Theta_fix=1
-      send.sendContinuousValue(x3,y3+300,0,theta3+Theta_fix+1,0)
+      send.sendContinuousValue(x3+100,y3+400,0,theta3+Theta_fix+1,0)
       print(" THREE 左轉")
     elif -3<=yaw_1 and yaw_1<=3: 
       send.sendContinuousValue(x3,y3,0,theta3,0)
@@ -386,7 +386,7 @@ if __name__ == '__main__':
                           red_middle=float(target_xmax+target_xmin)/2
                           print('紅色中心點= ',red_middle)
                           if red_middle<target_left:
-                            send.sendContinuousValue(xl,yl,0,tl,0)
+                            send.sendContinuousValue(xl,yl+100,0,tl+1,0)
                             print('左左左左左左左左左左左左左左左左左左左')
                           elif red_middle>target_right:
                             send.sendContinuousValue(xr,yr,0,tr,0)
@@ -458,7 +458,7 @@ if __name__ == '__main__':
                           time.sleep(0.2)
                       time.sleep(0.4) 
                       send.sendBodySector(pick3)
-                      time.sleep(3.5)  
+                      time.sleep(5.5)  
                       print("111 yaw before afterbar= ",yaw) 
                       yaw=afterbar()
                       print("222 yaw after afterbar= ",yaw)
