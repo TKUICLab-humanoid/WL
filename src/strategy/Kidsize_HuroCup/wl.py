@@ -81,13 +81,13 @@ def red_line():
     target_ymax = 0
     target_ymin = 0
     target_size = 0
-    for red_cnt in range(send.color_mask_subject_cnts[5]):  #  send.color_mask_subject_cnts[5] is value about red range
-      if send.color_mask_subject_size[5][red_cnt]>300:
-        target_xmax = send.color_mask_subject_XMax[5][red_cnt]
-        target_xmin = send.color_mask_subject_XMin[5][red_cnt]
-        target_ymax = send.color_mask_subject_YMax[5][red_cnt]
-        target_ymin = send.color_mask_subject_YMin[5][red_cnt]
-        target_size = send.color_mask_subject_size[5][red_cnt]
+    for red_cnt in range(send.color_mask_subject_cnts[2]):  #  send.color_mask_subject_cnts[5] is value about red range
+      if send.color_mask_subject_size[2][red_cnt]>300:
+        target_xmax = send.color_mask_subject_XMax[2][red_cnt]
+        target_xmin = send.color_mask_subject_XMin[2][red_cnt]
+        target_ymax = send.color_mask_subject_YMax[2][red_cnt]
+        target_ymin = send.color_mask_subject_YMin[2][red_cnt]
+        target_size = send.color_mask_subject_size[2][red_cnt]
         #print(target_xmax,target_xmin)
       print(target_ymax)
       print(target_size)
@@ -236,7 +236,7 @@ if __name__ == '__main__':
         #pick_bar = True
         time.sleep(0.35)
         send.sendSensorReset()
-        send.sendHeadMotor(2,1450,50)
+        send.sendHeadMotor(2,2646,50)
         r = rospy.Rate(5) #5hz
         while not rospy.is_shutdown():
           if send.is_start == True:
@@ -250,14 +250,14 @@ if __name__ == '__main__':
                         if correct==False:
 
                           if imu_reset==False:
-                            send.sendBodySector(666) #起始動作
+                            #send.sendBodySector(666) #起始動作
                             time.sleep(2)
                             send.sendSensorReset()
                             imu_reset=True
                             print("imu_reset:", imu_reset)
 
                           if imu_reset==True:
-                            send.sendHeadMotor(2,1350,50)
+                            send.sendHeadMotor(2,2746,50)
                             print('move')
                             turn_on()
                             imu()
@@ -291,7 +291,7 @@ if __name__ == '__main__':
                         time.sleep(0.5)
                         print('down')
                         time.sleep(0.35)
-                        send.sendBodySector(pick1)  #手打開 and 蹲下(左：負正正[1:2:1]  右：正負負[1:2:1])
+                        #send.sendBodySector(pick1)  #手打開 and 蹲下(左：負正正[1:2:1]  右：正負負[1:2:1])
                         time.sleep(4)
 
                         target_ymax,target_ymin,target_xmax,target_xmin=red_line()
@@ -310,12 +310,12 @@ if __name__ == '__main__':
                         # 預測：調整腰 --> 左移 or 右移
                         if distance>0:
                           for d in range(distance):
-                            send.sendBodySector(32) #右移
+                            #send.sendBodySector(32) #右移
                             time.sleep(0.2)
                             print("蹲:左移")
                         if distance<0:  
                           for d in range(distance):
-                            send.sendBodySector(31) #左移
+                            #send.sendBodySector(31) #左移
                             time.sleep(0.2)
                             print("蹲:右移")
                         
@@ -326,7 +326,7 @@ if __name__ == '__main__':
                     if arrive2==True:  
                       print('pick up')
                       time.sleep(1.5)
-                      send.sendBodySector(pick2) #手夾起 and 站起來(左:正負負[1:2:1]  右:負正正[1:2:1])
+                      #send.sendBodySector(pick2) #手夾起 and 站起來(左:正負負[1:2:1]  右:負正正[1:2:1])
                       time.sleep(3)
                       print('fix=',distance)
                       time.sleep(0.35)
@@ -334,23 +334,23 @@ if __name__ == '__main__':
                       #相呼對應的左移 or 右移
                       if distance>0:
                         for d in range(distance):
-                          send.sendBodySector(31)
+                          #send.sendBodySector(31)
                           time.sleep(0.2)
                           print("站:右移")
                       if distance<0:  
                         for d in range(distance):
-                          send.sendBodySector(32)
+                          #send.sendBodySector(32)
                           time.sleep(0.2)
                           print("站:左移")
 
                       time.sleep(0.4) 
-                      send.sendBodySector(pick3) #??
+                      #send.sendBodySector(pick3) #??
                       time.sleep(2.2)  
                       print("111",yaw) 
                       yaw = afterbar() #reset imu
                       print("222",yaw) 
                       time.sleep(1.5)
-                      send.sendHeadMotor(2,1300,50) 
+                      send.sendHeadMotor(2,2796,50) 
                       
                       time.sleep(1)
                       pick_bar = True
@@ -387,7 +387,7 @@ if __name__ == '__main__':
                   time.sleep(2.5)
                   turn_off()
 
-                  send.sendBodySector(lift) #舉起
+                  #send.sendBodySector(lift) #舉起
                   time.sleep(8.3)
 
                   yaw=afterbar() #reset yaw
