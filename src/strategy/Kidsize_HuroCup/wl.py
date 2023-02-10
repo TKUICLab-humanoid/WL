@@ -18,8 +18,8 @@ yaw = 0
 
 # 原地步態數值
 X_origin=-200
-Y_origin=-200
-Theta_origin=-1
+Y_origin=0
+Theta_origin=0
 
 
 Theta_fix=0         # 用於imu修正，進入判斷式才給值
@@ -83,8 +83,8 @@ pickup_distance3=210  #
 pickup_distance4=230  # 太近數值判定，用於第二階段原地左右旋轉
 
 # 判斷距離設定，用於 舉起線 距離區間停下判斷
-liftup_distance1=70   # 此數值應小於 liftup_distance2
-liftup_distance2=120  # 這兩個數值進行第一階段判斷，判斷成功後(lift_line=True)進行第二階段
+liftup_distance1=60   # 此數值應小於 liftup_distance2
+liftup_distance2=140  # 這兩個數值進行第一階段判斷，判斷成功後(lift_line=True)進行第二階段
 
 liftup_distance3=5    # 距離在此區間便停下；此數值應小於 liftup_distance4
 liftup_distance4=40   # 
@@ -289,12 +289,12 @@ def imu_2():  #拾起線到舉起線在用的
     print("yaw_1= ",yaw_1)
     if yaw_1>2: 
       Theta_fix=Theta_RfixValue
-      send.sendContinuousValue(x+200,y,0,theta2+Theta_fix-1,0)
+      send.sendContinuousValue(x+100,y,0,theta2+Theta_fix-1,0)
       print(" TWO 右轉")
 
     elif yaw_1<-2:
       Theta_fix=Theta_LfixValue
-      send.sendContinuousValue(x+200,y,0,theta2+Theta_fix+2,0)
+      send.sendContinuousValue(x+100,y,0,theta2+Theta_fix+1,0)
       print(" TWO 左轉")
     
     elif -2<=yaw_1 and yaw_1<=2 :
@@ -308,11 +308,11 @@ def imu_3():  #舉起線到終點線在用的
     print("yaw_1= ",yaw_1)
     if yaw_1>3: 
       Theta_fix=-1
-      send.sendContinuousValue(x3+100,y3-400,0,theta3+Theta_fix-1,0)
+      send.sendContinuousValue(x3+500,y3-400,0,theta3+Theta_fix-2,0)
       print(" THREE 右轉")
     if yaw_1<-3: 
       Theta_fix=1
-      send.sendContinuousValue(x3+100,y3+400,0,theta3+Theta_fix+1,0)
+      send.sendContinuousValue(x3+500,y3+400,0,theta3+Theta_fix+2,0)
       print(" THREE 左轉")
     elif -3<=yaw_1 and yaw_1<=3: 
       send.sendContinuousValue(x3,y3,0,theta3,0)
@@ -460,9 +460,9 @@ if __name__ == '__main__':
                       send.sendBodySector(pick3)
                       time.sleep(5.5)  
                       print("111 yaw before afterbar= ",yaw) 
-                      yaw=afterbar()
+                      # yaw=afterbar()
                       print("222 yaw after afterbar= ",yaw)
-                      time.sleep(1.5)
+                      # time.sleep(1.5)
                       send.sendHeadMotor(2,head_motor_angle3,50) 
                       time.sleep(1)
                       
@@ -486,7 +486,7 @@ if __name__ == '__main__':
                     imu_2()
                     print('find white_ymax= ',white_ymax)
                     if white_ymax>liftup_distance1 and white_ymax<liftup_distance2:
-                      time.sleep(1)
+                      # time.sleep(1)
                       print("舉起線要到了") 
                       lift_line=True
                     else:
@@ -501,9 +501,9 @@ if __name__ == '__main__':
                   time.sleep(2.5)
                   turn_off()
                   send.sendBodySector(lift)
-                  time.sleep(6)
-                  yaw=afterbar()
-                  time.sleep(1.5)
+                  time.sleep(7.5)
+                  # yaw=afterbar()
+                  # time.sleep(1.5)
                   lift_bar=True
                   print("imu_value_Pitch= ",send.imu_value_Pitch)
                   time.sleep(1.5)
