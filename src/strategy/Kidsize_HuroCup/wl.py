@@ -83,16 +83,16 @@ pickup_distance3=210  #
 pickup_distance4=230  # 太近數值判定，用於第二階段原地左右旋轉
 
 # 判斷距離設定，用於 舉起線 距離區間停下判斷
-liftup_distance1=60   # 此數值應小於 liftup_distance2
-liftup_distance2=140  # 這兩個數值進行第一階段判斷，判斷成功後(lift_line=True)進行第二階段
+liftup_distance1=107   # 此數值應小於 liftup_distance2
+liftup_distance2=190  # 這兩個數值進行第一階段判斷，判斷成功後(lift_line=True)進行第二階段
 
-liftup_distance3=5    # 距離在此區間便停下；此數值應小於 liftup_distance4
-liftup_distance4=40   # 
+liftup_distance3=210    # 距離在此區間便停下；此數值應小於 liftup_distance4
+liftup_distance4=223  # 
 
 # 頭部馬達角度設定
-head_motor_angle1=1456    # 初始位置
+head_motor_angle1=1456    # 初始位置1456
 head_motor_angle2=1337    # 最一開始移動後的位置
-head_motor_angle3=1377    # 拾起槓鈴後的位置
+head_motor_angle3=1233    # 拾起槓鈴後的位置
 # 磁區變數設定
 pick1=7411
 pick2=7412
@@ -157,7 +157,7 @@ def white_line():
     white_size = 0
     for white_cnt in range(send.color_mask_subject_cnts[6]): 
       white_line_wide=send.color_mask_subject_XMax[6][white_cnt]-send.color_mask_subject_XMin[6][white_cnt]  
-      if send.color_mask_subject_size[6][white_cnt]>500 and send.color_mask_subject_YMax[6][white_cnt]<160:
+      if send.color_mask_subject_size[6][white_cnt]>500 : #and send.color_mask_subject_YMax[6][white_cnt]<200
         white_xmax = send.color_mask_subject_XMax[6][white_cnt]
         white_xmin = send.color_mask_subject_XMin[6][white_cnt]
         white_ymax = send.color_mask_subject_YMax[6][white_cnt]
@@ -458,7 +458,7 @@ if __name__ == '__main__':
                           time.sleep(0.2)
                       time.sleep(0.4) 
                       send.sendBodySector(pick3)
-                      time.sleep(5.5)  
+                      time.sleep(6)  
                       print("111 yaw before afterbar= ",yaw) 
                       # yaw=afterbar()
                       print("222 yaw after afterbar= ",yaw)
