@@ -17,9 +17,9 @@ correct = False
 yaw = 0
 
 # 原地步態數值
-X_origin=-200
+X_origin=-400
 Y_origin=0
-Theta_origin=0
+Theta_origin=-1
 
 
 Theta_fix=0         # 用於imu修正，進入判斷式才給值
@@ -83,16 +83,17 @@ pickup_distance3=210  #
 pickup_distance4=230  # 太近數值判定，用於第二階段原地左右旋轉
 
 # 判斷距離設定，用於 舉起線 距離區間停下判斷
-liftup_distance1=107   # 此數值應小於 liftup_distance2
+liftup_distance1=85   # 此數值應小於 liftup_distance2
 liftup_distance2=190  # 這兩個數值進行第一階段判斷，判斷成功後(lift_line=True)進行第二階段
 
-liftup_distance3=210    # 距離在此區間便停下；此數值應小於 liftup_distance4
-liftup_distance4=223  # 
+liftup_distance3=205    # 距離在此區間便停下；此數值應小於 liftup_distance4
+liftup_distance4=215  # 
 
 # 頭部馬達角度設定
 head_motor_angle1=1456    # 初始位置1456
 head_motor_angle2=1337    # 最一開始移動後的位置
-head_motor_angle3=1233    # 拾起槓鈴後的位置
+head_motor_angle3=1270    # 拾起槓鈴後的位置
+head_motor_angle4=1233    # 舉起前低頭
 # 磁區變數設定
 pick1=7411
 pick2=7412
@@ -157,7 +158,7 @@ def white_line():
     white_size = 0
     for white_cnt in range(send.color_mask_subject_cnts[6]): 
       white_line_wide=send.color_mask_subject_XMax[6][white_cnt]-send.color_mask_subject_XMin[6][white_cnt]  
-      if send.color_mask_subject_size[6][white_cnt]>500 : #and send.color_mask_subject_YMax[6][white_cnt]<200
+      if send.color_mask_subject_size[6][white_cnt]>500 and send.color_mask_subject_YMax[6][white_cnt]< 230: #and send.color_mask_subject_YMax[6][white_cnt]<200
         white_xmax = send.color_mask_subject_XMax[6][white_cnt]
         white_xmin = send.color_mask_subject_XMin[6][white_cnt]
         white_ymax = send.color_mask_subject_YMax[6][white_cnt]
@@ -308,14 +309,14 @@ def imu_3():  #舉起線到終點線在用的
     print("yaw_1= ",yaw_1)
     if yaw_1>3: 
       Theta_fix=-1
-      send.sendContinuousValue(x3+500,y3-400,0,theta3+Theta_fix-2,0)
+      send.sendContinuousValue(x3+500,y3-200,0,theta3+Theta_fix-2,0)
       print(" THREE 右轉")
     if yaw_1<-3: 
       Theta_fix=1
-      send.sendContinuousValue(x3+500,y3+400,0,theta3+Theta_fix+2,0)
+      send.sendContinuousValue(x3+500,y3+200,0,theta3+Theta_fix+2,0)
       print(" THREE 左轉")
     elif -3<=yaw_1 and yaw_1<=3: 
-      send.sendContinuousValue(x3,y3,0,theta3,0)
+      send.sendContinuousValue(x3+500,y3,0,theta3+1,0)
       print(" THREE 直走")
 def afterbar():
     print('revise')
@@ -397,12 +398,12 @@ if __name__ == '__main__':
                             if target_ymax>pickup_distance4 and target_ymin>pickup_distance4:
                               print("太靠近了！！！後退！！！！！！")
                               send.sendContinuousValue(xBack,yStand,0,Theta_origin,0)
-                            if target_ymin<pickup_distance3:
-                              print("桿子右下左上，右旋！！！！！")
-                              send.sendContinuousValue(xStand,yStand,0,RightStand,0)
-                            elif target_ymax<pickup_distance3:
-                              print("桿子左下右上，左旋！！！")
-                              send.sendContinuousValue(xStand,yStand,0,LeftStand,0)
+                            # if target_ymin<pickup_distance3:
+                            #   print("桿子右下左上，右旋！！！！！")
+                            #   send.sendContinuousValue(xStand,yStand,0,RightStand,0)
+                            # elif target_ymax<pickup_distance3:
+                            #   print("桿子左下右上，左旋！！！")
+                            #   send.sendContinuousValue(xStand,yStand,0,LeftStand,0)
                             arrive=True
                             print('微調結束')
                       if arrive==True:                                     
@@ -412,7 +413,7 @@ if __name__ == '__main__':
                        time.sleep(0.5)
                        print('我要抬手囉!!!!!!')
                        send.sendBodySector(pick1)
-                       time.sleep(6)
+                       time.sleep(4.5)
                        target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                        print('第305行')
                        print("target_xmax= ",target_xmax)
@@ -422,9 +423,9 @@ if __name__ == '__main__':
                        red_middle=round((target_xmax+target_xmin)/2)                        
                        distance2=round(red_middle2-red_middle)
                        if distance2>32:
-                         distance=32
+                         distance=10
                        elif distance2<-32:
-                         distance=-32
+                         distance=-10
                        else :
                          distance=distance2
                        time.sleep(0.5)
@@ -488,6 +489,8 @@ if __name__ == '__main__':
                     if white_ymax>liftup_distance1 and white_ymax<liftup_distance2:
                       # time.sleep(1)
                       print("舉起線要到了") 
+                      send.sendHeadMotor(2,head_motor_angle4,50) 
+                      time.sleep(0.2)
                       lift_line=True
                     else:
                       print('imu_2微調')
