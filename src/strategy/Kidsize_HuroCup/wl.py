@@ -19,7 +19,7 @@ yaw = 0
 x=1000
 y=0
 z=0
-theta=0
+theta=1
 
 x2=3000
 y2=0
@@ -34,7 +34,7 @@ theta3=0
 xl=-1000
 yl=700  
 zl=0
-tl=0
+tl=3
 
 xr=-1000
 yr=-500
@@ -250,7 +250,7 @@ if __name__ == '__main__':
                         if correct==False:
 
                           if imu_reset==False:
-                            send.sendBodySector(666) #起始動作
+                            #send.sendBodySector(666) #起始動作
                             time.sleep(2)
                             send.sendSensorReset()
                             imu_reset=True
@@ -267,7 +267,7 @@ if __name__ == '__main__':
                               imu1_5()
                               target_ymax ,target_ymin ,target_xmax ,target_xmin=red_line()
                               print("target_ymax_2:", target_ymax)
-                            if target_ymax>=200:
+                            if target_ymax>=190:
                               correct=True
                               print("correct:", correct)
 
@@ -409,6 +409,7 @@ if __name__ == '__main__':
 
           if send.is_start == False:
             turn_off()
+            send.sendBodySector(666)
             print("AA")
             white_ymax,white_ymin=white_line()
             print('w=',white_ymax)
