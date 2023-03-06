@@ -16,7 +16,7 @@ correct = False
 yaw = 0
 
 # 原地步態數值
-X_origin=0
+X_origin=-200
 Y_origin=-100
 Theta_origin=-1
 
@@ -69,14 +69,14 @@ tr=Theta_origin
 
 
 # 理想中間值，用於 "correct==true" 區域，與上方 xl, yl, ..., xr, yr, ...等等做搭配
-target_left=161
-target_right=165
+target_left=165
+target_right=170
 # 理想中間值，當機器人抓到槓鈴，此變數用於判斷是否執行磁區 31or32 進行微調
-red_middle2=162.5
+red_middle2=168.5
 
 # 停下/判斷距離設定，用於 拾起線 距離區間停下判斷
-pickup_distance1=179  # 此數值應小於 pickup_distance2
-pickup_distance2=180  # 停下數值改這個.126
+pickup_distance1=163  # 此數值應小於 pickup_distance2
+pickup_distance2=168  # 停下數值改這個.126
 
 pickup_distance3=210  # 
 pickup_distance4=230  # 太近數值判定，用於第二階段原地左右旋轉
@@ -310,8 +310,7 @@ if __name__ == '__main__':
                       if arrive==False:
                         if correct==False:
                           if imu_reset==False:
-                            # send.sendBodySector(666)
-                            # time.sleep(2)
+                            
                             send.sendSensorReset()
                             imu_reset=True
                           if imu_reset==True:
@@ -347,7 +346,7 @@ if __name__ == '__main__':
                           red_middle=float(target_xmax+target_xmin)/2
                           print('紅色中心點= ',red_middle)
                           if red_middle<target_left:
-                            send.sendContinuousValue(xl-200,yl+600,0,tl,0)
+                            send.sendContinuousValue(xl-200,yl+600,0,tl+1,0)
                             print('左左左左左左左左左左左左左左左左左左左')
                           elif red_middle>target_right:
                             send.sendContinuousValue(xr-200,yr-400,0,tr,0)
@@ -465,9 +464,11 @@ if __name__ == '__main__':
                   time.sleep(2.5)
                   turn_off()
                   send.sendBodySector(lift)
-                  time.sleep(8.8)
+                  time.sleep(9.8)
                   # yaw=afterbar()
                   # time.sleep(1.5)
+                  send.sendBodySector(666)
+                  time.sleep(2)
                   lift_bar=True
                   print("imu_value_Pitch= ",send.imu_value_Pitch)
                   time.sleep(1.5)
