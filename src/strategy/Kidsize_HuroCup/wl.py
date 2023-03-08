@@ -16,10 +16,10 @@ lift_line = False #是否抵達 lift line
 correct = False #是否站在賽道中間
 yaw = 0
 
-x=1700
-y=300
+x=1500
+y=-100
 z=0
-theta=2
+theta=1
 
 x2=3000
 y2=0
@@ -31,13 +31,13 @@ y3=0
 z3=0  
 theta3=0
 
-xl=-500
-yl=1000
+xl=-1000
+yl=1300
 zl=0
-tl=0
+tl=2
 
-xr=-500
-yr=-500
+xr=-700
+yr=-1200
 zr=0
 tr=-2
 
@@ -147,7 +147,7 @@ def imu1_5():
     target_ymax,target_ymin,target_xmax,target_xmin=red_line()
     target_middle=(target_xmax+target_xmin)/2
     if target_middle>160:
-      fix=2
+      fix=3
     if target_middle<160:
       fix=-2
     else :
@@ -173,7 +173,7 @@ def imu_2():
     yaw_1+=yaw
     print(yaw_1)
     if yaw_1>2: 
-      send.sendContinuousValue(x2,y,z,theta2,0)
+      send.sendContinuousValue(x2,y,z,theta2-2,0)
       print("turn right 2")
       
     elif yaw_1<-2 :
@@ -312,12 +312,12 @@ if __name__ == '__main__':
                           for d in range(distance):
                             #send.sendBodySector(32) #右移
                             time.sleep(0.2)
-                            print("蹲:左移")
+                            #print("蹲:左移")
                         if distance<0:  
                           for d in range(distance):
                             #send.sendBodySector(31) #左移
                             time.sleep(0.2)
-                            print("蹲:右移")
+                            #print("蹲:右移")
                         
                         time.sleep(0.4)    
                         arrive2=True
@@ -336,11 +336,11 @@ if __name__ == '__main__':
                         for d in range(distance):
                           #send.sendBodySector(31)
                           time.sleep(0.2)
-                          print("站:右移")
+                          #print("站:右移")
                       if distance<0:  
                         for d in range(distance):
                           #send.sendBodySector(32)
-                          time.sleep(0.2)
+                          #time.sleep(0.2)
                           print("站:左移")
 
                       time.sleep(0.4) 
@@ -365,7 +365,7 @@ if __name__ == '__main__':
                     time.sleep(0.35)
                     imu_2()
                     print('find',white_ymax)
-                    time.sleep(10)
+                    time.sleep(9)
 
                     if white_ymax>180 and white_ymax<240:
                       print("1")
@@ -382,7 +382,7 @@ if __name__ == '__main__':
                 white_ymax,white_ymin=white_line()
                 print('distance 2=',white_ymax)
 
-                if white_ymax>5 and white_ymax<40:
+                if white_ymax>200 and white_ymax<240:
                   print('stop and lift')
                   turn_off()
                   time.sleep(2.5)
