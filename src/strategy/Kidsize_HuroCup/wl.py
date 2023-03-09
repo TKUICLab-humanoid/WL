@@ -18,7 +18,7 @@ yaw = 0
 # 原地步態數值
 X_origin=-200
 Y_origin=-100
-Theta_origin=-1
+Theta_origin=0
 
 
 Theta_fix=0         # 用於imu修正，進入判斷式才給值
@@ -75,8 +75,8 @@ target_right=170
 red_middle2=168.5
 
 # 停下/判斷距離設定，用於 拾起線 距離區間停下判斷
-pickup_distance1=163  # 此數值應小於 pickup_distance2
-pickup_distance2=168  # 停下數值改這個.126
+pickup_distance1=162  # 此數值應小於 pickup_distance2
+pickup_distance2=167  # 停下數值改這個.126
 
 pickup_distance3=210  # 
 pickup_distance4=230  # 太近數值判定，用於第二階段原地左右旋轉
@@ -89,7 +89,7 @@ liftup_distance3=205    # 距離在此區間便停下；此數值應小於 liftu
 liftup_distance4=215  # 
 
 # 頭部馬達角度設定
-head_motor_angle1=1456    # 初始位置1456
+head_motor_angle1=1433    # 初始位置1456
 head_motor_angle2=1337    # 最一開始移動後的位置
 head_motor_angle3=1270    # 拾起槓鈴後的位置
 head_motor_angle4=1233    # 舉起前低頭
@@ -113,7 +113,7 @@ def turn_on():
     elif Body_Auto==False:
       time.sleep(0.7)
       send.sendSensorReset()
-      send.sendBodyAuto(200,0,0,0,1,0)
+      send.sendBodyAuto(X_origin+600,Y_origin,0,Theta_origin,1,0)
       Body_Auto=True
 
 def turn_off():
@@ -122,7 +122,7 @@ def turn_off():
     print("F===",Body_Auto)
     if Body_Auto==True:
       send.sendSensorReset()
-      send.sendBodyAuto(200,0,0,0,1,0)
+      send.sendBodyAuto(X_origin+600,Y_origin,0,Theta_origin,1,0)
       Body_Auto=False
     elif Body_Auto==False:
       pass
@@ -270,7 +270,7 @@ def imu_3():  #舉起線到終點線在用的
     print("yaw_1= ",yaw_1)
     if yaw_1>3: 
       Theta_fix=-1
-      send.sendContinuousValue(x3+500,y3-200,0,theta3+Theta_fix-2,0)
+      send.sendContinuousValue(x3+500,y3-200,0,theta3+Theta_fix-4,0)
       print(" THREE 右轉")
     if yaw_1<-3: 
       Theta_fix=1
