@@ -14,12 +14,13 @@ arrive2 = False #是否蹲下
 imu_reset = False
 lift_line = False #是否抵達 lift line
 correct = False #是否站在賽道中間
+tem = True # go to lift 的暫停
 yaw = 0
 
 x=1500
-y=-100
+y=-200
 z=0
-theta=1
+theta=0
 
 x2=3000
 y2=0
@@ -34,12 +35,12 @@ theta3=0
 xl=-1000
 yl=1300
 zl=0
-tl=2
+tl=0
 
 xr=-700
 yr=-1200
 zr=0
-tr=-2
+tr=-1
 
 target_left=162
 target_right=165
@@ -81,13 +82,13 @@ def red_line():
     target_ymax = 0
     target_ymin = 0
     target_size = 0
-    for red_cnt in range(send.color_mask_subject_cnts[2]):  #  send.color_mask_subject_cnts[5] is value about red range
-      if send.color_mask_subject_size[2][red_cnt]>300:
-        target_xmax = send.color_mask_subject_XMax[2][red_cnt]
-        target_xmin = send.color_mask_subject_XMin[2][red_cnt]
-        target_ymax = send.color_mask_subject_YMax[2][red_cnt]
-        target_ymin = send.color_mask_subject_YMin[2][red_cnt]
-        target_size = send.color_mask_subject_size[2][red_cnt]
+    for red_cnt in range(send.color_mask_subject_cnts[5]):  #  send.color_mask_subject_cnts[5] is value about red range
+      if send.color_mask_subject_size[5][red_cnt]>300:
+        target_xmax = send.color_mask_subject_XMax[5][red_cnt]
+        target_xmin = send.color_mask_subject_XMin[5][red_cnt]
+        target_ymax = send.color_mask_subject_YMax[5][red_cnt]
+        target_ymin = send.color_mask_subject_YMin[5][red_cnt]
+        target_size = send.color_mask_subject_size[5][red_cnt]
         #print(target_xmax,target_xmin)
       print(target_ymax)
       print(target_size)
@@ -124,46 +125,46 @@ def imu():
     target_ymax,target_ymin,target_xmax,target_xmin=red_line()
     target_middle=(target_xmax+target_xmin)/2
     if target_middle>160:
-      fix=2
+      fix=1
     if target_middle<160:
-      fix=-2
+      fix=-1
     else :
       fix=0
     yaw_1=send.imu_value_Yaw
-    print(yaw_1)
-    if yaw_1>2: 
+    print("yaw =", yaw_1)
+    if yaw_1>15: 
       send.sendContinuousValue(x,y,z,theta+fix,0)
       print("turn right")
       
-    elif yaw_1<-2:
+    elif yaw_1<-15:
       send.sendContinuousValue(x,y,z,theta+fix,0)
       print("turn left")
 
-    elif -2<=yaw_1 and yaw_1<=2:
-      send.sendContinuousValue(x,y,z,theta+fix,0)
+    elif -15<=yaw_1 and yaw_1<=15:
+      send.sendContinuousValue(x,y,z,theta,0)
       print("walk straight")
 
 def imu1_5():
     target_ymax,target_ymin,target_xmax,target_xmin=red_line()
     target_middle=(target_xmax+target_xmin)/2
     if target_middle>160:
-      fix=3
+      fix=1
     if target_middle<160:
-      fix=-2
+      fix=-1
     else :
       fix=0
     yaw_1=send.imu_value_Yaw
-    print(yaw_1)
-    if yaw_1>2: 
+    print("yaw =", yaw_1)
+    if yaw_1>15: 
       send.sendContinuousValue(x,y,z,theta+fix,0)
       print("turn right")
       
-    elif yaw_1<-2:
+    elif yaw_1<-15:
       send.sendContinuousValue(x,y,z,theta+fix,0)
       print("turn left")
 
-    elif -2<=yaw_1 and yaw_1<=2:
-      send.sendContinuousValue(x,y,z,theta+fix,0)
+    elif -15<=yaw_1 and yaw_1<=15:
+      send.sendContinuousValue(x,y,z,theta,0)
       print("walk straight")
 
 def imu_2():
@@ -171,7 +172,7 @@ def imu_2():
     #print("cccccc",yaw_1) 
     #time.sleep(0.5)
     yaw_1+=yaw
-    print(yaw_1)
+    print("yaw =", yaw_1)
     if yaw_1>2: 
       send.sendContinuousValue(x2,y,z,theta2-2,0)
       print("turn right 2")
@@ -188,17 +189,17 @@ def imu_2():
 def imu_3():
     yaw_1=send.imu_value_Yaw
     yaw_1+=yaw
-    print(yaw_1)
+    print("yaw =", yaw_1)
     if yaw_1>3: 
-      send.sendContinuousValue(x2,y3,z3,theta3,0)
+      send.sendContinuousValue(x3,y3,z3,theta3-2,0)
       print("turn right 3")
       
     elif yaw_1<-3 :
-      send.sendContinuousValue(x2,y3,z3,theta3,0)
+      send.sendContinuousValue(x3,y3,z3,theta3,0)
       print("turn left 3")
 
     elif -3<=yaw_1 and yaw_1<=3 :
-      send.sendContinuousValue(x2,y3,z3,theta3,0)
+      send.sendContinuousValue(x3,y3,z3,theta3,0)
       print("walk straight 3")
 
 
@@ -251,7 +252,7 @@ if __name__ == '__main__':
 
                           if imu_reset==False:
                             #send.sendBodySector(666) #起始動作
-                            time.sleep(2)
+                            time.sleep(0.5)
                             send.sendSensorReset()
                             imu_reset=True
                             print("imu_reset:", imu_reset)
@@ -267,7 +268,7 @@ if __name__ == '__main__':
                               imu1_5()
                               target_ymax ,target_ymin ,target_xmax ,target_xmin=red_line()
                               print("target_ymax_2:", target_ymax)
-                            if target_ymax>=186:
+                            if target_ymax>=170:
                               correct=True
                               print("correct:", correct)
 
@@ -292,7 +293,7 @@ if __name__ == '__main__':
                         print('down')
                         time.sleep(1)
                         send.sendBodySector(pick1)  #手打開 and 蹲下(左：負正正[1:2:1]  右：正負負[1:2:1])
-                        time.sleep(20)
+                        time.sleep(9.5)
 
                         target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                         red_middle=round((target_xmax+target_xmin)/2)                        
@@ -306,7 +307,7 @@ if __name__ == '__main__':
                         time.sleep(0.5)
                         print('fix=',distance)
                         time.sleep(0.5)
-
+                        '''
                         # 預測：調整腰 --> 左移 or 右移
                         if distance>0:
                           for d in range(distance):
@@ -318,7 +319,7 @@ if __name__ == '__main__':
                             #send.sendBodySector(31) #左移
                             time.sleep(0.2)
                             #print("蹲:右移")
-                        
+                         '''         
                         time.sleep(0.4)    
                         arrive2=True
                         print("arrive2 =", arrive2)
@@ -327,10 +328,10 @@ if __name__ == '__main__':
                       print('pick up')
                       time.sleep(1.5)
                       send.sendBodySector(pick2) #手夾起 and 站起來(左:正負負[1:2:1]  右:負正正[1:2:1])
-                      time.sleep(23)
+                      time.sleep(17)
                       print('fix=',distance)
                       time.sleep(0.35)
-
+                      '''
                       #相呼對應的左移 or 右移
                       if distance>0:
                         for d in range(distance):
@@ -341,11 +342,11 @@ if __name__ == '__main__':
                         for d in range(distance):
                           #send.sendBodySector(32)
                           #time.sleep(0.2)
-                          print("站:左移")
-
-                      time.sleep(0.4) 
+                          #print("站:左移")
+                      '''
+                      #time.sleep(0.4) 
                       #send.sendBodySector(pick3) #??
-                      time.sleep(2.2)  
+                      #time.sleep(2.2)  
                       print("111",yaw) 
                       yaw = afterbar() #reset imu
                       print("222",yaw) 
@@ -360,12 +361,17 @@ if __name__ == '__main__':
                     turn_on()
                     time.sleep(1)
                     print("moving to liftline")
+                    imu_2()
+                    if tem == True:
+                      imu_2()
+                      time.sleep(9)
+                      tem = False
 
                     white_ymax,white_ymin=white_line()
                     time.sleep(0.35)
                     imu_2()
-                    print('find',white_ymax)
-                    time.sleep(9)
+                    print('find while_ymax =',white_ymax)
+                    
 
                     if white_ymax>180 and white_ymax<240:
                       print("1")
@@ -389,7 +395,7 @@ if __name__ == '__main__':
                   turn_off()
 
                   send.sendBodySector(lift) #舉起
-                  time.sleep(10)
+                  time.sleep(5.5)
 
                   yaw=afterbar() #reset yaw
                   time.sleep(1.5)
@@ -415,8 +421,8 @@ if __name__ == '__main__':
             white_ymax,white_ymin=white_line()
             print('w=',white_ymax)
 
-            print("y_max =", send.color_mask_subject_YMax[2][0])
-            print("y_min =", send.color_mask_subject_YMin[2][0])
+            print("y_max =", send.color_mask_subject_YMax[5][0])
+            print("y_min =", send.color_mask_subject_YMin[5][0])
             target_ymax,target_ymin,target_xmax,target_xmin = red_line()
             red_middle = float(target_xmax+target_xmin)/2
             print('r=', red_middle)
