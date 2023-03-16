@@ -16,7 +16,7 @@ correct = False
 yaw = 0
 
 # 原地步態數值
-X_origin=-300
+X_origin=-100
 Y_origin=-100
 Theta_origin=-1
 
@@ -75,8 +75,8 @@ target_right=169
 red_middle2=167.5
 
 # 停下/判斷距離設定，用於 拾起線 距離區間停下判斷
-pickup_distance1=167  # 此數值應小於 pickup_distance2
-pickup_distance2=172  # 停下數值改這個.126
+pickup_distance1=162  # 此數值應小於 pickup_distance2
+pickup_distance2=167  # 停下數值改這個.126
 
 pickup_distance3=210  # 
 pickup_distance4=230  # 太近數值判定，用於第二階段原地左右旋轉
@@ -204,16 +204,16 @@ def imu():  #一開始走路在用的，還不在紅模範圍
 
     if yaw_1>2 : 
       Theta_fix=Theta_RfixValue
-      send.sendContinuousValue(x+800,y,0,theta+Theta_fix+fix,0) #theta-2
+      send.sendContinuousValue(x+300,y,0,theta+Theta_fix+fix,0) #theta-2
       print(" ONE 右轉")
       
     elif yaw_1<-2 :
       Theta_fix=Theta_LfixValue
-      send.sendContinuousValue(x+800,y,0,theta+Theta_fix+fix,0) #theta+2
+      send.sendContinuousValue(x+300,y,0,theta+Theta_fix+fix+1,0) #theta+2
       print(" ONE 左轉")
 
     elif -2<=yaw_1 and yaw_1<=2:
-      send.sendContinuousValue(x+800,y,0,theta+fix,0)   #theta+1 or-1
+      send.sendContinuousValue(x+300,y,0,theta+fix+1,0)   #theta+1 or-1
       print(" ONE 直走")
 
 def imu1_5(): #已經靠近紅模，還沒到停下的程度
@@ -251,7 +251,7 @@ def imu_2():  #拾起線到舉起線在用的
     print("yaw_1= ",yaw_1)
     if yaw_1>2: 
       Theta_fix=Theta_RfixValue
-      send.sendContinuousValue(x+100,y,0,theta2+Theta_fix-1,0)
+      send.sendContinuousValue(x+100,y,0,theta2+Theta_fix-0,0)
       print(" TWO 右轉")
 
     elif yaw_1<-2:
@@ -270,7 +270,7 @@ def imu_3():  #舉起線到終點線在用的
     print("yaw_1= ",yaw_1)
     if yaw_1>3: 
       Theta_fix=-1
-      send.sendContinuousValue(x3+500,y3-200,0,theta3+Theta_fix-4,0)
+      send.sendContinuousValue(x3+500,y3-200,0,theta3+Theta_fix-3,0)
       print(" THREE 右轉")
     if yaw_1<-3: 
       Theta_fix=1
@@ -464,7 +464,7 @@ if __name__ == '__main__':
                   time.sleep(2.5)
                   turn_off()
                   send.sendBodySector(lift)
-                  time.sleep(16)
+                  time.sleep(19)
                   # yaw=afterbar()
                   # time.sleep(1.5)
                   send.sendBodySector(666)
