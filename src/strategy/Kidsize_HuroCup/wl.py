@@ -16,15 +16,15 @@ correct = False
 yaw = 0
 
 # 原地步態數值
-X_origin=-100
-Y_origin=-100
-Theta_origin=-1
+X_origin=-200
+Y_origin=-200
+Theta_origin=0
 
 
 Theta_fix=0         # 用於imu修正，進入判斷式才給值
 
-Theta_LfixValue=4   # 用於imu修正，進入判斷式將此值丟給Theta_fix
-Theta_RfixValue=-1  # 用於imu修正，進入判斷式將此值丟給Theta_fix
+Theta_LfixValue=3   # 用於imu修正，進入判斷式將此值丟給Theta_fix
+Theta_RfixValue=-2  # 用於imu修正，進入判斷式將此值丟給Theta_fix
 
 # 前進，左右踏，左右旋調整   imu
 X_forward=1800
@@ -75,24 +75,24 @@ target_right=169
 red_middle2=167.5
 
 # 停下/判斷距離設定，用於 拾起線 距離區間停下判斷
-pickup_distance1=162  # 此數值應小於 pickup_distance2
-pickup_distance2=167  # 停下數值改這個.126
+pickup_distance1=176  # 此數值應小於 pickup_distance2
+pickup_distance2=181  # 停下數值改這個.126
 
 pickup_distance3=210  # 
 pickup_distance4=230  # 太近數值判定，用於第二階段原地左右旋轉
 
 # 判斷距離設定，用於 舉起線 距離區間停下判斷
-liftup_distance1=85   # 此數值應小於 liftup_distance2
-liftup_distance2=190  # 這兩個數值進行第一階段判斷，判斷成功後(lift_line=True)進行第二階段
+liftup_distance1=15   # 此數值應小於 liftup_distance2 ; 看第3條線
+liftup_distance2=120  # 這兩個數值進行第一階段判斷，判斷成功後(lift_line=True)進行第二階段 ; 看第3條線
 
-liftup_distance3=205    # 距離在此區間便停下；此數值應小於 liftup_distance4
-liftup_distance4=215  # 
+liftup_distance3=5    # 距離在此區間便停下；此數值應小於 liftup_distance4 ; 看第4條線
+liftup_distance4=25  # 看第4條線
 
 # 頭部馬達角度設定
 head_motor_angle1=1433    # 初始位置1456
 head_motor_angle2=1337    # 最一開始移動後的位置
 head_motor_angle3=1270    # 拾起槓鈴後的位置
-head_motor_angle4=1233    # 舉起前低頭
+head_motor_angle4=1263    # 舉起前低頭
 # 磁區變數設定
 pick1=7411
 pick2=7412
@@ -180,7 +180,7 @@ def white_line():
         white_size = send.color_mask_subject_size[6][white_cnt]
      #print(target_xmax,target_xmin)
      #print(target_ymax,target_ymin)
-     # print(white_size)
+        print(white_size)
       send.drawImageFunction(1,0,white_xmax,white_xmax,white_ymin,white_ymax,0,0,0)
       send.drawImageFunction(2,0,white_xmin,white_xmin,white_ymin,white_ymax,0,0,0)
       send.drawImageFunction(3,0,white_xmin,white_xmax,white_ymin,white_ymin,0,0,0)
@@ -251,12 +251,12 @@ def imu_2():  #拾起線到舉起線在用的
     print("yaw_1= ",yaw_1)
     if yaw_1>2: 
       Theta_fix=Theta_RfixValue
-      send.sendContinuousValue(x+100,y,0,theta2+Theta_fix-0,0)
+      send.sendContinuousValue(x+100,y,0,theta2+Theta_fix-1,0)
       print(" TWO 右轉")
 
     elif yaw_1<-2:
       Theta_fix=Theta_LfixValue
-      send.sendContinuousValue(x+100,y+400,0,theta2+Theta_fix+1,0)
+      send.sendContinuousValue(x+100,y+400,0,theta2+Theta_fix,0)
       print(" TWO 左轉")
     
     elif -2<=yaw_1 and yaw_1<=2 :
@@ -349,7 +349,7 @@ if __name__ == '__main__':
                             send.sendContinuousValue(xl,yl+600,0,tl+1,0)
                             print('左左左左左左左左左左左左左左左左左左左')
                           elif red_middle>target_right:
-                            send.sendContinuousValue(xr,yr-400,0,tr,0)
+                            send.sendContinuousValue(xr,yr-200,0,tr,0)
                             print('右右右右右右右右右右右右右右右右右右右')
 
                           elif red_middle>target_left and red_middle<target_right:
@@ -449,9 +449,9 @@ if __name__ == '__main__':
                       # time.sleep(1)
                       print("舉起線要到了") 
                       send.sendHeadMotor(2,head_motor_angle4,50) 
-                      time.sleep(0.2)
+                      time.sleep(1)
                       lift_line=True
-                      time.sleep(5)
+                      time.sleep(3)
                     else:
                       print('imu_2微調')
                       imu_2()
