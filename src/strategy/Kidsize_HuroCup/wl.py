@@ -16,15 +16,15 @@ correct = False
 yaw = 0
 
 # 原地步態數值
-X_origin=-200
-Y_origin=-200
+X_origin=-150
+Y_origin= 200
 Theta_origin=0
 
 
 Theta_fix=0         # 用於imu修正，進入判斷式才給值
 
-Theta_LfixValue=3   # 用於imu修正，進入判斷式將此值丟給Theta_fix
-Theta_RfixValue=-2  # 用於imu修正，進入判斷式將此值丟給Theta_fix
+Theta_LfixValue=2   # 用於imu修正，進入判斷式將此值丟給Theta_fix
+Theta_RfixValue=-1  # 用於imu修正，進入判斷式將此值丟給Theta_fix
 
 # 前進，左右踏，左右旋調整   imu
 X_forward=1800
@@ -346,10 +346,10 @@ if __name__ == '__main__':
                           red_middle=float(target_xmax+target_xmin)/2
                           print('紅色中心點= ',red_middle)
                           if red_middle<target_left:
-                            send.sendContinuousValue(xl,yl+600,0,tl+1,0)
+                            send.sendContinuousValue(xl,yl+900,0,tl,0)
                             print('左左左左左左左左左左左左左左左左左左左')
                           elif red_middle>target_right:
-                            send.sendContinuousValue(xr,yr-200,0,tr,0)
+                            send.sendContinuousValue(xr,yr-700,0,tr-1,0)
                             print('右右右右右右右右右右右右右右右右右右右')
 
                           elif red_middle>target_left and red_middle<target_right:
