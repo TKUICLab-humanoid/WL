@@ -16,6 +16,8 @@ lift_line = False #是否抵達 lift line
 correct = False #是否站在賽道中間
 start_gogo = True #初始偏移的調整
 tem = True # go to lift 的暫停
+red_ymax_revise = False
+imu_yaw_revise = False
 
 yaw = 0
 
@@ -33,6 +35,9 @@ x3=3500
 y3=0
 z3=0  
 theta3=0
+
+x_fix = 0
+theta_fix = 0
 
 xl=-900
 yl=1000
@@ -52,6 +57,9 @@ small_right_Standard_1 = 2
 
 big_left_Standard_1 = -20
 small_left_Standard_1 = -2
+
+Red_Standard_min = 166
+Red_Standard_max = 170
 
 #red_middle2=166.5
 
@@ -222,35 +230,41 @@ def correct_target():
     target_ymax,target_ymin,target_xmax,target_xmin=red_line()
     red_middle=float(target_xmax+target_xmin)/2
     print('middle =',red_middle)
-#=====================================================================================
-    if red_middle != 0:
-      if red_middle > (target_right + big_right_Standard_1):
-        send.sendContinuousValue(x, y-1700, z, theta, 0)
-        print('big right')
+    if target_ymax < Red_Standard_min:
+      #=====================================================================================
+      if red_middle != 0:
+        if red_middle > (target_right + big_right_Standard_1):
+          send.sendContinuousValue(x, y-1700, z, theta, 0)
+          print('big right')
 
-      elif (target_right + small_right_Standard_1) < red_middle and red_middle <= (target_right + big_right_Standard_1):
-        send.sendContinuousValue(x, y-1300, z, theta, 0)
-        print('normal right')
+        elif (target_right + small_right_Standard_1) < red_middle and red_middle <= (target_right + big_right_Standard_1):
+          send.sendContinuousValue(x, y-1300, z, theta, 0)
+          print('normal right')
 
-      elif (target_right + small_right_Standard_1) <= red_middle:
-        send.sendContinuousValue(x, y-800, z, theta, 0)
-        print('small right')
-  #=====================================================================================
-      elif (target_left + big_left_Standard_1) < red_middle:
-        send.sendContinuousValue(x, y+1800, z, theta, 0)
-        print('big left')
+        elif (target_right + small_right_Standard_1) <= red_middle:
+          send.sendContinuousValue(x, y-800, z, theta, 0)
+          print('small right')
+        #=====================================================================================
+        elif (target_left + big_left_Standard_1) < red_middle:
+          send.sendContinuousValue(x, y+1800, z, theta, 0)
+          print('big left')
 
-      elif (target_left + small_left_Standard_1) > red_middle and red_middle >= (target_left + big_left_Standard_1):
-        send.sendContinuousValue(x, y+1400, z, theta, 0)
-        print('normal left')
+        elif (target_left + small_left_Standard_1) > red_middle and red_middle >= (target_left + big_left_Standard_1):
+          send.sendContinuousValue(x, y+1400, z, theta, 0)
+          print('normal left')
 
-      elif (target_left + small_left_Standard_1) >= red_middle:
-        send.sendContinuousValue(x, y+900, z, theta, 0)
-        print('small left')
-#====================================================================================== 
+        elif (target_left + small_left_Standard_1) >= red_middle:
+          send.sendContinuousValue(x, y+900, z, theta, 0)
+          print('small left')
+        #======================================================================================
+        time.sleep(0.3)
+       
+      else:
+        imu()
+        print("gogo")
+
     else:
-      imu()
-      print("gogo")
+      pass
 
     return red_middle
     # if red_middle>157 and red_middle<172:
@@ -311,7 +325,6 @@ if __name__ == '__main__':
 
                             imu()
                             correct_target()
-                            time.sleep(0.3)
 
                             target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                             print("target_ymax_1:", target_ymax)
@@ -319,13 +332,13 @@ if __name__ == '__main__':
                             if target_ymax>115 and target_ymax<128:
                               imu1_5()
                               time.sleep(0.3)
-                              target_ymax ,target_ymin ,target_xmax ,target_xmin=red_line()
+                              target_ymax ,target_ymin ,target_xmax ,target_xmin = red_line()
                               print("target_ymax_2:", target_ymax)
-                            if target_ymax>=164:
-                              correct=True
+                            if target_ymax >= Red_Standard_min:
+                              correct = True
                               print("correct:", correct)
 
-                        if correct==True:
+                        if correct == True:
                           target_ymax,target_ymin,target_xmax,target_xmin=red_line()
                           red_middle=float(target_xmax+target_xmin)/2
                           print('middle=',red_middle)
@@ -337,11 +350,42 @@ if __name__ == '__main__':
                             send.sendContinuousValue(xr,yr,zr,tr,0)
                             print('move right')
                           if red_middle >= target_left and red_middle <= target_right:
+                            # while(red_ymax_revise == False or imu_yaw_revise == False):
+                            #   if target_ymax > Red_Standard_max:
+                            #     x_fix = -1500
+                            #     print("後退!後退!")
+                            #   elif target_ymax < Red_Standard_min:
+                            #     x_fix = -500
+                            #     print("前進!前進!")
+                            #   else:
+                            #     x_fix = -1000
+                            #     print("pass")
+                            #     red_ymax_revise = True
+
+                            #   if send.imu_value_Yaw > 15:
+                            #     theta_fix = -1
+                            #     print("右旋")
+                            #   elif send.imu_value_Yaw <15:
+                            #     theta_fix = 2
+                            #     print("左旋")
+                            #   else:
+                            #     theta_fix = 0
+                            #     print("pass")
+                            #     imu_yaw_revise = True
+
+                            #   if(red_ymax_revise == False or imu_yaw_revise == False):
+                            #     send.sendContinuousValue(x_fix, 0, 0, theta_fix, 0)
+                            #     time.sleep(0.5)
+                            #     target_ymax,target_ymin,target_xmax,target_xmin=red_line()
+                            #   else:
+                            #     print("stop")                                     
+                            #     turn_off()
+
                             arrive=True
                             print("arrive:", arrive)
 
                       if arrive==True:
-                        print("stop")                                     
+                        #print("stop")                                     
                         turn_off()
                         time.sleep(1)
                         print('down')
