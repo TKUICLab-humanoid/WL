@@ -16,8 +16,8 @@ correct = False
 yaw = 0
 
 # 原地步態數值
-X_origin=-150
-Y_origin= 200
+X_origin=-50
+Y_origin= 0
 Theta_origin=0
 
 
