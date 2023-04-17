@@ -16,9 +16,9 @@ correct = False
 yaw = 0
 
 # 原地步態數值
-X_origin=-50
-Y_origin= 0
-Theta_origin=0
+X_origin=-350
+Y_origin= 100
+Theta_origin=-1
 
 
 Theta_fix=0         # 用於imu修正，進入判斷式才給值
@@ -76,7 +76,7 @@ red_middle2=167.5
 
 # 停下/判斷距離設定，用於 拾起線 距離區間停下判斷
 pickup_distance1=176  # 此數值應小於 pickup_distance2
-pickup_distance2=181  # 停下數值改這個.126
+pickup_distance2=171  # 停下數值改這個.126
 
 pickup_distance3=210  # 
 pickup_distance4=230  # 太近數值判定，用於第二階段原地左右旋轉
@@ -85,8 +85,8 @@ pickup_distance4=230  # 太近數值判定，用於第二階段原地左右旋�
 liftup_distance1=15   # 此數值應小於 liftup_distance2 ; 看第3條線
 liftup_distance2=120  # 這兩個數值進行第一階段判斷，判斷成功後(lift_line=True)進行第二階段 ; 看第3條線
 
-liftup_distance3=5    # 距離在此區間便停下；此數值應小於 liftup_distance4 ; 看第4條線
-liftup_distance4=25  # 看第4條線
+liftup_distance3=10    # 距離在此區間便停下；此數值應小於 liftup_distance4 ; 看第4條線
+liftup_distance4=35  # 看第4條線
 
 # 頭部馬達角度設定
 head_motor_angle1=1433    # 初始位置1456
@@ -346,10 +346,10 @@ if __name__ == '__main__':
                           red_middle=float(target_xmax+target_xmin)/2
                           print('紅色中心點= ',red_middle)
                           if red_middle<target_left:
-                            send.sendContinuousValue(xl,yl+900,0,tl,0)
+                            send.sendContinuousValue(xl-100,yl+900,0,tl,0)
                             print('左左左左左左左左左左左左左左左左左左左')
                           elif red_middle>target_right:
-                            send.sendContinuousValue(xr,yr-700,0,tr-1,0)
+                            send.sendContinuousValue(xr,yr-700,0,tr,0)
                             print('右右右右右右右右右右右右右右右右右右右')
 
                           elif red_middle>target_left and red_middle<target_right:
