@@ -16,9 +16,9 @@ correct = False
 yaw = 0
 
 # 原地步態數值
-X_origin=-350
-Y_origin= 100
-Theta_origin=-1
+X_origin=-250
+Y_origin= 200
+Theta_origin=0
 
 
 Theta_fix=0         # 用於imu修正，進入判斷式才給值
@@ -69,10 +69,10 @@ tr=Theta_origin
  
 
 # 理想中間值，用於 "correct==true" 區域，與上方 xl, yl, ..., xr, yr, ...等等做搭配
-target_left=164
-target_right=169
+target_left=157
+target_right=163
 # 理想中間值，當機器人抓到槓鈴，此變數用於判斷是否執行磁區 31or32 進行微調
-red_middle2=167.5
+red_middle2=160
 
 # 停下/判斷距離設定，用於 拾起線 距離區間停下判斷
 pickup_distance1=176  # 此數值應小於 pickup_distance2
@@ -251,16 +251,16 @@ def imu_2():  #拾起線到舉起線在用的
     print("yaw_1= ",yaw_1)
     if yaw_1>2: 
       Theta_fix=Theta_RfixValue
-      send.sendContinuousValue(x+100,y,0,theta2+Theta_fix-1,0)
+      send.sendContinuousValue(x+100,y-500,0,theta2+Theta_fix-4,0)
       print(" TWO 右轉")
 
     elif yaw_1<-2:
       Theta_fix=Theta_LfixValue
-      send.sendContinuousValue(x+100,y+400,0,theta2+Theta_fix,0)
+      send.sendContinuousValue(x+100,y-100,0,theta2+Theta_fix,0)
       print(" TWO 左轉")
     
     elif -2<=yaw_1 and yaw_1<=2 :
-      send.sendContinuousValue(x+200,y,0,theta2-1,0)
+      send.sendContinuousValue(x+200,y-200,0,theta2-1,0)
       print(" TWO 直走")
     #print("gggggg",theta)  
 
@@ -270,14 +270,14 @@ def imu_3():  #舉起線到終點線在用的
     print("yaw_1= ",yaw_1)
     if yaw_1>3: 
       Theta_fix=-1
-      send.sendContinuousValue(x3+500,y3-200,0,theta3+Theta_fix-3,0)
+      send.sendContinuousValue(x3+500,y3-100,0,theta3+Theta_fix,0)
       print(" THREE 右轉")
     if yaw_1<-3: 
       Theta_fix=1
-      send.sendContinuousValue(x3+500,y3+400,0,theta3+Theta_fix+4,0)
+      send.sendContinuousValue(x3+500,y3-100,0,theta3+Theta_fix,0)
       print(" THREE 左轉")
     elif -3<=yaw_1 and yaw_1<=3: 
-      send.sendContinuousValue(x3+500,y3,0,theta3,0)
+      send.sendContinuousValue(x3+500,y3-100,0,theta3,0)
       print(" THREE 直走")
 def afterbar():
     print('revise')
@@ -346,7 +346,7 @@ if __name__ == '__main__':
                           red_middle=float(target_xmax+target_xmin)/2
                           print('紅色中心點= ',red_middle)
                           if red_middle<target_left:
-                            send.sendContinuousValue(xl-100,yl+900,0,tl,0)
+                            send.sendContinuousValue(xl,yl+300,0,tl,0)
                             print('左左左左左左左左左左左左左左左左左左左')
                           elif red_middle>target_right:
                             send.sendContinuousValue(xr,yr-700,0,tr,0)
