@@ -13,9 +13,9 @@ send = Sendmessage()
 WHITE_SLOPE = 205
 
  # 原地步態數值
-X_ORIGIN = -400
+X_ORIGIN = -200
 Y_ORIGIN = 0
-THETA_ORIGIN = -1
+THETA_ORIGIN = 0
 
 # 理想中間值，用於 "correct==true" 區域，與上方 xl, yl, ..., xr, yr, ...等等做搭配
 RED_LEFT = 157
@@ -25,14 +25,14 @@ RED_RIGHT = 163
 RED_MIDDLE_IDEAL = 160
 
 # 停下/判斷距離設定，用於 拾起線 距離區間停下判斷
-PICK_DIS_ONE = 171  
-PICK_DIS_TWO = 176  # 停下數值改這個.126
+PICK_DIS_ONE = 168  
+PICK_DIS_TWO = 173  # 停下數值改這個.126
 
 # 判斷距離設定，用於 舉起線 距離區間停下判斷
-LIFT_DIS_MIN = 80   # 此數值應小於 liftup_distance2 ; 看第3條線
+LIFT_DIS_MIN = 60   # 此數值應小於 liftup_distance2 ; 看第3條線
 LIFT_DIS_MAX = 120  # 這兩個數值進行第一階段判斷，判斷成功後(lift_line=True)進行第二階段 ; 看第3條線
 
-LIFT_STOP_MIN = 25    # 距離在此區間便停下；此數值應小於 liftup_distance4 ; 看第4條線
+LIFT_STOP_MIN = 20    # 距離在此區間便停下；此數值應小於 liftup_distance4 ; 看第4條線
 LIFT_STOP_MAX = 75  # 看第4條線
 
 # 頭部馬達角度設定
@@ -81,6 +81,115 @@ class WeightLift():
 
           self.white_width_x = self.white_xmax - self.white_xmin
           self.white_width_y = self.white_ymax - self.white_ymin
+
+    def horizontal(self):
+        rospy.loginfo(f'開始微調')
+        self.red_line_value()
+        self.red_middle = float(self.red_xmax + self.red_xmin) / 2
+        rospy.loginfo(f'red_middle = {self.red_middle}')
+        if self.red_middle < RED_LEFT:
+          send.sendContinuousValue(X_ORIGIN - 200, Y_ORIGIN + 1000, 0, THETA_ORIGIN - 1, 0)
+          rospy.loginfo(f'左左左左左左左左左左左左左左左左左左左')
+        elif self.red_middle > RED_RIGHT:
+          send.sendContinuousValue(X_ORIGIN - 50, Y_ORIGIN - 1000, 0, THETA_ORIGIN, 0)
+          rospy.loginfo(f'右右右右右右右右右右右右右右右右右右右')
+        else:
+            self.arrive = True
+            self.correct = False
+            rospy.loginfo(f'微調結束')
+
+    def imu(self):
+      self.red_line()
+      self.red_xmiddle = (self.red_xmax + self.red_xmin) / 2
+      self.red_ymiddle = (self.red_ymax + self.red_ymin) / 2
+
+      if self.imu_reset: #imu
+        if self.red_xmiddle > 160:
+          self.fix = -1
+        elif self.red_xmiddle < 160:
+          self.fix = 1
+        else:
+          self.fix = 0
+        self.yaw = send.imu_value_Yaw
+        rospy.loginfo(f'yaw = {self.yaw}')
+        rospy.loginfo(f'red_xmiddle = {self.red_xmiddle}')
+
+        if self.red_ymax > PICK_DIS_ONE and self.red_ymax < PICK_DIS_TWO:
+          self.x_fix = 1500
+
+        if self.yaw > 2:
+          self.y_fix = 0
+          self.theta_fix = -1 + self.fix
+          self.theta = THETA_ORIGIN + self.theta_fix 
+          send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
+          rospy.loginfo(f'111111111111111右轉1111111111111111111')
+          
+        elif self.yaw < -2:
+          self.y_fix = 0
+          self.theta_fix = 1 + self.fix
+          self.theta = THETA_ORIGIN + self.theta_fix 
+          send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
+          rospy.loginfo(f'11111111111111左轉1111111111111111')
+
+        elif -2 <= self.yaw and self.yaw <= 2:
+          self.y_fix = 0
+          self.theta_fix = 0 + self.fix
+          self.theta = THETA_ORIGIN + self.theta_fix 
+          send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
+          rospy.loginfo(f'111111111111直走1111111111111111111')
+
+      elif self.lift_line or self.pick_bar: #imu2
+            self.white_line()  
+            self.x = 2000
+            self.yaw = send.imu_value_Yaw
+            rospy.loginfo(f'yaw = {self.yaw}')
+            # send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
+            if self.white_width_x - self.white_width_y < WHITE_SLOPE:
+              if self.yaw > 2:
+                  self.y_fix = -500
+                  self.theta_fix = -2
+                  self.theta = THETA_ORIGIN + self.theta_fix 
+                  send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
+                  rospy.loginfo(f'22222222222222222右轉22222222222222222222')
+
+              elif self.yaw < -2:
+                  self.y_fix = 100
+                  self.theta_fix = 2
+                  self.theta = THETA_ORIGIN + self.theta_fix 
+                  send.sendContinuousValue(self.x, self.y + 300, 0, self.theta, 0)
+                  rospy.loginfo(f'222222222222222222左轉2222222222222222222')
+
+            else:
+                self.y_fix = -200
+                self.theta_fix = 0
+                self.theta = THETA_ORIGIN + self.theta_fix 
+                send.sendContinuousValue(self.x, self.y + 300, 0, self.theta, 0)
+                rospy.loginfo(f'2222222222222直走22222222222222222222222')
+        
+      elif self.lift_bar: #imu_3
+            self.yaw = send.imu_value_Yaw
+            rospy.loginfo(f'yaw = {self.yaw}')
+
+            self.x = 2000
+
+            if self.yaw > 3:
+              self.y_fix = -500
+              self.theta_fix = -2
+              self.theta = THETA_ORIGIN + self.theta_fix 
+              send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
+              rospy.loginfo(f'3333333333333333右轉3333333333333333')
+            elif self.yaw < -3:
+              self.y_fix = 500
+              self.theta_fix = 2 
+              self.theta = THETA_ORIGIN + self.theta_fix 
+              send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
+              rospy.loginfo(f'333333333333333333左轉33333333333333333')
+            elif -3 <= self.yaw and self.yaw <= 3:
+              self.y_fix = -500
+              self.theta_fix = 0
+              self.theta = THETA_ORIGIN + self.theta_fix 
+              send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
+              rospy.loginfo(f'33333333333333333333直走33333333333333333333333')
     
     def turn_on(self):
         rospy.loginfo(f'OOOOO = {self.body_auto}')
@@ -124,99 +233,6 @@ class WeightLift():
         send.drawImageFunction(2, 0, self.white_xmin, self.white_xmin, self.white_ymin, self.white_ymax, 0, 0, 0)
         send.drawImageFunction(3, 0, self.white_xmin, self.white_xmax, self.white_ymin, self.white_ymin, 0, 0, 0)
         send.drawImageFunction(4, 0, self.white_xmin, self.white_xmax, self.white_ymax, self.white_ymax, 0, 0, 0)
-
-    def imu(self):
-      self.red_line()
-      self.red_xmiddle = (self.red_xmax + self.red_xmin) / 2
-      self.red_ymiddle = (self.red_ymax + self.red_ymin) / 2
-
-      if self.imu_reset: #imu
-        if self.red_xmiddle > 160:
-          self.fix = -1
-        elif self.red_xmiddle < 160:
-          self.fix = 1
-        else:
-          self.fix = 0
-        self.yaw = send.imu_value_Yaw
-        rospy.loginfo(f'yaw = {self.yaw}')
-        rospy.loginfo(f'red_xmiddle = {self.red_xmiddle}')
-
-        if self.red_ymax > PICK_DIS_ONE and self.red_ymax < PICK_DIS_TWO:
-          self.x_fix = 1500
-
-        if self.yaw > 2:
-          self.y_fix = 0
-          self.theta_fix = -1 + self.fix
-          self.theta = THETA_ORIGIN + self.theta_fix 
-          send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
-          rospy.loginfo(f'111111111111111右轉1111111111111111111')
-          
-        elif self.yaw < -2:
-          self.y_fix = 0
-          self.theta_fix = 1 + self.fix
-          self.theta = THETA_ORIGIN + self.theta_fix 
-          send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
-          rospy.loginfo(f'11111111111111左轉1111111111111111')
-
-        elif -2 <= self.yaw and self.yaw <= 2:
-          self.y_fix = 0
-          self.theta_fix = 3 + self.fix
-          self.theta = THETA_ORIGIN + self.theta_fix 
-          send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
-          rospy.loginfo(f'111111111111直走1111111111111111111')
-
-      elif self.pick_bar: #imu2
-            self.white_line()  
-            print('aaaaaa')          
-            self.x = 2000
-            
-            # send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
-            # if self.white_width_x - self.white_width_y < WHITE_SLOPE:
-            if self.yaw > 2:
-                self.y_fix = -500
-                self.theta_fix = -2
-                self.theta = THETA_ORIGIN + self.theta_fix 
-                send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
-                rospy.loginfo(f'22222222222222222右轉22222222222222222222')
-
-            elif self.yaw < -2:
-                self.y_fix = 100
-                self.theta_fix = 2
-                self.theta = THETA_ORIGIN + self.theta_fix 
-                send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
-                rospy.loginfo(f'222222222222222222左轉2222222222222222222')
-
-            else:
-                self.y_fix = -200
-                self.theta_fix = 1
-                self.theta = THETA_ORIGIN + self.theta_fix 
-                send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
-                rospy.loginfo(f'2222222222222直走22222222222222222222222')
-        
-      elif not self.pick_bar and self.lift_bar: #imu_3
-            self.yaw = send.imu_value_Yaw
-            rospy.loginfo(f'yaw = {self.yaw}')
-
-            self.x = 2000
-
-            if self.yaw > 3:
-              self.y_fix = -500
-              self.theta_fix = -1
-              self.theta = THETA_ORIGIN + self.theta_fix 
-              send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
-              rospy.loginfo(f'3333333333333333右轉3333333333333333')
-            elif self.yaw < -3:
-              self.y_fix = 500
-              self.theta_fix = 1 
-              self.theta = THETA_ORIGIN + self.theta_fix 
-              send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
-              rospy.loginfo(f'333333333333333333左轉33333333333333333')
-            elif -3 <= self.yaw and self.yaw <= 3:
-              self.y_fix = -500
-              self.theta_fix = 1
-              self.theta = THETA_ORIGIN + self.theta_fix 
-              send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
-              rospy.loginfo(f'33333333333333333333直走33333333333333333333333')
       
     def red_line_value(self):
         self.red_line()
@@ -233,22 +249,6 @@ class WeightLift():
         rospy.logdebug(f'white_ymin = {self.white_ymin}')
         rospy.logdebug(f'white_xmax = {self.white_xmax}')
         rospy.logdebug(f'white_xmin = {self.white_xmin}')
-
-
-    def horizontal(self):
-        rospy.loginfo(f'開始微調')
-        self.red_line_value()
-        self.red_middle = float(self.red_xmax + self.red_xmin) / 2
-        rospy.loginfo(f'red_middle = {self.red_middle}')
-        if self.red_middle < RED_LEFT:
-          send.sendContinuousValue(X_ORIGIN + 100, Y_ORIGIN + 800, 0, THETA_ORIGIN + 1, 0)
-          rospy.loginfo(f'左左左左左左左左左左左左左左左左左左左')
-        elif self.red_middle > RED_RIGHT:
-          send.sendContinuousValue(X_ORIGIN + 100, Y_ORIGIN - 1200, 0, THETA_ORIGIN - 1, 0)
-          rospy.loginfo(f'右右右右右右右右右右右右右右右右右右右')
-        else:
-            self.arrive = True
-            rospy.loginfo(f'微調結束')
 
     def main(self):
         send.sendSensorReset()
@@ -274,6 +274,7 @@ class WeightLift():
                             self.red_line_value()
                             if self.red_ymax >= PICK_DIS_TWO:
                               self.correct = True
+                              self. imu_reset = False
                         if self.correct:
                           self.horizontal()
                       if self.arrive:                                     
@@ -302,6 +303,7 @@ class WeightLift():
                             send.sendBodySector(31)
                             time.sleep(0.2)
                         self.arrive_two = True
+                        self.arrive = False
                         rospy.loginfo(f'我要撿起來囉!!!!!!!!!')
                     if self.arrive_two:  
                       rospy.loginfo(f'我撿撿撿撿撿撿撿撿撿撿')
@@ -324,13 +326,13 @@ class WeightLift():
                       send.sendHeadMotor(2,HEAD_MOTOR_LIFT,50) 
                       time.sleep(0.5)
                       self.pick_bar = True 
-                      self.imu_reset = False    
+                      self.arrive_two = False    
                       rospy.loginfo(f'舉起線在哪!?')
                   if self.pick_bar:
                     self.turn_on()
                     rospy.logdebug(f'##################################################')
                     rospy.loginfo(f'舉起線我來了!!!')
-                    send.sendContinuousValue(2000, 0, 0, 1, 0) #imu2
+                    self.imu()                                 #imu2
                     rospy.logdebug(f'white_ymax = {self.white_ymax}')
                     time.sleep(3)
                     if self.white_ymax > LIFT_DIS_MIN and self.white_ymax < LIFT_DIS_MAX:
@@ -353,16 +355,17 @@ class WeightLift():
                   send.sendBodySector(666)
                   time.sleep(1.5)
                   self.lift_bar = True
+                  self.lift_line = False
                   rospy.logdebug(f'imu_value_Pitch = {send.imu_value_Pitch}')
                 else:           
                   rospy.loginfo(f'imu微調')    
-                  self.imu()
+                  self.imu()                      
             elif self.lift_bar:
               rospy.loginfo(f'##################################################')
               rospy.loginfo(f'======終點我來了======')
               self.turn_on()
               time.sleep(0.5)
-              self.imu()      
+              self.imu()                 #imu3
               rospy.loginfo(f'耶~~~~~到了~~~~~')
           if not send.is_start:
             self.turn_off()
