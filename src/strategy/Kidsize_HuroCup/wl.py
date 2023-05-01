@@ -88,7 +88,7 @@ class WeightLift():
         self.red_middle = float(self.red_xmax + self.red_xmin) / 2
         rospy.loginfo(f'red_middle = {self.red_middle}')
         if self.red_middle < RED_LEFT:
-          send.sendContinuousValue(X_ORIGIN - 200, Y_ORIGIN + 1000, 0, THETA_ORIGIN - 1, 0)
+          send.sendContinuousValue(X_ORIGIN - 100, Y_ORIGIN + 1000, 0, THETA_ORIGIN - 1, 0)
           rospy.loginfo(f'左左左左左左左左左左左左左左左左左左左')
         elif self.red_middle > RED_RIGHT:
           send.sendContinuousValue(X_ORIGIN - 50, Y_ORIGIN - 1000, 0, THETA_ORIGIN, 0)
@@ -149,21 +149,21 @@ class WeightLift():
                   self.y_fix = -500
                   self.theta_fix = -2
                   self.theta = THETA_ORIGIN + self.theta_fix 
-                  send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
+                  send.sendContinuousValue(self.x, self.y - 500, 0, self.theta, 0)
                   rospy.loginfo(f'22222222222222222右轉22222222222222222222')
 
               elif self.yaw < -2:
                   self.y_fix = 100
                   self.theta_fix = 2
                   self.theta = THETA_ORIGIN + self.theta_fix 
-                  send.sendContinuousValue(self.x, self.y + 300, 0, self.theta, 0)
+                  send.sendContinuousValue(self.x, self.y + 100, 0, self.theta, 0)
                   rospy.loginfo(f'222222222222222222左轉2222222222222222222')
 
             else:
                 self.y_fix = -200
                 self.theta_fix = 0
                 self.theta = THETA_ORIGIN + self.theta_fix 
-                send.sendContinuousValue(self.x, self.y + 300, 0, self.theta, 0)
+                send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
                 rospy.loginfo(f'2222222222222直走22222222222222222222222')
         
       elif self.lift_bar: #imu_3
