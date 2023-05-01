@@ -149,7 +149,7 @@ class WeightLift():
                   self.y_fix = -500
                   self.theta_fix = -2
                   self.theta = THETA_ORIGIN + self.theta_fix 
-                  send.sendContinuousValue(self.x, self.y - 500, 0, self.theta, 0)
+                  send.sendContinuousValue(self.x, self.y - 300, 0, self.theta, 0)
                   rospy.loginfo(f'22222222222222222右轉22222222222222222222')
 
               elif self.yaw < -2:
