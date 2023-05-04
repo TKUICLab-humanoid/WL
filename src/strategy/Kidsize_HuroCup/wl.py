@@ -15,7 +15,7 @@ rospy.logwarn()
 rospy.logerr()
 rospy.logfatal()
 '''
-
+# 
 # -----------------  平移基準量  -------------------
 # 直走(START -> PICK)
 FORWARD_X               = 1500
