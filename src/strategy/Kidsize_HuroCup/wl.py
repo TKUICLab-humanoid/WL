@@ -4,7 +4,8 @@ import rospy
 import numpy as np
 from Python_API import Sendmessage
 import time
-
+# send.sendBodySector(3)
+# send.sendBodySector(4)
 aaaa = rospy.init_node('talker', anonymous=True, log_level=rospy.DEBUG)
 
 imgdata = [[None for high in range(240)]for width in range(320)]
@@ -12,9 +13,9 @@ send = Sendmessage()
 
 WHITE_SLOPE = 205
 
- # 原地步態數值
+# 原地步態數值
 X_ORIGIN = -200
-Y_ORIGIN = 0
+Y_ORIGIN = 50
 THETA_ORIGIN = 0
 
 # 理想中間值，用於 "correct==true" 區域，與上方 xl, yl, ..., xr, yr, ...等等做搭配
@@ -32,20 +33,20 @@ PICK_DIS_TWO = 173  # 停下數值改這個.126
 LIFT_DIS_MIN = 60   # 此數值應小於 liftup_distance2 ; 看第3條線
 LIFT_DIS_MAX = 120  # 這兩個數值進行第一階段判斷，判斷成功後(lift_line=True)進行第二階段 ; 看第3條線
 
-LIFT_STOP_MIN = 20    # 距離在此區間便停下；此數值應小於 liftup_distance4 ; 看第4條線
+LIFT_STOP_MIN = 15    # 距離在此區間便停下；此數值應小於 liftup_distance4 ; 看第4條線
 LIFT_STOP_MAX = 75  # 看第4條線
 
 # 頭部馬達角度設定
 HEAD_MOTOR_STAND = 1433    # 初始位置1456
 HEAD_MOTOR_PICK = 1337    # 最一開始移動後的位置
 HEAD_MOTOR_LIFT = 1270    # 拾起槓鈴後的位置
-HEAD_MOTOR_FINISH = 1263    # 舉起前低頭
+HEAD_MOTOR_FINISH = 1275    # 舉起前低頭 1263
 
 # 磁區
-PICK_ONE = 7411
-PICK_TWO = 7412
-PICK_THREE = 7413
-LIFT = 742
+PICK_ONE = 601
+PICK_TWO = 602
+PICK_THREE = 603
+LIFT = 604
 
 class WeightLift():
     def __init__(self):
@@ -88,10 +89,10 @@ class WeightLift():
         self.red_middle = float(self.red_xmax + self.red_xmin) / 2
         rospy.loginfo(f'red_middle = {self.red_middle}')
         if self.red_middle < RED_LEFT:
-          send.sendContinuousValue(X_ORIGIN - 100, Y_ORIGIN + 1000, 0, THETA_ORIGIN - 1, 0)
+          send.sendContinuousValue(X_ORIGIN - 0, Y_ORIGIN + 1000, 0, THETA_ORIGIN - 0, 0)
           rospy.loginfo(f'左左左左左左左左左左左左左左左左左左左')
         elif self.red_middle > RED_RIGHT:
-          send.sendContinuousValue(X_ORIGIN - 50, Y_ORIGIN - 1000, 0, THETA_ORIGIN, 0)
+          send.sendContinuousValue(X_ORIGIN - 50, Y_ORIGIN - 1100, 0, THETA_ORIGIN + 1, 0)
           rospy.loginfo(f'右右右右右右右右右右右右右右右右右右右')
         else:
             self.arrive = True
@@ -118,14 +119,14 @@ class WeightLift():
           self.x_fix = 1500
 
         if self.yaw > 2:
-          self.y_fix = 0
+          self.y_fix = -600
           self.theta_fix = -1 + self.fix
           self.theta = THETA_ORIGIN + self.theta_fix 
           send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
           rospy.loginfo(f'111111111111111右轉1111111111111111111')
           
         elif self.yaw < -2:
-          self.y_fix = 0
+          self.y_fix = 600
           self.theta_fix = 1 + self.fix
           self.theta = THETA_ORIGIN + self.theta_fix 
           send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
@@ -265,6 +266,8 @@ class WeightLift():
                         if not self.correct:
                           if not self.imu_reset:
                               send.sendSensorReset()
+                              send.sendBodySector(3)
+                              time.sleep(1)
                               self.imu_reset = True
                           if self.imu_reset:
                             send.sendHeadMotor(2, HEAD_MOTOR_PICK, 50)
@@ -282,6 +285,8 @@ class WeightLift():
                         time.sleep(3.5)
                         rospy.loginfo(f'down')
                         rospy.loginfo(f'我要抬手囉!!!!!!')
+                        send.sendBodySector(29)
+                        time.sleep(1)
                         send.sendBodySector(PICK_ONE)
                         time.sleep(4.5)
                         self.red_line_value()
@@ -329,6 +334,8 @@ class WeightLift():
                       self.arrive_two = False    
                       rospy.loginfo(f'舉起線在哪!?')
                   if self.pick_bar:
+                    send.sendBodySector(3)
+                    time.sleep(1)
                     self.turn_on()
                     rospy.logdebug(f'##################################################')
                     rospy.loginfo(f'舉起線我來了!!!')
@@ -350,6 +357,8 @@ class WeightLift():
                   rospy.loginfo(f'======停下，舉起======')
                   self.turn_off()
                   time.sleep(1.5)
+                  send.sendBodySector(4)
+                  time.sleep(1)
                   send.sendBodySector(LIFT)
                   time.sleep(19)
                   send.sendBodySector(666)
