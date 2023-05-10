@@ -30,22 +30,22 @@ FORWARD_TO_LIFT_THETA   = 0
 # 直走(LIFT -> END)
 # 60 片:前進速度  2800
 # 60 片:前進速度  3000
-FORWARD_TO_END_X        = 3000
+FORWARD_TO_END_X        = 2000
 FORWARD_TO_END_Y        = 0  
 FORWARD_TO_END_THETA    = 0
 
 # 左平移參數
-TRANSLATE_LEFT_X        = -1100
-TRANSLATE_LEFT_Y        = 1600
-TRANSLATE_LEFT_THETA    = 1
+TRANSLATE_LEFT_X        = -2100
+TRANSLATE_LEFT_Y        = 1500
+TRANSLATE_LEFT_THETA    = 0
 
 # 右平移參數
-TRANSLATE_RIGHT_X       = -1100
+TRANSLATE_RIGHT_X       = -2100
 TRANSLATE_RIGHT_Y       = -2000
-TRANSLATE_RIGHT_THETA   = 0
+TRANSLATE_RIGHT_THETA   = 1
 
 #基準改變量
-BASE_CHANGE             = 500
+BASE_CHANGE             = 100
 
 # --------------------------------------------------
 # forward_fix 修正大小
@@ -119,15 +119,15 @@ class WeightLifting:
         self.imu_fix        = 0
         self.number         = 0
 
-        self.target_xmax = 0
-        self.target_xmin = 0
-        self.target_ymax = 0
-        self.target_ymin = 0
+        self.target_xmax    = 0
+        self.target_xmin    = 0
+        self.target_ymax    = 0
+        self.target_ymin    = 0
 
-        self.white_xmax = 0
-        self.white_xmin = 0
-        self.white_ymax = 0
-        self.white_ymin = 0
+        self.white_xmax     = 0
+        self.white_xmin     = 0
+        self.white_ymax     = 0
+        self.white_ymin     = 0
 
     # 開始踏步
     def turn_on(self):
@@ -199,7 +199,7 @@ class WeightLifting:
             self.yaw = send.imu_value_Yaw
 
             if self.yaw > YAW_STANDARD_TO_PICK: 
-                self.theta += self.imu_fix - 2
+                self.theta += self.imu_fix
                 self.now_state[2] = "右旋"
 
             elif self.yaw < -YAW_STANDARD_TO_PICK:
@@ -266,11 +266,11 @@ class WeightLifting:
                     self.translate_fix = -TRANSLATE_FIX_NOR
                     self.now_state[1] = 'normal right'
 
-                elif (TARGET_RED_X_RIGHT + TRANSLATE_STANDARD_MIN) <= red_middle:
+                elif (TARGET_RED_X_RIGHT + TRANSLATE_STANDARD_MIN) >= red_middle:
                     self.translate_fix = -TRANSLATE_FIX_MIN
                     self.now_state[1] = 'small right'
                 #=====================================================================================
-                elif (TARGET_RED_X_LEFT - TRANSLATE_STANDARD_BIG) < red_middle:
+                elif (TARGET_RED_X_LEFT - TRANSLATE_STANDARD_BIG) > red_middle:
                     self.translate_fix = TRANSLATE_FIX_BIG
                     self.now_state[1] = 'big left'
 
@@ -278,7 +278,7 @@ class WeightLifting:
                     self.translate_fix = TRANSLATE_FIX_NOR
                     self.now_state[1] = 'normal left'
 
-                elif (TARGET_RED_X_LEFT - TRANSLATE_STANDARD_MIN) >= red_middle:
+                elif (TARGET_RED_X_LEFT - TRANSLATE_STANDARD_MIN) <= red_middle:
                     self.translate_fix = TRANSLATE_FIX_MIN
                     self.now_state[1] = 'small left'
                 #======================================================================================
@@ -293,10 +293,10 @@ class WeightLifting:
     def start_forward(self):
 
         if self.lift_bar:
-            # if self.go_end_tem:
-            #     self.forward    = 500 
-            #     self.go_end_tem = False
-            self.forward    = FORWARD_TO_END_X
+            if self.go_end_tem:
+                self.forward    = 500 
+                self.go_end_tem = False
+            #self.forward    = FORWARD_TO_END_X
             self.translate  = FORWARD_TO_END_Y
             self.theta      = FORWARD_TO_END_THETA
             self.imu()
@@ -314,6 +314,7 @@ class WeightLifting:
             self.imu()
             send.sendContinuousValue(self.forward, self.translate, 0, self.theta, 0)
             rospy.logwarn(f'{self.now_state}')
+
         elif self.pick_bar:
             self.translate = 500
             self.correct_target()
@@ -475,10 +476,10 @@ class WeightLifting:
                         elif send.DIOValue == 28 or send.DIOValue == 29 or send.DIOValue == 30:  #70
                             send.sendBodySector(PICK_70)
                             time.sleep(19)
-                            send.sendBodySector(27)  # 伸右腳的磁區，maybe可以拿掉
+                            send.sendBodySector(39)  # 伸右腳的磁區，maybe可以拿掉
                             time.sleep(0.3)
-                            send.sendBodySector(27)
-                            time.sleep(0.3)
+                            # send.sendBodySector(27)
+                            # time.sleep(0.3)
                         
 
                         send.sendHeadMotor(2, 2802, 50)
@@ -554,10 +555,10 @@ class WeightLifting:
           if self.standing_tem: 
               send.sendBodySector(29)
               time.sleep(0.5)
-              send.sendBodySector(39)
-              time.sleep(0.5)
-              send.sendBodySector(39)
-              time.sleep(0.5)
+              #send.sendBodySector(39)
+              #time.sleep(0.5)
+              #send.sendBodySector(39)
+              #time.sleep(0.5)
               #send.sendBodySector(27)  # 伸左腳的磁區，maybe可以拿掉
               self.standing_tem = False
           
