@@ -14,20 +14,20 @@ send = Sendmessage()
 WHITE_SLOPE = 205
 
 # 原地步態數值
-X_ORIGIN = -200
+X_ORIGIN = 0
 Y_ORIGIN = 50
 THETA_ORIGIN = 0
 
 # 理想中間值，用於 "correct==true" 區域，與上方 xl, yl, ..., xr, yr, ...等等做搭配
-RED_LEFT = 157
-RED_RIGHT = 163
+RED_LEFT = 152
+RED_RIGHT = 158
 
 # 理想中間值，當機器人抓到槓鈴，此變數用於判斷是否執行磁區 31or32 進行微調
-RED_MIDDLE_IDEAL = 160
+RED_MIDDLE_IDEAL = 155
 
 # 停下/判斷距離設定，用於 拾起線 距離區間停下判斷
-PICK_DIS_ONE = 168  
-PICK_DIS_TWO = 173  # 停下數值改這個.126
+PICK_DIS_ONE = 165 
+PICK_DIS_TWO = 170  # 停下數值改這個.126
 
 # 判斷距離設定，用於 舉起線 距離區間停下判斷
 LIFT_DIS_MIN = 60   # 此數值應小於 liftup_distance2 ; 看第3條線
@@ -43,10 +43,10 @@ HEAD_MOTOR_LIFT = 1270    # 拾起槓鈴後的位置
 HEAD_MOTOR_FINISH = 1275    # 舉起前低頭 1263
 
 # 磁區
-PICK_ONE = 601
-PICK_TWO = 602
-PICK_THREE = 603
-LIFT = 604
+PICK_ONE = 801
+PICK_TWO = 802
+PICK_THREE = 803
+LIFT = 804
 
 class WeightLift():
     def __init__(self):
@@ -92,7 +92,7 @@ class WeightLift():
           send.sendContinuousValue(X_ORIGIN - 0, Y_ORIGIN + 1000, 0, THETA_ORIGIN - 0, 0)
           rospy.loginfo(f'左左左左左左左左左左左左左左左左左左左')
         elif self.red_middle > RED_RIGHT:
-          send.sendContinuousValue(X_ORIGIN - 50, Y_ORIGIN - 1100, 0, THETA_ORIGIN + 1, 0)
+          send.sendContinuousValue(X_ORIGIN - 50, Y_ORIGIN - 1100, 0, THETA_ORIGIN - 1, 0)
           rospy.loginfo(f'右右右右右右右右右右右右右右右右右右右')
         else:
             self.arrive = True
@@ -192,6 +192,19 @@ class WeightLift():
               send.sendContinuousValue(self.x, self.y, 0, self.theta, 0)
               rospy.loginfo(f'33333333333333333333直走33333333333333333333333')
     
+    def initial(self):
+        self.red_xmax = 0
+        self.red_xmin = 0
+        self.red_ymax = 0
+        self.red_ymin = 0
+        self.red_size = 0
+        
+        self.white_xmax = 0
+        self.white_xmin = 0
+        self.white_ymax = 0
+        self.white_ymin = 0
+        self.white_size = 0
+  
     def turn_on(self):
         rospy.loginfo(f'OOOOO = {self.body_auto}')
         if not self.body_auto:
@@ -266,8 +279,9 @@ class WeightLift():
                         if not self.correct:
                           if not self.imu_reset:
                               send.sendSensorReset()
-                              send.sendBodySector(3)
-                              time.sleep(1)
+                              # send.sendBodySector(3)
+                              # time.sleep(1)
+                              self.initial()
                               self.imu_reset = True
                           if self.imu_reset:
                             send.sendHeadMotor(2, HEAD_MOTOR_PICK, 50)
@@ -334,8 +348,8 @@ class WeightLift():
                       self.arrive_two = False    
                       rospy.loginfo(f'舉起線在哪!?')
                   if self.pick_bar:
-                    send.sendBodySector(3)
-                    time.sleep(1)
+                    # send.sendBodySector(3)
+                    # time.sleep(1)
                     self.turn_on()
                     rospy.logdebug(f'##################################################')
                     rospy.loginfo(f'舉起線我來了!!!')
@@ -357,8 +371,8 @@ class WeightLift():
                   rospy.loginfo(f'======停下，舉起======')
                   self.turn_off()
                   time.sleep(1.5)
-                  send.sendBodySector(4)
-                  time.sleep(1)
+                  # send.sendBodySector(4)
+                  # time.sleep(1)
                   send.sendBodySector(LIFT)
                   time.sleep(19)
                   send.sendBodySector(666)
