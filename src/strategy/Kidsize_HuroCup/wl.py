@@ -16,7 +16,7 @@ rospy.logwarn()
 rospy.logerr()
 rospy.logfatal()
 '''
-# 
+
 # -----------------  平移基準量  -------------------
 # 直走(START -> PICK)
 FORWARD_X               = 500
@@ -24,13 +24,11 @@ FORWARD_Y               = 0
 FORWARD_THETA           = 0
 
 # 直走(PICK -> LIFT)
-FORWARD_TO_LIFT_X       = 4000
+FORWARD_TO_LIFT_X       = 3000
 FORWARD_TO_LIFT_Y       = 0
-FORWARD_TO_LIFT_THETA   = 0
+FORWARD_TO_LIFT_THETA   = -2
 
 # 直走(LIFT -> END)
-# 60 片:前進速度  2800
-# 60 片:前進速度  3000
 FORWARD_TO_END_X        = 3000
 FORWARD_TO_END_Y        = 0  
 FORWARD_TO_END_THETA    = 0
@@ -38,15 +36,18 @@ FORWARD_TO_END_THETA    = 0
 # 左平移參數
 TRANSLATE_LEFT_X        = -1200
 TRANSLATE_LEFT_Y        = 1700
-TRANSLATE_LEFT_THETA    = 1
+TRANSLATE_LEFT_THETA    = 2
 
 # 右平移參數
 TRANSLATE_RIGHT_X       = -1200
 TRANSLATE_RIGHT_Y       = -1800
-TRANSLATE_RIGHT_THETA   = 0
+TRANSLATE_RIGHT_THETA   = 1
 
+#紅線前平移
+FORWARD_RED_X           = -1500
+FORWARD_RED_FIX_X       = 1800
+BACK_RED_FIX_X          = -500
 
-FORWARD_RED_X           = -2500
 #基準改變量
 BASE_CHANGE             = 100
 
@@ -69,7 +70,7 @@ TARGET_RED_X_LEFT       = 180
 TARGET_RED_X_RIGHT      = 169
 
 # 紅線(桿子)停止基準 (遠：數值變sma)
-RED_Y_STANDARD          = 205
+RED_Y_STANDARD          = 193
 
 # 距離紅線(桿子)遠近
 RED_Y_DISTANCE_FAR      = 100
@@ -84,14 +85,14 @@ YAW_STANDARD_TO_END     = 3
 IMAGE_MIDDLE_X          = 1601
 
 #-------------    磁區    ----------------
-DOWN_60    = 60     # 60片蹲下
-DOWN_70    = 70     # 70片蹲下
+DOWN_40    = 40     # 30~50片蹲下
+DOWN_70    = 70     # 60~70片蹲下
 
-PICK_60    = 61     # 60片拿起
-PICK_70    = 71     # 70片拿起
+PICK_40    = 41     # 30~50片拿起
+PICK_70    = 71     # 60~70片拿起
  
-LIFT_60    = 62     # 60片舉起
-LIFT_70    = 72     # 70片舉起
+LIFT_40    = 42     # 30~50片舉起
+LIFT_70    = 72     # 60~70片舉起
 
 
 class WeightLifting:
@@ -102,6 +103,8 @@ class WeightLifting:
         self.start_tem      = True      #起始是否需要左右平移
         self.to_lift_tem    = True
         self.standing_tem   = True
+        self.go_end_tem     = True
+        self.lift_x_add     = True      
 
         self.imu_reset      = False     #起點 imu reset
         self.pick_bar       = False     #是否抵達 pick_bar (第一條線)
@@ -109,7 +112,6 @@ class WeightLifting:
         self.middle_pole    = False     #是否抵達桿子的中間
         self.get_down       = False     #蹲下
         self.stand_up       = False     #站起
-        self.go_end_tem     = True
         
         self.forward        = 0
         self.translate      = 0
@@ -167,7 +169,7 @@ class WeightLifting:
                 self.now_state[2] = "右旋_END"
             
             elif self.yaw < -YAW_STANDARD_TO_END:
-                self.theta += 1
+                self.theta += 2
                 self.now_state[2] = "左旋_END"
 
             elif (-YAW_STANDARD_TO_END <= self.yaw) and (self.yaw <= YAW_STANDARD_TO_END):
@@ -177,11 +179,11 @@ class WeightLifting:
             self.yaw = send.imu_value_Yaw
 
             if self.yaw > YAW_STANDAND_TO_LIFT: 
-                self.theta += -2
+                self.theta += -3
                 self.now_state[2] = "右旋_LIFT"
             
             elif self.yaw < -YAW_STANDAND_TO_LIFT:
-                self.theta += 2
+                self.theta += 4
                 self.now_state[2] = "左旋_LIFT"
 
             elif (-YAW_STANDAND_TO_LIFT <= self.yaw) and (self.yaw <= YAW_STANDAND_TO_LIFT):
@@ -190,13 +192,6 @@ class WeightLifting:
         elif self.pick_bar:
             self.red_line()
             target_x_middle = (self.target_xmax + self.target_xmin) / 2
-
-            # if target_x_middle > IMAGE_MIDDLE_X:
-            #     self.imu_fix = 1
-            # if target_x_middle < IMAGE_MIDDLE_X:
-            #     self.imu_fix = -1
-            # else:
-            #     self.imu_fix = 0
 
             self.yaw = send.imu_value_Yaw
             rospy.logerr(f'yaw = {self.yaw}')
@@ -343,30 +338,37 @@ class WeightLifting:
 
     # 前進量
     def start_forward(self):
-
+        #============================ lift_bar -> end ===============================
         if self.lift_bar:
-            if self.go_end_tem:
-                self.forward    = 500 
-                self.go_end_tem = False
-            #self.forward    = FORWARD_TO_END_X
+            if self.lift_x_add:
+                if self.go_end_tem:
+                    self.forward    = 500 
+                    self.go_end_tem = False 
+                if FORWARD_TO_END_X > self.forward:
+                    self.forward += BASE_CHANGE
+            else:
+                self.forward = FORWARD_TO_END_X
+            
             self.translate  = FORWARD_TO_END_Y
             self.theta      = FORWARD_TO_END_THETA
             self.imu()
-            if FORWARD_TO_END_X > self.forward:
-                self.forward += BASE_CHANGE
-            rospy.loginfo(f"self.forward = {self.forward}")
+            
             send.sendContinuousValue(self.forward, self.translate, 0, self.theta, 0)
             rospy.logwarn(f'{self.now_state}')
+            rospy.logwarn(f'x: {self.forward},  y: {self.translate},  theta: {self.theta}')
             
-
+        #============================ pick_bar -> lift_bar ===============================
         elif self.stand_up:
             self.forward    = FORWARD_TO_LIFT_X
             self.translate  = FORWARD_TO_LIFT_Y
             self.theta      = FORWARD_TO_LIFT_THETA
             self.imu()
+            
             send.sendContinuousValue(self.forward, self.translate, 0, self.theta, 0)
             rospy.logwarn(f'{self.now_state}')
+            rospy.logwarn(f'x: {self.forward},  y: {self.translate},  theta: {self.theta}')
 
+        #============================ pick_bar 紅線前平移 ===============================
         elif self.pick_bar:
             self.forward   = FORWARD_RED_X
             self.translate = 1000
@@ -376,11 +378,11 @@ class WeightLifting:
             self.imu()
             
             if(self.target_ymax > RED_Y_STANDARD - 30):
-                self.forward -= FORWARD_FIX_NOR + 200
+                self.forward += BACK_RED_FIX_X
                 self.now_state[0] = "後退"
 
             elif (self.target_ymax < RED_Y_STANDARD - 20):
-                self.forward += FORWARD_FIX_BIG +  800
+                self.forward += FORWARD_RED_FIX_X
                 self.now_state[0] = "前進"
 
             if(self.translate_fix > 0):
@@ -391,8 +393,9 @@ class WeightLifting:
             rospy.logwarn(f'{self.now_state}')
             self.number += 1
             send.sendContinuousValue(self.forward, self.translate, 0, self.theta, 0)
+            rospy.logwarn(f'x: {self.forward},  y: {self.translate},  theta: {self.theta}')
             
-
+        #============================ start -> pick_bar ===============================
         elif self.imu_reset:
             self.forward    = FORWARD_X
             self.translate  = FORWARD_Y
@@ -420,6 +423,7 @@ class WeightLifting:
             if (self.target_ymax - 50) < RED_Y_STANDARD:
                 send.sendContinuousValue(self.forward, self.translate + self.translate_fix, 0, self.theta, 0)
                 rospy.logwarn(f'{self.now_state}')
+                rospy.logwarn(f'x: {self.forward},  y: {self.translate + self.translate_fix},  theta: {self.theta}')
             else:
                 pass
     
@@ -436,16 +440,17 @@ class WeightLifting:
                                     rospy.logerr("----------------------")
                                     rospy.logerr("READY!!")
                                     rospy.logerr("----------------------")
+                                    send.saveWalkParameter(1, 0, 6.5, 420, 0, 5.5, 0, 0, False)
+                                    time.sleep(0.5)
+                                    send.saveWalkParameter(1, 0, 6.5, 420, 0, 5.5, 0, 0, True)
+                                    time.sleep(0.5)
                                     rospy.logerr(f"imu_reset: {self.imu_reset}")
 
                                 elif self.imu_reset:
                                     send.sendHeadMotor(2, 2746, 50)
 
                                     if self.start_tem:
-                                        send.saveWalkParameter(1, 0, 6.5, 420, 0, 4, 0, 0, False)
-                                        time.sleep(0.2)
-                                        send.saveWalkParameter(1, 0, 6.5, 420, 0, 4, 0, 0, True)
-                                        time.sleep(0.2)
+                                        
                                         self.turn_on()
                                         self.start_forward()
                                         # 右移
@@ -454,7 +459,7 @@ class WeightLifting:
                                             # delay 7 sec
                                             start_delay = time.time()
                                             end_delay = -9999
-                                            while (end_delay - start_delay) < 3:
+                                            while (end_delay - start_delay) < 5:
                                                 end_delay = time.time()
                                                 rospy.loginfo("=======")
                                                 rospy.loginfo(f"delay: {end_delay - start_delay}")
@@ -462,11 +467,11 @@ class WeightLifting:
                                         
                                         #左移
                                         elif send.DIOValue == 26 or send.DIOValue == 30 or send.DIOValue == 34 or send.DIOValue == 38:
-                                            send.sendContinuousValue(self.forward, self.translate + 2500, 0, self.theta, 0)
+                                            send.sendContinuousValue(self.forward, self.translate + 2500, 0, self.theta+1, 0)
                                             # delay 7 sec
                                             start_delay = time.time()
                                             end_delay = -9999
-                                            while (end_delay - start_delay) < 7:
+                                            while (end_delay - start_delay) < 5:
                                                 end_delay = time.time()
                                                 rospy.loginfo("=======")
                                                 rospy.loginfo(f"delay: {end_delay - start_delay}")
@@ -504,23 +509,22 @@ class WeightLifting:
                                     self.middle_pole  = True
                                     self.now_state[0] = "gogo"
                                     self.now_state[1] = "無"
-                                    rospy.logerr("!!!!!!!!!!!!!!!!!!")
+                                    rospy.logerr("check✅✅")
                                     rospy.logerr("================")
                                     rospy.logerr(f'middle_pole = {self.middle_pole}')
                                     self.now_state[0] = "前進"
                                     self.now_state[1] = "無"
                                 
-                                #rospy.logwarn(f'{self.now_state[1]}')
                                 
                                 # 避免一直左右調整，直接到下一階段
-                                if self.number == 20:
+                                if self.number == 30:
                                     self.middle_pole = True
-                                    rospy.logerr("+++++++++++++++++")
+                                    rospy.logerr("2️⃣0️⃣")
                                     rospy.logerr("================")
                                     rospy.logerr(f'middle_pole = {self.middle_pole}')
 
                         elif self.middle_pole:
-                            rospy.logerr(f'red x_max = {send.color_mask_subject_XMax[5][0]}')
+                            #rospy.logerr(f'red x_max = {send.color_mask_subject_XMax[5][0]}')
                             rospy.logerr(f'red y_max = {send.color_mask_subject_YMax[5][0]}')
                             self.turn_off()
                             time.sleep(1)
@@ -530,7 +534,7 @@ class WeightLifting:
                             time.sleep(0.2)
                             # 60片蹲下
                             if send.DIOValue == 24 or send.DIOValue == 25 or send.DIOValue == 26:
-                                send.sendBodySector(DOWN_60)
+                                send.sendBodySector(DOWN_40)
                             # # 70片蹲下
                             elif send.DIOValue == 28 or send.DIOValue == 29 or send.DIOValue == 30:
                                 send.sendBodySector(DOWN_70)
@@ -545,30 +549,34 @@ class WeightLifting:
                         time.sleep(1)
                         # 60片拿起
                         if send.DIOValue == 24 or send.DIOValue == 25 or send.DIOValue == 26:  #60
-                            send.sendBodySector(PICK_60)
+                            send.sendBodySector(PICK_40)
                             time.sleep(17)
+                            #send.sendBodySector(39)
+                            #time.sleep(0.3)
+                            
                         # 70片拿起
                         elif send.DIOValue == 28 or send.DIOValue == 29 or send.DIOValue == 30:  #70
                             send.sendBodySector(PICK_70)
                             time.sleep(19)
-                            #send.sendBodySector(39)  # 伸右腳的磁區，maybe可以拿掉
-                            #time.sleep(0.3)
+                            send.sendBodySector(39)  # maybe可以拿掉
+                            time.sleep(0.3)
                             # send.sendBodySector(27)
                             # time.sleep(0.3)
-                        send.saveWalkParameter(1, 0, 6.5, 420, 0, 4, 0, 0, False)
-                        time.sleep(0.2)
-                        send.saveWalkParameter(1, 0, 6.5, 420, 0, 4, 0, 0, True)
-                        time.sleep(0.2)
+                        send.saveWalkParameter(1, 0, 6.5, 420, 0, 5.5, 0, 0, False)
+                        time.sleep(0.5)
+                        send.saveWalkParameter(1, 0, 6.5, 420, 0, 5.5, 0, 0, True)
+                        time.sleep(0.5)
                         
 
                         send.sendHeadMotor(2, 2802, 50)
                         time.sleep(1)
+                        send.sendSensorReset(1,1,0)
                         self.stand_up = True
                         rospy.logerr("==================")
                         rospy.logerr(f'stand_up = {self.stand_up}')
 
                 elif self.stand_up:
-                    send.sendSensorReset(1,1,0)
+                    
                     self.turn_on()
                     rospy.logerr("------moving to liftline------")
                     self.start_forward()
@@ -596,7 +604,7 @@ class WeightLifting:
                         rospy.logerr("-----Find While_line-----")
                         rospy.logerr("1")
                         rospy.logerr("2")
-                        time.sleep(1.7)
+                        time.sleep(1.3)
                         rospy.logerr("3")
 
                         rospy.logerr('-----stop and lift-----')
@@ -608,7 +616,7 @@ class WeightLifting:
 
                         # 60片
                         if send.DIOValue == 24 or send.DIOValue == 25 or send.DIOValue == 26: 
-                            send.sendBodySector(LIFT_60)
+                            send.sendBodySector(LIFT_40)
                             #send.sendBodySector(39)
                             time.sleep(9)
                         # 70片
@@ -621,18 +629,19 @@ class WeightLifting:
                         self.lift_bar = True
                         rospy.logerr("==================")
                         rospy.logerr(f'lift_bar = {self.lift_bar}')
+                        send.sendSensorReset(1,1,0)
                         time.sleep(1.5)
-                        send.saveWalkParameter(1, 0, 6.5, 420, 0.2, 5.5, 0, 0, False)
-                        time.sleep(0.2)
-                        send.saveWalkParameter(1, 0, 6.5, 420, 0.2, 5.5, 0, 0, True)
-                        time.sleep(0.2)
+                        send.saveWalkParameter(1, 0, 6.5, 420, 0.3, 5.5, 0, 0, False)
+                        time.sleep(0.5)
+                        send.saveWalkParameter(1, 0, 6.5, 420, 0.3, 5.5, 0, 0, True)
+                        time.sleep(0.5)
                     else:
                         self.start_forward()
                         rospy.logerr("keep going")
 
             elif self.lift_bar:
                 rospy.logerr('-----keep going to endline----')
-                send.sendSensorReset(1,1,0)
+                
                 self.turn_on()
                 #time.sleep(0.5)
                 self.start_forward()
@@ -642,8 +651,8 @@ class WeightLifting:
           if self.standing_tem: 
               send.sendBodySector(29)
               time.sleep(0.5)
-              send.sendBodySector(39)
-              time.sleep(0.5)
+              #send.sendBodySector(39)
+              #time.sleep(0.5)
               #send.sendBodySector(39)
               #time.sleep(0.5)
               #send.sendBodySector(27)  # 伸左腳的磁區，maybe可以拿掉

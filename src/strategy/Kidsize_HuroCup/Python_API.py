@@ -114,7 +114,7 @@ class Sendmessage:
         walkparameter.Period_T = period_t if period_t % 30 == 0 else 420
         walkparameter.Period_T2 = 720
         walkparameter.Sample_Time = 20
-        walkparameter.OSC_LockRange = t_dsp if 0 <= t_dsp <= 1 else 0
+        walkparameter.OSC_LockRange = t_dsp 
         walkparameter.BASE_Default_Z = base_default_z if base_default_z > 1 else 1
         walkparameter.Y_Swing_Shift = right_z_shift
         walkparameter.BASE_LIFT_Z = base_lift_z
