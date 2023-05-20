@@ -33,8 +33,8 @@ PICK_DIS_TWO = 167  # 停下數值改這個.126
 LIFT_DIS_MIN = 60   # 此數值應小於 liftup_distance2 ; 看第3條線
 LIFT_DIS_MAX = 120  # 這兩個數值進行第一階段判斷，判斷成功後(lift_line=True)進行第二階段 ; 看第3條線
 
-LIFT_STOP_MIN = 18    # 距離在此區間便停下；此數值應小於 liftup_distance4 ; 看第4條線
-LIFT_STOP_MAX = 75  # 看第4條線
+LIFT_STOP_MIN = 30    # 距離在此區間便停下；此數值應小於 liftup_distance4 ; 看第4條線
+LIFT_STOP_MAX = 90  # 看第4條線
 
 # 頭部馬達角度設定
 HEAD_MOTOR_STAND = 1433    # 初始位置1456
@@ -89,10 +89,10 @@ class WeightLift():
         self.red_middle = float(self.red_xmax + self.red_xmin) / 2
         rospy.loginfo(f'red_middle = {self.red_middle}')
         if self.red_middle < RED_LEFT:
-          send.sendContinuousValue(X_ORIGIN - 0, Y_ORIGIN + 1200, 0, THETA_ORIGIN - 1, 0)
+          send.sendContinuousValue(X_ORIGIN - 50, Y_ORIGIN + 1200, 0, THETA_ORIGIN - 2, 0)
           rospy.loginfo(f'左左左左左左左左左左左左左左左左左左左')
         elif self.red_middle > RED_RIGHT:
-          send.sendContinuousValue(X_ORIGIN - 150, Y_ORIGIN - 1200, 0, THETA_ORIGIN - 2, 0)
+          send.sendContinuousValue(X_ORIGIN + 100, Y_ORIGIN - 1200, 0, THETA_ORIGIN - 1, 0)
           rospy.loginfo(f'右右右右右右右右右右右右右右右右右右右')
         else:
             self.arrive = True
@@ -148,14 +148,14 @@ class WeightLift():
             if self.white_width_x - self.white_width_y < WHITE_SLOPE:
               if self.yaw > 2:
                   self.y_fix = -500
-                  self.theta_fix = -2
+                  self.theta_fix = -3
                   self.theta = THETA_ORIGIN + self.theta_fix 
                   send.sendContinuousValue(self.x, self.y - 300, 0, self.theta, 0)
                   rospy.loginfo(f'22222222222222222右轉22222222222222222222')
 
               elif self.yaw < -2:
                   self.y_fix = 100
-                  self.theta_fix = 2
+                  self.theta_fix = 1
                   self.theta = THETA_ORIGIN + self.theta_fix 
                   send.sendContinuousValue(self.x, self.y + 100, 0, self.theta, 0)
                   rospy.loginfo(f'222222222222222222左轉2222222222222222222')
@@ -279,9 +279,13 @@ class WeightLift():
                       if not self.correct:
                         if not self.imu_reset:
                             send.sendSensorReset(1, 1, 1)
-                            # send.sendBodySector(3)
-                            # time.sleep(1)
+                            send.sendBodySector(111)
+                            time.sleep(1)
                             self.initial()
+                            send.saveWalkParameter(1, -1, 4.5, 360, 0, 2, 0, 0, False)
+                            time.sleep(0.3)
+                            send.saveWalkParameter(1, -1, 4.5, 360, 0, 2, 0, 0, True)
+                            time.sleep(0.3)
                             self.imu_reset = True
                         elif self.imu_reset:
                           send.sendHeadMotor(2, HEAD_MOTOR_PICK, 50)
@@ -301,8 +305,8 @@ class WeightLift():
                       time.sleep(3.5)
                       rospy.loginfo(f'down')
                       rospy.loginfo(f'我要抬手囉!!!!!!')
-                      send.sendBodySector(29)
-                      time.sleep(1)
+                      # send.sendBodySector(29)
+                      # time.sleep(1)
                       send.sendBodySector(PICK_ONE)
                       time.sleep(4.5)
                       self.red_line_value()
@@ -346,6 +350,10 @@ class WeightLift():
                     rospy.logdebug(f'yaw = {self.yaw}') 
                     send.sendHeadMotor(2,HEAD_MOTOR_LIFT,50) 
                     time.sleep(0.5)
+                    send.saveWalkParameter(1, -1, 4.5, 360, 0, 2, 0, 0, False)
+                    time.sleep(0.3)
+                    send.saveWalkParameter(1, -1, 4.5, 360, 0, 2, 0, 0, True)
+                    time.sleep(0.3)
                     self.pick_bar = True 
                     self.arrive_two = False    
                     rospy.loginfo(f'舉起線在哪!?')
@@ -381,7 +389,11 @@ class WeightLift():
                   send.sendBodySector(LIFT)
                   time.sleep(19)
                   send.sendBodySector(666)
-                  time.sleep(1.5)
+                  time.sleep(3)
+                  send.saveWalkParameter(1, -1, 4.5, 360, 0.1, 2, 0, 0, False)
+                  time.sleep(0.3)
+                  send.saveWalkParameter(1, -1, 4.5, 360, 0.1, 2, 0, 0, True)
+                  time.sleep(0.3)
                   self.lift_bar = True
                   self.lift_line = False
                   rospy.logdebug(f'imu_value_Pitch = {send.imu_value_Pitch}')

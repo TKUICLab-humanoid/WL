@@ -109,13 +109,13 @@ class Sendmessage:
         walkparameter = parameter()
         walkparameter.mode = mode
         walkparameter.X_Swing_Range = com_y_shift
-        walkparameter.Y_Swing_Range = y_swing if y_swing > 6 else 6
+        walkparameter.Y_Swing_Range = y_swing
         walkparameter.Z_Swing_Range = 0
-        walkparameter.Period_T = period_t if period_t % 30 == 0 else 420
+        walkparameter.Period_T = period_t
         walkparameter.Period_T2 = 720
         walkparameter.Sample_Time = 20
-        walkparameter.OSC_LockRange = t_dsp if 0 <= t_dsp <= 1 else 0
-        walkparameter.BASE_Default_Z = base_default_z if base_default_z > 1 else 1
+        walkparameter.OSC_LockRange = t_dsp
+        walkparameter.BASE_Default_Z = base_default_z
         walkparameter.Y_Swing_Shift = right_z_shift
         walkparameter.BASE_LIFT_Z = base_lift_z
         walkparameter.Stand_Balance = False
