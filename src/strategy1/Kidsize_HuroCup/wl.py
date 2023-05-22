@@ -14,8 +14,8 @@ send = Sendmessage()
 WHITE_SLOPE = 205
 
 # 原地步態數值
-X_ORIGIN = -300
-Y_ORIGIN = 250
+X_ORIGIN = -200
+Y_ORIGIN = 150
 THETA_ORIGIN = 1
 
 # 理想中間值，用於 "correct==true" 區域，與上方 xl, yl, ..., xr, yr, ...等等做搭配
@@ -33,20 +33,20 @@ PICK_DIS_TWO = 167  # 停下數值改這個.126
 LIFT_DIS_MIN = 60   # 此數值應小於 liftup_distance2 ; 看第3條線
 LIFT_DIS_MAX = 120  # 這兩個數值進行第一階段判斷，判斷成功後(lift_line=True)進行第二階段 ; 看第3條線
 
-LIFT_STOP_MIN = 30    # 距離在此區間便停下；此數值應小於 liftup_distance4 ; 看第4條線
+LIFT_STOP_MIN = 20    # 距離在此區間便停下；此數值應小於 liftup_distance4 ; 看第4條線
 LIFT_STOP_MAX = 90  # 看第4條線
 
 # 頭部馬達角度設定
 HEAD_MOTOR_STAND = 1433    # 初始位置1456
 HEAD_MOTOR_PICK = 1337    # 最一開始移動後的位置
 HEAD_MOTOR_LIFT = 1320    # 拾起槓鈴後的位置
-HEAD_MOTOR_FINISH = 1320    # 舉起前低頭 1263
+HEAD_MOTOR_FINISH = 1350    # 舉起前低頭 1263
 
 # 磁區
-PICK_ONE = 601
-PICK_TWO = 602
-PICK_THREE = 603
-LIFT = 604
+PICK_ONE = 801
+PICK_TWO = 802
+PICK_THREE = 803
+LIFT = 804
 
 class WeightLift():
     def __init__(self):
@@ -89,10 +89,10 @@ class WeightLift():
         self.red_middle = float(self.red_xmax + self.red_xmin) / 2
         rospy.loginfo(f'red_middle = {self.red_middle}')
         if self.red_middle < RED_LEFT:
-          send.sendContinuousValue(X_ORIGIN - 50, Y_ORIGIN + 1200, 0, THETA_ORIGIN - 2, 0)
+          send.sendContinuousValue(X_ORIGIN - 50, Y_ORIGIN + 1200, 0, THETA_ORIGIN - 1, 0)
           rospy.loginfo(f'左左左左左左左左左左左左左左左左左左左')
         elif self.red_middle > RED_RIGHT:
-          send.sendContinuousValue(X_ORIGIN + 100, Y_ORIGIN - 1200, 0, THETA_ORIGIN - 1, 0)
+          send.sendContinuousValue(X_ORIGIN - 150, Y_ORIGIN - 1200, 0, THETA_ORIGIN - 1, 0)
           rospy.loginfo(f'右右右右右右右右右右右右右右右右右右右')
         else:
             self.arrive = True
