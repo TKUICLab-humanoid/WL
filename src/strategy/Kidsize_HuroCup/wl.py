@@ -31,7 +31,7 @@ FORWARD_THETA           = 0
 # 直走(PICK -> LIFT)
 FORWARD_TO_LIFT_X       = 3000
 FORWARD_TO_LIFT_Y       = 0
-FORWARD_TO_LIFT_THETA   = 2
+FORWARD_TO_LIFT_THETA   = 0
 
 # 直走(LIFT -> END)
 FORWARD_TO_END_X        = 3000
@@ -50,8 +50,8 @@ TRANSLATE_RIGHT_THETA   = 1
 
 #紅線前平移
 FORWARD_RED_X           = -1500
-FORWARD_RED_FIX_X       = 1800
-BACK_RED_FIX_X          = -800
+FORWARD_RED_FIX_X       = 1500
+BACK_RED_FIX_X          = -700
 
 #基準改變量
 BASE_CHANGE             = 100
@@ -75,7 +75,7 @@ TARGET_RED_X_LEFT       = 155
 TARGET_RED_X_RIGHT      = 160
 
 # 紅線(桿子)停止基準 (遠：數值變sma)
-RED_Y_STANDARD          = 185
+RED_Y_STANDARD          = 190
 
 # 距離紅線(桿子)遠近
 RED_Y_DISTANCE_FAR      = 100
@@ -426,11 +426,11 @@ class WeightLifting:
             self.correct_target()
             self.imu()
             
-            if(self.target_ymax > RED_Y_STANDARD - 40):
+            if(self.target_ymax > RED_Y_STANDARD - 20):
                 self.forward += BACK_RED_FIX_X
                 self.now_state[0] = "後退"
 
-            elif (self.target_ymax < RED_Y_STANDARD - 50):
+            elif (self.target_ymax < RED_Y_STANDARD - 30):
                 self.forward += FORWARD_RED_FIX_X
                 self.now_state[0] = "前進"
 
@@ -671,7 +671,8 @@ class WeightLifting:
                         rospy.logerr(f'lift_bar = {self.lift_bar}')
                         send.sendSensorReset(1,1,0)
                         time.sleep(1.5)
-                        
+                        send.saveWalkParameter(1, 1, 8, 420, 0.3, 5.5, 0, 0, False)
+                        time.sleep(0.5)
                         send.saveWalkParameter(1, 1, 8, 420, 0.3, 5.5, 0, 0, True)
                         time.sleep(0.5)
                     else:
