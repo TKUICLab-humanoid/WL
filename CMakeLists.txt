@@ -27,10 +27,10 @@ set(STRATEGYBASE_LIBRARIES ${CATKIN_DEVEL_PREFIX}/lib/libroscommunication.so)
 # find_package(Boost REQUIRED COMPONENTS system)
 
 ## Generate messages in the 'msg' folder
-add_message_files(DIRECTORY msg
-	FILES
-	changedisks.msg
-)
+#add_message_files(DIRECTORY msg
+#	FILES
+#	changedisks.msg
+#)
 ## Generate services in the 'srv' folder
 #add_service_files(DIRECTORY srv 
 #	FILES
@@ -47,8 +47,8 @@ add_message_files(DIRECTORY msg
 generate_messages(DEPENDENCIES std_msgs)
 
 catkin_package(
-	INCLUDE_DIRS include
-	LIBRARIES tku_libs roscommunication ros2multicommunication
+#	INCLUDE_DIRS include
+#	LIBRARIES tku_libs roscommunication ros2multicommunication
  	#std_msgs
  	#roscpp
 )
