@@ -7,31 +7,7 @@ from Python_API import Sendmessage
 import time
 
 aaaa = rospy.init_node('talker', anonymous=True)
-# def ball_cv2():
-#     ball_x , ball_y , ball_r= 0 ,0 ,0
-#     img = send.rawimg.copy()
-#     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-#     blur = cv2.GaussianBlur(gray,(5,5),0) 
-#     # gray = cv2.bitwise_not(gray)
-#     ret,thresh = cv2.threshold(blur,100,255,cv2.THRESH_BINARY) # 使用二值化閾值處理
-#     circles = cv2.HoughCircles(thresh,cv2.HOUGH_GRADIENT,2,200,
-#                             param1=33,param2=16,minRadius=3,maxRadius=15)        #thresh: 經過閾值處理的圖像
-#                                                                                 # cv2.HOUGH_GRADIENT: Hough圓檢測的方法
-#                                                                                 # 1: 圖像分辨率
-#                                                                                 # 20: 圓之間的最小距離
-#                                                                                 # param1: 檢測邊緣的閾值
-#                                                                                 # param2: 檢測圓心的閾值
-#                                                                                 # minRadius: 最小圓半徑
-#                                                                                 # maxRadius: 最大圓半徑
 
-#     if circles is not None:
-#         circles = np.round(circles[0, :]).astype("int")
-#         for (x, y, r) in circles:
-#             ball_x = x
-#             ball_y = y
-#             ball_r = r
-
-#     return ball_x,ball_y,ball_r
 HEAD_MOTOR_START = 1433    # 初始位置1456
 HEAD_MOTOR_FINISH = 1350    # 舉起前低頭 1263
 
@@ -74,7 +50,7 @@ class WeightLift:
     def walking(self,yaw):
         if not self.body_auto:
             send.sendSensorReset(1, 1, yaw)
-            send.sendWalkParameter(0, 1,-3,5, 60, 360, 0, 3, 0, 23.5, 0, False)
+            send.sendWalkParameter(0, 1,-1,4.5, 29.5, 360, 0, 2, 0, 23.5, 0, False)
             time.sleep(0.03)
             self.walk_switch()
         self.theta = self.imu_fix()
@@ -94,8 +70,19 @@ class WeightLift:
             self.bar.update()
             self.line.update()
             if self.ctrl_status == 'start_line':
-                self.walking(1)
-                if self.bar.edge_max.y >= 173:
+                if self.bar.center.x > 170:
+                    send.sendContinuousValue(1000, -600, 0, -3, 0)
+                elif self.bar.center.x < 150 and self.bar.center.x > 0:
+                    send.sendContinuousValue(1000, 600, 0, 3, 0)    
+                else:
+                    self.walking(1)
+                rospy.loginfo(f"x = {self.bar.center.x}")
+                if self.bar.center.y >= 198:
+                    self.ctrl_status = 'turn_straight'
+            elif self.ctrl_status == 'turn_straight':
+                self.theta = self.imu_fix()
+                send.sendContinuousValue(0, 0, 0, self.theta, 0)
+                if self.theta == 0:
                     self.ctrl_status = 'pick_up'
             elif self.ctrl_status == 'pick_up':
                 if self.body_auto:
@@ -109,7 +96,7 @@ class WeightLift:
                 time.sleep(5.5)
                 send.sendBodySector(PICK_THREE)
                 print("PICK_3")
-                time.sleep(15)  
+                time.sleep(11)  
                 self.ctrl_status = 'second_line'
             elif self.ctrl_status == 'second_line':
                 self.walking(0)
@@ -118,14 +105,14 @@ class WeightLift:
                 print(self.third_line)
                 if self.line.edge_max.y >= 220 and self.third_line :
                     self.ctrl_status = 'rise_up'
-                    time.sleep(2)
+                    time.sleep(2.5)
             elif self.ctrl_status == 'rise_up':
                 if self.body_auto:
                     self.walk_switch()
                 time.sleep(2)
                 send.sendBodySector(LIFT)
                 print("LIFT")
-                time.sleep(20)
+                time.sleep(17)
                 self.ctrl_status = 'final'
             elif self.ctrl_status == 'final':
                 self.walking(0)
