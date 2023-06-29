@@ -3,8 +3,11 @@
 import rospy
 import numpy as np
 import cv2
+import sys
+sys.path.append('/home/iclab/Desktop/kid_hurocup/src/strategy')
 from Python_API import Sendmessage
 import time
+import random
 
 aaaa = rospy.init_node('talker', anonymous=True)
 
@@ -33,7 +36,7 @@ class WeightLift:
         self.stop = True
 
     def walk_switch(self):
-        send.sendBodyAuto(600, 0, 0, 0, 1, 0)
+        send.sendBodyAuto(500, 0, 0, 0, 1, 0)
         if self.body_auto:
             self.body_auto = False
         else:
@@ -46,11 +49,22 @@ class WeightLift:
         elif send.imu_value_Yaw < -5:
             theta = 2
         return theta
-    
-    def walking(self,yaw):
+
+    def walk_parameter(self, yaw, Y_COM):
+        send.sendSensorReset(1, 1, yaw)
+        send.sendWalkParameter('save', 1, com_y_shift = Y_COM
+                                        , y_swing = 4.5
+                                        , period_t = 360
+                                        , t_dsp = 0
+                                        , base_default_z = 2
+                                        , right_z_shift = 0
+                                        , base_lift_z = 3
+                                        , com_height = 29.5
+                                        , stand_height = 23.5
+                                        , back_flag = False)
+    def walking(self, yaw, Y_COM):
         if not self.body_auto:
-            send.sendSensorReset(1, 1, yaw)
-            send.sendWalkParameter(0, 1,-1,4.5, 29.5, 360, 0, 2, 0, 23.5, 0, False)
+            self.walk_parameter(yaw, Y_COM)
             time.sleep(0.03)
             self.walk_switch()
         self.theta = self.imu_fix()
@@ -66,16 +80,30 @@ class WeightLift:
                 send.sendHeadMotor(2, HEAD_MOTOR_START, 100)
                 self.stop = False
                 time.sleep(0.3)
+                self.ctrl_status = 'preturn'
+            self.bar.update(1)
+            self.line.update(2)
+            if self.ctrl_status == 'preturn':
+                print(send.DIOValue)
+                if not self.body_auto:
+                    self.walk_parameter(1, 0)
+                    self.walk_switch()
+                if send.DIOValue == 25:
+                    send.sendContinuousValue(0, -400, 0, -4, 0)
+                    time.sleep(5)
+                elif send.DIOValue == 27:
+                    send.sendContinuousValue(0, 400, 0, 4, 0)
+                    time.sleep(5)
+                else:
+                    print('aaaaaaaaaaaaaaaaa')
                 self.ctrl_status = 'start_line'
-            self.bar.update()
-            self.line.update()
             if self.ctrl_status == 'start_line':
                 if self.bar.center.x > 170:
-                    send.sendContinuousValue(1000, -600, 0, -3, 0)
+                    send.sendContinuousValue(1000, -200, 0, -3, 0)
                 elif self.bar.center.x < 150 and self.bar.center.x > 0:
-                    send.sendContinuousValue(1000, 600, 0, 3, 0)    
+                    send.sendContinuousValue(1000, 200, 0, 3, 0)    
                 else:
-                    self.walking(1)
+                    self.walking(1, 0)
                 rospy.loginfo(f"x = {self.bar.center.x}")
                 if self.bar.center.y >= 198:
                     self.ctrl_status = 'turn_straight'
@@ -99,7 +127,7 @@ class WeightLift:
                 time.sleep(11)  
                 self.ctrl_status = 'second_line'
             elif self.ctrl_status == 'second_line':
-                self.walking(0)
+                self.walking(0, 0)
                 if self.line.edge_min.y < 80 and self.line.edge_min.y > 60:
                     self.third_line = True
                 print(self.third_line)
@@ -115,7 +143,7 @@ class WeightLift:
                 time.sleep(17)
                 self.ctrl_status = 'final'
             elif self.ctrl_status == 'final':
-                self.walking(0)
+                self.walking(0, -1)
 
         if not send.is_start:
             if self.body_auto:
@@ -156,18 +184,20 @@ class ObjectInfo:
         self.find_object = update_strategy[object_type]
 
     def get_line_object(self):
-        max_object_size = max(send.color_mask_subject_size[self.color])
-        max_object_idx = send.color_mask_subject_size[self.color].index(max_object_size)
+        if send.color_mask_subject_size[self.color] != []:
+            max_object_size = max(send.color_mask_subject_size[self.color])
+            max_object_idx = send.color_mask_subject_size[self.color].index(max_object_size)
 
-        return max_object_idx if max_object_size > 3000 else None
+            return max_object_idx if max_object_size > 3000 else None
 
     def get_bar_object(self):
-        max_object_size = max(send.color_mask_subject_size[self.color])
-        max_object_idx = send.color_mask_subject_size[self.color].index(max_object_size)
+        if send.color_mask_subject_size[self.color] != []:
+            max_object_size = max(send.color_mask_subject_size[self.color])
+            max_object_idx = send.color_mask_subject_size[self.color].index(max_object_size)
 
-        return max_object_idx if max_object_size > 200 else None
+            return max_object_idx if max_object_size > 200 else None
 
-    def update(self):
+    def update(self,ID):
         object_idx = self.find_object()
 
         if object_idx is not None:
@@ -182,7 +212,7 @@ class ObjectInfo:
 
             
             rospy.logdebug(abs(abs(self.edge_max.x - self.edge_min.x) - abs(self.edge_max.y - self.edge_min.y)))
-            send.drawImageFunction(1, 1, self.edge_min.x, self.edge_max.x, self.edge_min.y, self.edge_max.y, 0, 0, 255)
+            send.drawImageFunction( ID, 1, self.edge_min.x, self.edge_max.x, self.edge_min.y, self.edge_max.y, 0, 0, 255)
         else:
             self.edge_max.x = 0
             self.edge_min.x = 0
