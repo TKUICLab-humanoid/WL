@@ -36,13 +36,14 @@ HEAD_MOTOR_START = 1433    # 初始位置1433
 HEAD_MOTOR_FINISH = 1350
 
 RED_X = 150
-RED_Y = 210
+RED_Y = 200
 
 PICK_ONE = 40
 PICK_TWO = 41
-LIFT = 42
+LIFT = 60
 
 send = Sendmessage()
+#send.use_new_color_mask = True
 aaaa = rospy.init_node('talker', anonymous=True)
 
 class WeightLift:
@@ -124,7 +125,7 @@ class WeightLift:
         theta = 0
         self.theta_status = '無'
         if send.imu_value_Yaw > 5:
-            theta = -2
+            theta = -3
             self.theta_status = '右旋'
         elif send.imu_value_Yaw < -5:
             theta = 3
@@ -139,16 +140,19 @@ class WeightLift:
             while(end - start < 1):
                 end = time.time() 
                 if self.ctrl_status == "final":
-                    send.sendWalkParameter('save', walk_mode = 1, y_swing = 8, t_dsp = 0.3)
-                    #send.sendWalkParameter(0, 1, -1, 8, 62, 420, 0.3, 4, 0, 47.3, 0, False)
+                    # send.sendWalkParameter('save', walk_mode = 1, y_swing = 8, t_dsp = 0.2)
+                    send.sendWalkParameter(0, 1, -1, 8, 62, 420, 0.3, 4, 0, 47.3, 0, False)
                 else:
-                    send.sendWalkParameter('save', walk_mode = 1, y_swing = 8, t_dsp = 0)
-                    #send.sendWalkParameter(0, 1, -1, 8, 62, 420, 0, 4, 0, 47.3, 0, False)
+                    # send.sendWalkParameter('save', walk_mode = 1, y_swing = 8, t_dsp = 0)
+                    send.sendWalkParameter(0, 1, -1, 8, 62, 420, 0, 4, 0, 47.3, 0, False)
             time.sleep(0.03)
             self.walk_switch()
         if (self.ctrl_status == 'start_line') or (self.ctrl_status == 'first_line'):
             self.forward = self.forward_fix()
             self.translate = self.translate_fix()
+        elif self.ctrl_status == 'second_line':
+            self.forward = 3000
+            self.translate = 0
         else:
             self.forward = 3000
             self.translate = 0
@@ -165,10 +169,10 @@ class WeightLift:
                 time.sleep(0.03)
                 self.ctrl_status = 'start_line'
 
-            if send.data_check == True:
-                self.line.update()
-                self.bar.update()
-                send.data_check = False
+            #if send.data_check == True:
+            self.line.update()
+            self.bar.update()
+                #send.data_check = False
 
             if self.ctrl_status == 'start_line':
                 self.walking(1)
@@ -192,18 +196,20 @@ class WeightLift:
                 time.sleep(6.2)
                 send.sendBodySector(PICK_TWO)
                 time.sleep(15.5)
-                send.sendBodySector(9999)
-                time.sleep(0.3)
                 self.ctrl_status = 'second_line'
 
             elif self.ctrl_status == 'second_line':
                 self.walking(0)
                 print(self.lift_get)
+                print('while : ', self.line.edge_max.y)
                 if not self.lift_get:
                     if self.line.edge_min.y >= 60 and self.line.edge_min.y <= 70:
+                        send.sendHeadMotor(2, 1300, 100)
                         self.lift_get = True
+                        
                 else:
                     if self.line.edge_max.y >= 230:
+                        #print('while : ', self.line.edge_max.y)
                         self.ctrl_status = 'rise_up'
 
             elif self.ctrl_status == 'rise_up':
@@ -216,7 +222,7 @@ class WeightLift:
                     self.walk_switch()
                 time.sleep(2)
                 send.sendBodySector(LIFT)
-                time.sleep(7.2)
+                time.sleep(8.8)
                 self.ctrl_status = 'final'
 
             elif self.ctrl_status == 'final':
@@ -226,15 +232,15 @@ class WeightLift:
             if self.body_auto:
                 self.walk_switch()
 
-            if send.data_check == True:
-                self.line.update()
-                self.bar.update()
-                send.data_check = False
+            #if send.data_check == True:
+            self.line.update()
+            self.bar.update()
+                #send.data_check = False
             rospy.loginfo(f'red_middle_x : {(self.bar.edge_max.x + self.bar.edge_min.x) / 2}')
             rospy.loginfo(f'red_line_y : {self.bar.edge_max.y}')
             rospy.loginfo(f'while_line : {self.line.edge_max.y}')
-
-            send.sendHeadMotor(2, HEAD_MOTOR_FINISH, 100)
+            print("while" , self.line.target_size)
+            send.sendHeadMotor(2, HEAD_MOTOR_START, 100)
             self.init()
 
 class Coordinate:
@@ -267,7 +273,6 @@ class ObjectInfo:
         if send.color_mask_subject_size[self.color] != []:
             max_object_size = max(send.color_mask_subject_size[self.color])
             max_object_idx = send.color_mask_subject_size[self.color].index(max_object_size)
-
             return max_object_idx if max_object_size > 1000 else None
 
     def get_bar_object(self):
