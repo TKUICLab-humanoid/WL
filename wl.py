@@ -68,13 +68,14 @@ class WeightLift:
             time.sleep(0.03)
             self.walk_switch()
         self.theta = self.imu_fix()
-        rospy.loginfo(f'theta : {self.theta}')
-        send.sendContinuousValue(2000, 0, 0, self.theta, 0)
+        rospy.loginfo(f'theta ========= {self.theta}')
+        send.sendContinuousValue(2000, -200, 0, self.theta, 0)
 
     def main(self):
         if send.is_start:#啟動電源與擺頭
             rospy.loginfo(f'ctrl_status : {self.ctrl_status}')
-            rospy.loginfo(self.bar.edge_max.y )
+            rospy.loginfo(self.bar.center.y )
+            rospy.loginfo(self.line.edge_min.y )
             rospy.loginfo(self.line.edge_max.y )
             if self.ctrl_status == 'head_shake':
                 send.sendHeadMotor(2, HEAD_MOTOR_START, 100)
@@ -93,18 +94,18 @@ class WeightLift:
                     time.sleep(5)
                 elif send.DIOValue == 27:
                     send.sendContinuousValue(0, 400, 0, 4, 0)
-                    time.sleep(5)
-                else:
-                    print('aaaaaaaaaaaaaaaaa')
+                    time.sleep(4.5)
                 self.ctrl_status = 'start_line'
             if self.ctrl_status == 'start_line':
-                if self.bar.center.x > 170:
+                if self.bar.center.x > 180:
                     send.sendContinuousValue(1000, -200, 0, -3, 0)
-                elif self.bar.center.x < 150 and self.bar.center.x > 0:
-                    send.sendContinuousValue(1000, 200, 0, 3, 0)    
+                    rospy.loginfo(f"右轉")
+                elif self.bar.center.x < 160 and self.bar.center.x > 0:
+                    send.sendContinuousValue(1000, 200, 0, 3, 0)  
+                    rospy.loginfo(f"左轉")  
                 else:
-                    self.walking(1, 0)
-                rospy.loginfo(f"x = {self.bar.center.x}")
+                    self.walking(1, -2)
+                rospy.loginfo(f"紅色 = {self.bar.center.x}")
                 if self.bar.center.y >= 198:
                     self.ctrl_status = 'turn_straight'
             elif self.ctrl_status == 'turn_straight':
@@ -124,16 +125,16 @@ class WeightLift:
                 time.sleep(5.5)
                 send.sendBodySector(PICK_THREE)
                 print("PICK_3")
-                time.sleep(11)  
+                time.sleep(8.5)  
                 self.ctrl_status = 'second_line'
             elif self.ctrl_status == 'second_line':
-                self.walking(0, 0)
+                self.walking(0, -2)
                 if self.line.edge_min.y < 80 and self.line.edge_min.y > 60:
                     self.third_line = True
                 print(self.third_line)
                 if self.line.edge_max.y >= 220 and self.third_line :
                     self.ctrl_status = 'rise_up'
-                    time.sleep(2.5)
+                    time.sleep(3)
             elif self.ctrl_status == 'rise_up':
                 if self.body_auto:
                     self.walk_switch()
@@ -143,7 +144,7 @@ class WeightLift:
                 time.sleep(17)
                 self.ctrl_status = 'final'
             elif self.ctrl_status == 'final':
-                self.walking(0, -1)
+                self.walking(0, -2)
 
         if not send.is_start:
             if self.body_auto:
