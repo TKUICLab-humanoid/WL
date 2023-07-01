@@ -52,7 +52,8 @@ class WeightLift:
 
     def walk_parameter(self, yaw, Y_COM):
         send.sendSensorReset(1, 1, yaw)
-        send.sendWalkParameter('save', 1, com_y_shift = Y_COM
+        send.sendWalkParameter('save'   , walk_mode = 1
+                                        , com_y_shift = Y_COM
                                         , y_swing = 4.5
                                         , period_t = 360
                                         , t_dsp = 0
