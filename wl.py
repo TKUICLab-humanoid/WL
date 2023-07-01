@@ -3,8 +3,8 @@
 import rospy
 import numpy as np
 import cv2
-import sys
-sys.path.append('/home/iclab/Desktop/adult_hurocup/src/strategy')
+# # import sys
+# sys.path.append('/home/iclab/Desktop/adult_hurocup/src/strategy')
 from Python_API import Sendmessage
 import time
 # def ball_cv2():
@@ -140,11 +140,11 @@ class WeightLift:
             while(end - start < 1):
                 end = time.time() 
                 if self.ctrl_status == "final":
-                    # send.sendWalkParameter('save', walk_mode = 1, y_swing = 8, t_dsp = 0.2)
-                    send.sendWalkParameter(0, 1, -1, 8, 62, 420, 0.3, 4, 0, 47.3, 0, False)
+                    send.sendWalkParameter('save', walk_mode = 1, y_swing = 8, t_dsp = 0.2)
+                    # send.sendWalkParameter(0, 1, -1, 8, 62, 420, 0.3, 4, 0, 47.3, 0, False)
                 else:
-                    # send.sendWalkParameter('save', walk_mode = 1, y_swing = 8, t_dsp = 0)
-                    send.sendWalkParameter(0, 1, -1, 8, 62, 420, 0, 4, 0, 47.3, 0, False)
+                    send.sendWalkParameter('save', walk_mode = 1, y_swing = 8, t_dsp = 0)
+                    # send.sendWalkParameter(0, 1, -1, 8, 62, 420, 0, 4, 0, 47.3, 0, False)
             time.sleep(0.03)
             self.walk_switch()
         if (self.ctrl_status == 'start_line') or (self.ctrl_status == 'first_line'):
