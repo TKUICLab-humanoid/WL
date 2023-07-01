@@ -268,8 +268,8 @@ class Sendmessage:
                 self.color_mask_subject_Width[i][j] = msg.Objectlist[i].Colorarray[j].Width
                 self.color_mask_subject_Height[i][j] = msg.Objectlist[i].Colorarray[j].Height
                 self.color_mask_subject_size[i][j] = msg.Objectlist[i].Colorarray[j].size
-        # time_end = time.time()
-        # self.time = 1/(time_end - time_start)
+        time_end = time.time()
+        self.time = 1/(time_end - time_start)
         # print("FPS:",self.time)
         
     def sensorPackageFunction(self,msg):
