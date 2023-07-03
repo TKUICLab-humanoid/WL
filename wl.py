@@ -32,15 +32,23 @@ import time
 #             ball_r = r
 
 #     return ball_x,ball_y,ball_r
-HEAD_MOTOR_START = 1433    # 初始位置1433
-HEAD_MOTOR_FINISH = 1350
+HEAD_MOTOR_START    = 1433    # 初始位置1433
+HEAD_MOTOR_FINISH   = 1330
+HEAD_MOTOR_LIFT     = 1729
 
 RED_X = 150
-RED_Y = 200
+RED_Y = 180
+
+'''
+磁區
+40片: 40 41 42
+50片: 40 41 60(週期:450、雙支撐:0.4)
+60片: 40 41 61(頭高:1729)
+'''
 
 PICK_ONE = 40
 PICK_TWO = 41
-LIFT = 60
+LIFT = 42
 
 send = Sendmessage()
 #send.use_new_color_mask = True
@@ -75,7 +83,7 @@ class WeightLift:
     
     def forward_fix(self):
         if self.ctrl_status == 'start_line':
-            forward = 3000
+            forward = 2000
             self.forward_status = '大前進'
         elif self.ctrl_status == 'first_line':
             forward = -1500
@@ -83,16 +91,16 @@ class WeightLift:
             
         if self.bar.edge_max.y != 0:
             if self.bar.edge_max.y < (RED_Y - 100):
-                forward = 3000
+                forward = 2000
                 self.forward_status = '大前進'
             elif ((RED_Y - 100) <= self.bar.edge_max.y) and (self.bar.edge_max.y < (RED_Y - 20)):
-                forward = 1500
+                forward = 1200
                 self.forward_status = '前進'
             elif ((RED_Y - 20) <= self.bar.edge_max.y) and (self.bar.edge_max.y < RED_Y):
-                forward = 500
+                forward = 200
                 self.forward_status = '小前進'
             elif RED_Y <= self.bar.edge_max.y:
-                forward = -1000
+                forward = -2000
                 self.forward_status = '後退'
         return forward
 
@@ -125,10 +133,10 @@ class WeightLift:
         theta = 0
         self.theta_status = '無'
         if send.imu_value_Yaw > 5:
-            theta = -3
+            theta = -4
             self.theta_status = '右旋'
         elif send.imu_value_Yaw < -5:
-            theta = 3
+            theta = 2
             self.theta_status = '左旋'
         return theta
 
@@ -140,11 +148,11 @@ class WeightLift:
             while(end - start < 1):
                 end = time.time() 
                 if self.ctrl_status == "final":
-                    send.sendWalkParameter('save', walk_mode = 1, y_swing = 8, t_dsp = 0.2)
-                    # send.sendWalkParameter(0, 1, -1, 8, 62, 420, 0.3, 4, 0, 47.3, 0, False)
+                    #send.sendWalkParameter('save', walk_mode = 1, y_swing = 8, t_dsp = 0.2)
+                    send.sendWalkParameter(0, 1, -1, 8, 62, 420, 0.3, 4, 0, 47.3, 0, False)
                 else:
-                    send.sendWalkParameter('save', walk_mode = 1, y_swing = 8, t_dsp = 0)
-                    # send.sendWalkParameter(0, 1, -1, 8, 62, 420, 0, 4, 0, 47.3, 0, False)
+                    #send.sendWalkParameter('save', walk_mode = 1, y_swing = 8, t_dsp = 0)
+                    send.sendWalkParameter(0, 1, -1, 8, 62, 420, 0, 4, 0, 47.3, 0, False)
             time.sleep(0.03)
             self.walk_switch()
         if (self.ctrl_status == 'start_line') or (self.ctrl_status == 'first_line'):
@@ -152,10 +160,11 @@ class WeightLift:
             self.translate = self.translate_fix()
         elif self.ctrl_status == 'second_line':
             self.forward = 3000
-            self.translate = 0
+            self.translate = -1500
+
         else:
             self.forward = 3000
-            self.translate = 0
+            self.translate = -1500
         self.theta = self.imu_fix()
         rospy.loginfo(f'forward : {self.forward}, translate : {self.translate}, theta : {self.theta}')
         rospy.loginfo(f'狀態 : {self.forward_status}, {self.translate_status}, {self.theta_status}')
@@ -165,7 +174,7 @@ class WeightLift:
         if send.is_start:#啟動電源與擺頭
             rospy.loginfo(f'ctrl_status : {self.ctrl_status}')
             if self.ctrl_status == 'head_shake':
-                send.sendHeadMotor(2, HEAD_MOTOR_START, 100)
+                send.sendHeadMotor(2, HEAD_MOTOR_FINISH, 100)
                 time.sleep(0.03)
                 self.ctrl_status = 'start_line'
 
@@ -175,6 +184,7 @@ class WeightLift:
                 #send.data_check = False
 
             if self.ctrl_status == 'start_line':
+                send.sendHeadMotor(2, HEAD_MOTOR_FINISH, 100)
                 self.walking(1)
                 if self.bar.edge_max.y > (RED_Y - 10):
                     self.ctrl_status = 'first_line'
@@ -196,6 +206,7 @@ class WeightLift:
                 time.sleep(6.2)
                 send.sendBodySector(PICK_TWO)
                 time.sleep(15.5)
+                
                 self.ctrl_status = 'second_line'
 
             elif self.ctrl_status == 'second_line':
@@ -208,19 +219,21 @@ class WeightLift:
                         self.lift_get = True
                         
                 else:
-                    if self.line.edge_max.y >= 230:
+                    if self.line.edge_max.y >= 217:
                         #print('while : ', self.line.edge_max.y)
                         self.ctrl_status = 'rise_up'
 
             elif self.ctrl_status == 'rise_up':
                 end = -9999
                 start = time.time()
-                while (end - start < 3.3):
+                while (end - start < 0.7):
                     end = time.time()
                     rospy.loginfo(f'delay : {end - start}')
                 if self.body_auto:
                     self.walk_switch()
                 time.sleep(2)
+                # send.sendHeadMotor(2, HEAD_MOTOR_LIFT, 100)
+                # time.sleep(0.03)
                 send.sendBodySector(LIFT)
                 time.sleep(8.8)
                 self.ctrl_status = 'final'
