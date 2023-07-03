@@ -71,7 +71,7 @@ class WeightLift:
             self.walk_switch()
         self.theta = self.imu_fix()
         rospy.loginfo(f'theta ========= {self.theta}')
-        send.sendContinuousValue(2000, -200, 0, self.theta, 0)
+        send.sendContinuousValue(1800, 0, 0, self.theta, 0)
 
     def main(self):
         if send.is_start:#啟動電源與擺頭
@@ -96,7 +96,7 @@ class WeightLift:
                     time.sleep(5)
                 elif send.DIOValue == 27:
                     send.sendContinuousValue(0, 400, 0, 4, 0)
-                    time.sleep(4.5)
+                    time.sleep(5)
                 self.ctrl_status = 'start_line'
             if self.ctrl_status == 'start_line':
                 if self.bar.center.x > 170:
@@ -143,14 +143,14 @@ class WeightLift:
                 print(self.third_line)
                 if self.line.edge_max.y >= 220 and self.third_line :
                     self.ctrl_status = 'rise_up'
-                    time.sleep(3)
+                    time.sleep(3.2)
             elif self.ctrl_status == 'rise_up':
                 if self.body_auto:
                     self.walk_switch()
                 time.sleep(2)
                 send.sendBodySector(LIFT)
                 print("LIFT")
-                time.sleep(17)
+                time.sleep(16)
                 print("x =============================== ",self.real_bar_center)
                 if self.real_bar_center > 175:
                     count = (self.real_bar_center - 165) // 7
@@ -166,10 +166,10 @@ class WeightLift:
                     for i in range(count):
                         print('a')
                         send.sendBodySector(606)       
-                    time.sleep(2) 
+                    time.sleep(3) 
                 self.ctrl_status = 'final'
             elif self.ctrl_status == 'final':
-                self.walking(0, -2)
+                self.walking(0, -3)
 
         # elif not send.is_start:
         else:
