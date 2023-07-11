@@ -36,7 +36,7 @@ HEAD_MOTOR_START    = 1433    # 初始位置1433
 HEAD_MOTOR_FINISH   = 1330
 HEAD_MOTOR_LIFT     = 1729
 
-RED_X = 148
+RED_X = 156
 RED_Y = 165
 
 '''
@@ -44,11 +44,12 @@ RED_Y = 165
 40片: 40 41 42
 50片: 40 41 60(週期:450、雙支撐:0.4)
 60片: 40 41 61(頭高:1729)
+70片: 40 71 72(頭高:1729)
 '''
 
 PICK_ONE = 40
-PICK_TWO = 41
-LIFT = 61
+PICK_TWO = 71
+LIFT = 72
 
 send = Sendmessage()
 #send.use_new_color_mask = True
@@ -161,12 +162,12 @@ class WeightLift:
             self.translate = self.translate_fix()
         elif self.ctrl_status == 'second_line':
             self.forward = 3000
-            self.translate = -1100
+            self.translate = 0
             self.forward_status = '前進'
             self.translate_status = '無'
         else:
             self.forward = 3000
-            self.translate = -1000
+            self.translate = 0
 
         self.theta = self.imu_fix()
         rospy.loginfo(f'forward : {self.forward}, translate : {self.translate}, theta : {self.theta}')
@@ -206,11 +207,9 @@ class WeightLift:
                     self.walk_switch()
                 time.sleep(2)
                 send.sendBodySector(PICK_ONE)
-                time.sleep(6.2)
+                time.sleep(5)
                 send.sendBodySector(PICK_TWO)
-                time.sleep(17.5)
-                send.sendBodySector(66)
-                time.sleep(0.5)
+                time.sleep(17)
                 
                 self.ctrl_status = 'second_line'
 
@@ -251,12 +250,12 @@ class WeightLift:
                 self.walk_switch()
 
             #if send.data_check == True:
-            #self.line.update()
+            # self.line.update()
             # self.bar.update()
                 #send.data_check = False
             #rospy.loginfo(f'red_middle_x : {(self.bar.edge_max.x + self.bar.edge_min.x) / 2}')
             #rospy.loginfo(f'red_line_y :   {self.bar.edge_max.y}')
-            rospy.loginfo(f'while_line :   {self.line.edge_max.y}')
+            #rospy.loginfo(f'while_line :   {self.line.edge_max.y}')
             #rospy.loginfo(f"while size :   {self.line.target_size}")
             #rospy.loginfo(f"red size :     {self.bar.target_size}")
             
