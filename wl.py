@@ -130,17 +130,16 @@ class WeightLift:
                 print("PICK_3")
                 time.sleep(7.5)  
                 self.bar.update(1)
-                print(self.bar.center.x )
                 send.sendHeadMotor(2, HEAD_MOTOR_START, 100)
                 time.sleep(1)
                 self.real_bar_center = self.bar.center.x 
-                print(self.real_bar_center)
                 self.ctrl_status = 'second_line'
             elif self.ctrl_status == 'second_line':
                 self.walking(0, -2)
                 if self.line.edge_min.y < 80 and self.line.edge_min.y > 60:
                     self.third_line = True
                 print(self.third_line)
+                rospy.loginfo(f"white_Y = {self.line.edge_max.y}")
                 if self.line.edge_max.y >= 220 and self.third_line :
                     self.ctrl_status = 'rise_up'
                     time.sleep(3.2)
@@ -152,14 +151,14 @@ class WeightLift:
                 print("LIFT")
                 time.sleep(16)
                 print("x =============================== ",self.real_bar_center)
-                if self.real_bar_center > 175:
+                if self.real_bar_center > 175 and self.real_bar_center < 210:
                     count = (self.real_bar_center - 165) // 7
                     count = min(count, 4)
                     print("count",count)
                     for i in range(count):
                         send.sendBodySector(605)
                     time.sleep(3) 
-                elif self.real_bar_center < 155:
+                elif self.real_bar_center < 155 and self.real_bar_center > 120:
                     count = (165 - self.real_bar_center) // 7
                     count = min(count, 4)
                     print("count",count)
@@ -173,7 +172,7 @@ class WeightLift:
 
         # elif not send.is_start:
         else:
-            self.bar.update(1)
+            self.line.update(1)
             if self.body_auto:
                 self.walk_switch()
             if not self.stop:
@@ -238,7 +237,7 @@ class ObjectInfo:
             self.center.y = send.color_mask_subject_Y[self.color][object_idx]
             self.target_size = send.color_mask_subject_size[self.color][object_idx]
 
-            # rospy.loginfo(self.center.x)
+            rospy.loginfo(self.edge_max.y)
             # rospy.logdebug(abs(abs(self.edge_max.x - self.edge_min.x) - abs(self.edge_max.y - self.edge_min.y)))
             send.drawImageFunction( ID, 1, self.edge_min.x, self.edge_max.x, self.edge_min.y, self.edge_max.y, 0, 0, 255)
         else:
