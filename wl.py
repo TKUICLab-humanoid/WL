@@ -17,7 +17,7 @@ HEAD_MOTOR_FINISH = 1350    # 舉起前低頭 1263
 PICK_ONE = 601
 PICK_TWO = 602
 PICK_THREE = 603
-LIFT = 604
+LIFT = 607
 
 send = Sendmessage()
 
@@ -71,7 +71,7 @@ class WeightLift:
             self.walk_switch()
         self.theta = self.imu_fix()
         rospy.loginfo(f'theta ========= {self.theta}')
-        send.sendContinuousValue(1800, 0, 0, self.theta, 0)
+        send.sendContinuousValue(1800, -250, 0, self.theta, 0)
 
     def main(self):
         if send.is_start:#啟動電源與擺頭
@@ -140,9 +140,9 @@ class WeightLift:
                     self.third_line = True
                 print(self.third_line)
                 rospy.loginfo(f"white_Y = {self.line.edge_max.y}")
-                if self.line.edge_max.y >= 220 and self.third_line :
+                if self.line.edge_max.y >= 210 and self.third_line :
                     self.ctrl_status = 'rise_up'
-                    time.sleep(3.2)
+                    time.sleep(3.7)
             elif self.ctrl_status == 'rise_up':
                 if self.body_auto:
                     self.walk_switch()
@@ -237,7 +237,7 @@ class ObjectInfo:
             self.center.y = send.color_mask_subject_Y[self.color][object_idx]
             self.target_size = send.color_mask_subject_size[self.color][object_idx]
 
-            rospy.loginfo(self.edge_max.y)
+            # rospy.loginfo(self.edge_max.y)
             # rospy.logdebug(abs(abs(self.edge_max.x - self.edge_min.x) - abs(self.edge_max.y - self.edge_min.y)))
             send.drawImageFunction( ID, 1, self.edge_min.x, self.edge_max.x, self.edge_min.y, self.edge_max.y, 0, 0, 255)
         else:
