@@ -42,14 +42,14 @@ RED_Y = 165
 '''
 磁區
 40片: 40 41 42
-50片: 40 41 60(週期:450、雙支撐:0.4)
-60片: 40 41 61(頭高:1729)
-70片: 40 71 72(頭高:1729)
+50片: 40 41 52(週期:420、雙支撐:0.3)
+60片: 40 41 62(頭高:1729, SPEED = 3300, Period_T = 450, 雙支撐:0.3, BASE_Default_z = 3.5)
+70片: 40 71 72(頭高:1729, Period_T = 450, 雙支撐:0.3, BASE_Default_z = 3.5)
 '''
 
 PICK_ONE = 40
-PICK_TWO = 71
-LIFT = 72
+PICK_TWO = 41
+LIFT = 62
 
 send = Sendmessage()
 #send.use_new_color_mask = True
@@ -73,6 +73,7 @@ class WeightLift:
         self.theta_status       = '無'
         
         self.body_auto  = False
+        self.reset      = True
         self.lift_get   = False
 
     def walk_switch(self):
@@ -84,7 +85,7 @@ class WeightLift:
     
     def forward_fix(self):
         if self.ctrl_status == 'start_line':
-            forward = 2000
+            forward = 3500
             self.forward_status = '大前進'
         elif self.ctrl_status == 'first_line':
             forward = -1500
@@ -92,10 +93,10 @@ class WeightLift:
             
         if self.bar.edge_max.y != 0:
             if self.bar.edge_max.y < (RED_Y - 100):
-                forward = 2000
+                forward = 3500
                 self.forward_status = '大前進'
             elif ((RED_Y - 100) <= self.bar.edge_max.y) and (self.bar.edge_max.y < (RED_Y - 20)):
-                forward = 1200
+                forward = 3000
                 self.forward_status = '前進'
             elif ((RED_Y - 20) <= self.bar.edge_max.y) and (self.bar.edge_max.y < RED_Y):
                 forward = 200
@@ -150,10 +151,10 @@ class WeightLift:
                 end = time.time() 
                 if self.ctrl_status == "final":
                     #send.sendWalkParameter('save', walk_mode = 1, y_swing = 8, t_dsp = 0.2)
-                    send.sendWalkParameter(0, 1, -1, 8, 62, 420, 0.3, 4, 0, 47.3, 0, False)
+                    send.sendWalkParameter(0, 1, -1, 7, 62, 450, 0.3, 3.5, 0, 47.3, 0, False)
                 else:
                     #send.sendWalkParameter('save', walk_mode = 1, y_swing = 8, t_dsp = 0)
-                    send.sendWalkParameter(0, 1, -1, 8, 62, 420, 0, 4, 0, 47.3, 0, False)
+                    send.sendWalkParameter(0, 1, 0, 8, 62, 420, 0, 4, 0, 47.3, 0, False)
             time.sleep(0.03)
             self.walk_switch()
         
@@ -161,12 +162,12 @@ class WeightLift:
             self.forward = self.forward_fix()
             self.translate = self.translate_fix()
         elif self.ctrl_status == 'second_line':
-            self.forward = 3000
-            self.translate = 0
+            self.forward = 5000
+            self.translate = -200
             self.forward_status = '前進'
             self.translate_status = '無'
         else:
-            self.forward = 3000
+            self.forward = 3300
             self.translate = 0
 
         self.theta = self.imu_fix()
@@ -205,11 +206,14 @@ class WeightLift:
             elif self.ctrl_status == 'pick_up':
                 if self.body_auto:
                     self.walk_switch()
+                send.sendBodySector(29)
                 time.sleep(2)
                 send.sendBodySector(PICK_ONE)
                 time.sleep(5)
                 send.sendBodySector(PICK_TWO)
-                time.sleep(17)
+                time.sleep(16.5)
+                send.sendBodySector(200)
+                time.sleep(1.5)
                 
                 self.ctrl_status = 'second_line'
 
@@ -230,7 +234,7 @@ class WeightLift:
             elif self.ctrl_status == 'rise_up':
                 end = -9999
                 start = time.time()
-                while (end - start < 2):
+                while (end - start < 1):
                     end = time.time()
                     rospy.loginfo(f'delay : {end - start}')
                 if self.body_auto:
@@ -240,6 +244,8 @@ class WeightLift:
                 time.sleep(0.03)
                 send.sendBodySector(LIFT)
                 time.sleep(8.8)
+                send.sendBodySector(300)
+                time.sleep(1)
                 self.ctrl_status = 'final'
 
             elif self.ctrl_status == 'final':
@@ -248,7 +254,11 @@ class WeightLift:
         else:
             if self.body_auto:
                 self.walk_switch()
-
+            
+            # if self.reset:
+            #     send.sendBodySector(29)
+            #     send.sendBodySector(999)
+            #     self.reset = False
             #if send.data_check == True:
             # self.line.update()
             # self.bar.update()
