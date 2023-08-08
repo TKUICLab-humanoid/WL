@@ -36,6 +36,7 @@ class Sendmessage:
         self.DIOValue = 0x00
         self.is_start = False
         self.data_check = False
+        self.first_check = True
         self.time = 0
         self.execute = False
         self.get_object = True
@@ -284,7 +285,7 @@ class Sendmessage:
 
     def getObject(self,msg):
     #取得物件資訊
-        if not self.data_check:
+        if not self.data_check or self.first_check:
             time_start = time.time()
             self.color_mask_subject_cnts = [0 for i in range(8)]
             self.color_mask_subject_X = [[0]*320 for i in range(8)]

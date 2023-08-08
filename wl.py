@@ -32,12 +32,12 @@ import time
 #             ball_r = r
 
 #     return ball_x,ball_y,ball_r
-HEAD_MOTOR_START    = 1433    # 初始位置1433
+HEAD_MOTOR_START    = 1233    # 初始位置1433
 HEAD_MOTOR_FINISH   = 1330
 HEAD_MOTOR_LIFT     = 1729
 
-RED_X = 148
-RED_Y = 162
+RED_X = 146
+RED_Y = 163
 
 '''
 磁區
@@ -48,8 +48,8 @@ RED_Y = 162
 '''
 
 PICK_ONE = 40
-PICK_TWO = 81
-LIFT = 82
+PICK_TWO = 41
+LIFT = 62
 
 send = Sendmessage()
 #send.use_new_color_mask = True
@@ -74,6 +74,7 @@ class WeightLift:
         self.theta_status       = '無'
         
         self.body_auto  = False
+        send.first_check = True
         self.reset      = True
         self.lift_get   = False
 
@@ -113,22 +114,22 @@ class WeightLift:
         middle = (self.bar.edge_max.x + self.bar.edge_min.x)/2
         if middle != 0:
             if middle > (RED_X + 20):
-                translate = -2800 + 200
+                translate = -2800 + 100
                 self.translate_status = '大 - 右平移'
             elif ((RED_X + 5) < middle) and (middle <= (RED_X + 20)):
-                translate = -1500 + 200
+                translate = -1500 + 100
                 self.translate_status = '中 - 右平移'
             elif (RED_X < middle) and (middle <= (RED_X + 5)):
-                translate = -1200 + 200
+                translate = -1200 + 100
                 self.translate_status = '小 - 右平移'
             elif ((RED_X - 5) < middle) and (middle <= RED_X):
-                translate = 900 - 200
+                translate = 900 - 100
                 self.translate_status = '小 - 左平移'
             elif ((RED_X - 20) < middle) and (middle <= (RED_X - 5)):
-                translate = 1200 - 200
+                translate = 1200 - 100
                 self.translate_status = '中 - 左平移'
             elif middle <= (RED_X - 20):
-                translate = 2500 - 200
+                translate = 2500 - 100
                 self.translate_status = '大 - 左平移'
         return translate
     
@@ -136,10 +137,10 @@ class WeightLift:
         theta = 0
         self.theta_status = '無'
         if send.imu_value_Yaw > 4:
-            theta = -2
+            theta = -3
             self.theta_status = '右旋'
         elif send.imu_value_Yaw < -4:
-            theta = 2
+            theta = 3
             self.theta_status = '左旋'
         return theta
 
@@ -148,21 +149,21 @@ class WeightLift:
             send.sendSensorReset(1, 1, yaw)
             end = -9999
             start = time.time()
-            while(end - start < 2):
+            while(end - start < 1):
                 end = time.time() 
                 send.sendBodySector(9999)
                 time.sleep(0.05)
                 if self.ctrl_status == "final":
                     #send.sendWalkParameter('save', walk_mode = 1, y_swing = 8, t_dsp = 0.2)
-                    send.sendWalkParameter(0, 1, -2, 8.5, 62, 540, 0.5, 4, 0, 45, 0, False)
+                    send.sendWalkParameter(0, 1, -1, 8, 50, 450, 0.3, 3.5, 0, 47.3, 0, False)
                     time.sleep(0.5)
-                    send.sendWalkParameter(1, 1, -2, 8.5, 62, 540, 0.5, 4, 0, 45, 0, False)
+                    send.sendWalkParameter(1, 1, -1, 8, 50, 450, 0.3, 3.5, 0, 47.3, 0, False)
                     time.sleep(0.5)
                 else:
                     #send.sendWalkParameter('save', walk_mode = 1, y_swing = 8, t_dsp = 0)
-                    send.sendWalkParameter(0, 1, -2, 8.5, 62, 420, 0, 4, 0, 47.3, 0, False)
+                    send.sendWalkParameter(0, 1, 0, 8, 50, 420, 0, 4, 0, 47.3, 0, False)
                     time.sleep(0.5)
-                    send.sendWalkParameter(0, 1, -2, 8.5, 62, 420, 0, 4, 0, 47.3, 0, True)
+                    send.sendWalkParameter(0, 1, 0, 8, 50, 420, 0, 4, 0, 47.3, 0, True)
                     time.sleep(0.5)
             time.sleep(0.03)
             self.walk_switch()
@@ -179,7 +180,7 @@ class WeightLift:
             self.translate_status = '無'
             self.reset = False
         elif self.ctrl_status == 'final' and self.reset:
-            self.final_forward = 3300
+            self.final_forward = 3000
             self.forward = 0
             self.translate = 0
             self.reset = False
@@ -204,6 +205,7 @@ class WeightLift:
                 self.line.update()
                 self.bar.update()
                 send.data_check = False
+                send.first_check = False
 
             if self.ctrl_status == 'start_line':
                 send.sendHeadMotor(2, HEAD_MOTOR_FINISH, 100)
@@ -216,7 +218,7 @@ class WeightLift:
                 rospy.loginfo(f'self.red_middle = {self.bar.center.x}')
                 if (self.bar.edge_max.y >= RED_Y) and (self.bar.edge_max.y <= RED_Y+5)\
                     and (self.bar.center.x >= RED_X-5) and (self.bar.center.x <= RED_X + 5)\
-                    and (send.imu_value_Yaw <= 10) and (send.imu_value_Yaw >= -10):
+                    and (send.imu_value_Yaw <= 8) and (send.imu_value_Yaw >= -8):
                         self.ctrl_status = 'pick_up'
 
             elif self.ctrl_status == 'pick_up':
@@ -226,37 +228,37 @@ class WeightLift:
                 send.sendBodySector(29)
                 time.sleep(0.5)
                 send.sendBodySector(PICK_ONE)
-                time.sleep(5)
-                self.number = int(abs(self.bar.center.x - RED_X) / 3)
-                if self.number > 3:
-                    self.number = 3
-                left = 0
-                right = 0
-                if self.bar.center.x > RED_X:
-                    while(self.number != 0):
-                        send.sendBodySector(222)
-                        self.number -= 1
-                        left += 1
-                        time.sleep(0.1)
-                elif self.bar.center.x < RED_X :
-                    while(self.number != 0):
-                        send.sendBodySector(666)
-                        self.number -= 1
-                        right += 1
-                        time.sleep(0.1)
+                time.sleep(6.8)
+                # self.number = int(abs(self.bar.center.x - RED_X) / 3)
+                # if self.number > 3:
+                #     self.number = 3
+                # left = 0
+                # right = 0
+                # if self.bar.center.x > RED_X:
+                #     while(self.number != 0):
+                #         send.sendBodySector(222)
+                #         self.number -= 1
+                #         left += 1
+                #         time.sleep(0.1)
+                # elif self.bar.center.x < RED_X :
+                #     while(self.number != 0):
+                #         send.sendBodySector(666)
+                #         self.number -= 1
+                #         right += 1
+                #         time.sleep(0.1)
                 send.sendBodySector(PICK_TWO)
-                time.sleep(15.5)
-                while(right != 0):
-                    send.sendBodySector(222)
-                    right -= 1
-                    time.sleep(0.1)
-                while(left != 0):
-                    send.sendBodySector(666)
-                    left -= 1
-                    time.sleep(0.1)
+                time.sleep(14.5)
+                # while(right != 0):
+                #     send.sendBodySector(222)
+                #     right -= 1
+                #     time.sleep(0.1)
+                # while(left != 0):
+                #     send.sendBodySector(666)
+                #     left -= 1
+                #     time.sleep(0.1)
                     
-                send.sendBodySector(200)
-                time.sleep(2)
+                # send.sendBodySector(200)
+                # time.sleep(1)
                 
                 self.ctrl_status = 'second_line'
 
@@ -286,9 +288,9 @@ class WeightLift:
                 send.sendHeadMotor(2, HEAD_MOTOR_LIFT, 100)
                 time.sleep(0.03)
                 send.sendBodySector(LIFT)
-                time.sleep(5)
-                send.sendBodySector(300)
-                time.sleep(1)
+                time.sleep(8.8)
+                # send.sendBodySector(300)
+                # time.sleep(1)
                 self.ctrl_status = 'final'
                 self.reset = True
 
@@ -307,7 +309,7 @@ class WeightLift:
             # self.line.update()
             # if send.data_check:
             #     self.line.update()
-            #     self.bar.update()
+            #self.bar.update()
             #     send.data_check = False
             # print(int(abs(self.bar.center.x - RED_X)))
                 #send.data_check = False
@@ -319,6 +321,8 @@ class WeightLift:
             
             send.sendHeadMotor(2, HEAD_MOTOR_START, 100)
             self.init()
+            for i in range(0,1,1):
+                print('start')
 
 class Coordinate:
     def __init__(self, x, y):
@@ -357,7 +361,7 @@ class ObjectInfo:
             max_object_size = max(send.color_mask_subject_size[self.color])
             max_object_idx = send.color_mask_subject_size[self.color].index(max_object_size)
 
-            return max_object_idx if max_object_size > 200 else None
+            return max_object_idx if max_object_size > 50 else None
 
     def update(self):
         object_idx = self.find_object()
