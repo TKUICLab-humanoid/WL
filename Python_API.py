@@ -288,7 +288,7 @@ class Sendmessage:
 
     def DIOackFunction(self,msg):
     #取得當前DIO值
-        if msg.data & 0x10:
+        if msg.data & 0x20:
             self.is_start = True
         else:
             self.is_start = False
