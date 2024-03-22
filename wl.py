@@ -13,6 +13,7 @@ aaaa = rospy.init_node('WLstrategy', anonymous=True, log_level=rospy.DEBUG)
 
 HEAD_MOTOR_START = 1433    # 初始位置1456
 HEAD_MOTOR_FINISH = 1350    # 舉起前低頭 1263
+# STAND_FIX = True
 
 WIGHT= 8
 
@@ -113,6 +114,19 @@ class WeightLift:
     def main(self):
         if send.is_start:#啟動電源與擺頭
             rospy.loginfo(f'ctrl_status : {self.ctrl_status}') #information
+            # if self.ctrl_status == 'First':
+            #     send.sendBodySector(29)             #基礎站姿磁區
+                # while not send.execute:
+                #     rospy.logdebug("站立姿勢")
+                # send.execute = False
+                # rospy.sleep(1) 
+                # if STAND_FIX:
+                #     send.sendBodySector(290)             #LC基礎站姿調整磁區
+                #     while not send.execute:
+                #         rospy.logdebug("站立姿勢調整")
+                #     send.execute = False
+                # rospy.sleep(1) 
+                # self.ctrl_status = 'head_shake'
             # rospy.loginfo(self.bar.center.y )
             # rospy.loginfo(self.line.edge_min.y )
             # rospy.loginfo(self.line.edge_max.y )
@@ -140,7 +154,7 @@ class WeightLift:
                         send.sendHeadMotor(2, 1500, 100)
                         self.bar.update(1)
                         self.line.update(2)
-                        while self.bar.center.x <= 160 or self.bar.center.x > 260:
+                        while self.bar.center.x <= 148 or self.bar.center.x > 260:
                             self.bar.update(1)
                             self.line.update(2)
                             send.sendContinuousValue(1000, 1200, 0, 1, 0)
@@ -149,11 +163,11 @@ class WeightLift:
                         send.sendHeadMotor(2, 1500, 100)
                         self.bar.update(1)
                         self.line.update(2)
-                        send.sendContinuousValue(1000, -900, 0, 0, 0)
-                        while self.bar.center.x >= 170 or self.bar.center.x <= 30 :
+                        send.sendContinuousValue(1000, -1000, 0, 0, 0)
+                        while self.bar.center.x >= 155 or self.bar.center.x <= 30 :
                             self.bar.update(1)
                             self.line.update(2)
-                            send.sendContinuousValue(1000, -900, 0, 0, 0)
+                            send.sendContinuousValue(1000, -1100, 0, 0, 0)
                             rospy.loginfo(f"紅色preturn = {self.bar.center.x}")
 
                 self.ctrl_status = 'start_line'
@@ -250,6 +264,8 @@ class WeightLift:
                 send.sendHeadMotor(2, HEAD_MOTOR_FINISH, 100)
                 self.init()
                 rospy.loginfo(f'stop')
+            # if self.ctrl_status != 'First':
+            #     self.ctrl_status = 'First'
 
 
             
