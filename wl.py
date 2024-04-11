@@ -106,10 +106,10 @@ class WeightLift:
         if self.ctrl_status == 'final':
             if self.speed < 1800:
                 self.speed += 200
-            send.sendContinuousValue(self.speed , 0, 0, self.theta, 0)
+            send.sendContinuousValue(self.speed , 200, 0, self.theta+1, 0)
             
         else:
-            send.sendContinuousValue(1900, 0, 0, self.theta, 0) #90 1900
+            send.sendContinuousValue(1900, 200, 0, self.theta+1, 0) #90 1900
 
     def main(self):
         if send.is_start:#啟動電源與擺頭
@@ -131,6 +131,8 @@ class WeightLift:
             # rospy.loginfo(self.line.edge_min.y )
             # rospy.loginfo(self.line.edge_max.y )
             if self.ctrl_status == 'head_shake':
+                send.sendBodySector(299)
+                time.sleep(1)
                 send.sendSensorReset(1,1,1)
                 time.sleep(0.1)
                 # send.sendBodySector(5559)  
@@ -271,7 +273,9 @@ class WeightLift:
                         print('a')
                         send.sendBodySector(606)       
                     time.sleep(3.5) 
-                send.sendBodySector(4444)
+                send.sendBodySector(3333)
+                time.sleep(1)
+                # send.sendBodySector(4444)1218-+
                 # send.sendBodySector(5557)  
                 # time.sleep(1) 
                 #second open
