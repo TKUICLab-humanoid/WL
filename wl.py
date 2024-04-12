@@ -106,10 +106,10 @@ class WeightLift:
         if self.ctrl_status == 'final':
             if self.speed < 1800:
                 self.speed += 200
-            send.sendContinuousValue(self.speed , 200, 0, self.theta+1, 0)
+            send.sendContinuousValue(self.speed , 100, 0, self.theta+1, 0)
             
         else:
-            send.sendContinuousValue(1900, 200, 0, self.theta+1, 0) #90 1900
+            send.sendContinuousValue(2000, 100, 0, self.theta+1, 0) #80/1900 60/1800 80/2000 
 
     def main(self):
         if send.is_start:#啟動電源與擺頭
@@ -170,7 +170,7 @@ class WeightLift:
                         self.bar.update(1)
                         self.line.update(2)
                         send.sendContinuousValue(1000, -1000, 0, 0, 0)
-                        while self.bar.center.x >= 160 or self.bar.center.x <= 30 :
+                        while self.bar.center.x >= 157 or self.bar.center.x <= 30 :
                             self.bar.update(1)
                             self.line.update(2)
                             send.sendContinuousValue(1000, -1100, 0, 0, 0)
@@ -239,7 +239,7 @@ class WeightLift:
                 self.ctrl_status = 'second_line'
             elif self.ctrl_status == 'second_line':
                 self.walking(0, -3)
-                if self.line.edge_min.y < 90 and self.line.edge_min.y > 70:
+                if self.line.edge_min.y < 95 and self.line.edge_min.y > 75:
                     self.third_line = True 
                 print(self.third_line)
                 rospy.loginfo(f"white_Y = {self.line.edge_max.y}")
@@ -273,12 +273,14 @@ class WeightLift:
                         print('a')
                         send.sendBodySector(606)       
                     time.sleep(3.5) 
-                send.sendBodySector(3333)
-                time.sleep(1)
+                # send.sendBodySector(3333)fri
+                # time.sleep(1)
                 # send.sendBodySector(4444)1218-+
-                # send.sendBodySector(5557)  
-                # time.sleep(1) 
+                # send.sendBodySector(5557)  second60
+                # time.sleep(1.5) 
                 #second open
+                send.sendBodySector(8484)
+                time.sleep(1)
                 self.ctrl_status = 'final'
             elif self.ctrl_status == 'final':
                 self.walking(0, -3)
