@@ -13,8 +13,11 @@ aaaa = rospy.init_node('WLstrategy', anonymous=True, log_level=rospy.DEBUG)
 
 HEAD_MOTOR_START = 1433    # 初始位置1456
 HEAD_MOTOR_FINISH = 1350    # 舉起前低頭 1263
-
-WIGHT = 80  #change
+#===============================================================================
+#60場地一要重新send WL_60_1 (內到外ok) 外到內不行
+#80片內到外還沒測
+#===============================================================================
+WIGHT = 60  #change
 FLAG1 = True
 
 if WIGHT == 80:
@@ -124,7 +127,7 @@ class WeightLift:
         elif self.ctrl_status == 'second_line':
             send.sendContinuousValue(SPEED , -200, 0, self.theta, 0)
         else:
-            send.sendContinuousValue(SPEED, -100, 0, self.theta, 0)
+            send.sendContinuousValue(SPEED, -200, 0, self.theta, 0)
 
     def main(self):
         if send.is_start:#啟動電源與擺頭
@@ -163,7 +166,7 @@ class WeightLift:
                         self.bar.update(1)
                         self.line.update(2)
                         send.sendContinuousValue(1000, -1000, 0, 0, 0)
-                        while self.bar.center.x >= 150 or self.bar.center.x <= 30 :
+                        while self.bar.center.x >= 155 or self.bar.center.x <= 30 :
                             self.bar.update(1)
                             self.line.update(2)
                             send.sendContinuousValue(1000, -1100, 0, 0, 0)
