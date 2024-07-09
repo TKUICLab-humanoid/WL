@@ -17,7 +17,7 @@ HEAD_MOTOR_FINISH = 1350    # 舉起前低頭 1263
 #60場地一要重新send WL_60_1 (內到外ok) 外到內不行
 #80片內到外還沒測
 #===============================================================================
-WIGHT = 60  #change
+WIGHT = 86  #change
 FLAG1 = True
 
 if WIGHT == 80:
@@ -92,7 +92,7 @@ class WeightLift:
             send.sendWalkParameter('save'   , walk_mode = 1
                                             , com_y_shift = Y_COM
                                             , y_swing = 4.5
-                                            , period_t = 360
+                                            , period_t = 330
                                             , t_dsp = 0.1
                                             , base_default_z = 1.5
                                             , right_z_shift = 0
@@ -136,7 +136,7 @@ class WeightLift:
             # rospy.loginfo(self.line.edge_min.y )
             # rospy.loginfo(self.line.edge_max.y )
             if self.ctrl_status == 'head_shake':
-                send.sendBodySector(2999) 
+                send.sendBodySector(8988) 
                 time.sleep(0.5)
                 send.sendSensorReset(1,1,1)
                 print(THIRD_LINE)
