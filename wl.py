@@ -21,7 +21,7 @@ WIGHT = 86  #change
 FLAG1 = True
 
 if WIGHT == 80:
-    THIRD_LINE = 179
+    THIRD_LINE = 214
     SPEED = 1900
     PICK_ONE = 801
     PICK_TWO = 802
@@ -29,12 +29,12 @@ if WIGHT == 80:
     LIFT = 804
 
 elif WIGHT == 86:
-    THIRD_LINE = 230
+    THIRD_LINE = 220
     SPEED = 2000
-    PICK_ONE = 801
-    PICK_TWO = 802
-    PICK_THREE = 803
-    LIFT = 804
+    PICK_ONE = 861
+    PICK_TWO = 862
+    PICK_THREE = 863
+    LIFT = 864
 
 elif WIGHT == 90:
     THIRD_LINE = 230
@@ -46,7 +46,7 @@ elif WIGHT == 90:
     
 else:
     SPEED = 1800
-    THIRD_LINE = 217
+    THIRD_LINE = 219
     PICK_ONE = 601
     PICK_TWO = 602
     PICK_THREE = 603
@@ -104,7 +104,7 @@ class WeightLift:
             send.sendWalkParameter('save'   , walk_mode = 1
                                             , com_y_shift = Y_COM
                                             , y_swing = 4.5
-                                            , period_t = 360
+                                            , period_t = 330
                                             , t_dsp = 0.1
                                             , base_default_z = 2
                                             , right_z_shift = 0
@@ -136,7 +136,7 @@ class WeightLift:
             # rospy.loginfo(self.line.edge_min.y )
             # rospy.loginfo(self.line.edge_max.y )
             if self.ctrl_status == 'head_shake':
-                send.sendBodySector(8988) 
+                send.sendBodySector(8988) #場地一內到外
                 time.sleep(0.5)
                 send.sendSensorReset(1,1,1)
                 print(THIRD_LINE)
@@ -156,7 +156,7 @@ class WeightLift:
                         send.sendHeadMotor(2, 1500, 100)
                         self.bar.update(1)
                         self.line.update(2)
-                        while self.bar.center.x <= 139 or self.bar.center.x > 260: #143
+                        while self.bar.center.x <= 150 or self.bar.center.x > 260: #143
                             self.bar.update(1)
                             self.line.update(2)
                             send.sendContinuousValue(1000, 1100, 0, 0, 0)
@@ -166,10 +166,10 @@ class WeightLift:
                         self.bar.update(1)
                         self.line.update(2)
                         send.sendContinuousValue(1000, -1000, 0, 0, 0)
-                        while self.bar.center.x >= 155 or self.bar.center.x <= 30 :
+                        while self.bar.center.x >= 163 or self.bar.center.x <= 30 :
                             self.bar.update(1)
                             self.line.update(2)
-                            send.sendContinuousValue(1000, -1100, 0, 0, 0)
+                            send.sendContinuousValue(1000, -1100, 0, -1, 0)
 
                 self.ctrl_status = 'start_line'
                 time.sleep(0.5)
@@ -183,7 +183,7 @@ class WeightLift:
                     send.sendContinuousValue(1000, -400, 0, -1, 0)
                     rospy.loginfo(f"右轉")
                 elif self.bar.center.x < 149 and self.bar.center.x > 0:
-                    send.sendContinuousValue(1000, 400, 0, 1, 0)  
+                    send.sendContinuousValue(1000, 400, 0, 0, 0)  
                     rospy.loginfo(f"左轉")  
                 #change
                 else:
@@ -230,8 +230,8 @@ class WeightLift:
                 if self.body_auto:
                     self.walk_switch()
                 time.sleep(2)
-                send.sendBodySector(5151)
-                time.sleep(2)
+                # send.sendBodySector(5151)
+                # time.sleep(2)
                 send.sendBodySector(LIFT)
                 print("LIFT")
                 if WIGHT==90:
@@ -256,15 +256,16 @@ class WeightLift:
                     time.sleep(3.5) 
                 if (FLAG1):
                     if WIGHT==80:
-                        send.sendBodySector(8889) #1
+                        # send.sendBodySector(8889) #1
+                        send.sendBodySector(8880) #2
                         time.sleep(1)
                     elif WIGHT==86:
                         time.sleep(1)
                     elif WIGHT==90:
                         time.sleep(1)
                     else:
+                        send.sendBodySector(6660) #2
                         time.sleep(1)
-                        #2不用調整
                 
                 self.ctrl_status = 'final'
             elif self.ctrl_status == 'final':
