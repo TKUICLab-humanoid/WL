@@ -29,8 +29,16 @@ if WIGHT == 80:
     PICK_THREE = 803
     LIFT = 804
 
+elif WIGHT == 40:
+    THIRD_LINE = 188
+    SPEED = 2000
+    PICK_ONE = 401
+    PICK_TWO = 402
+    PICK_THREE = 403
+    LIFT = 404
+
 elif WIGHT == 86:
-    THIRD_LINE = 220
+    THIRD_LINE = 200
     SPEED = 2000
     PICK_ONE = 861
     PICK_TWO = 862
@@ -47,7 +55,7 @@ elif WIGHT == 90:
     
 else:
     SPEED = 1800
-    THIRD_LINE = 219
+    THIRD_LINE = 187
     PICK_ONE = 601
     PICK_TWO = 602
     PICK_THREE = 603
@@ -128,7 +136,7 @@ class WeightLift:
         elif self.ctrl_status == 'second_line':
             send.sendContinuousValue(SPEED , -200, 0, self.theta, 0)
         else:
-            send.sendContinuousValue(SPEED, -300, 0, self.theta, 0)
+            send.sendContinuousValue(SPEED, -400, 0, self.theta, 0)
 
     def main(self):
         if send.is_start:#啟動電源與擺頭
@@ -137,7 +145,7 @@ class WeightLift:
             # rospy.loginfo(self.line.edge_min.y )
             # rospy.loginfo(self.line.edge_max.y )
             if self.ctrl_status == 'head_shake':
-                # send.sendBodySector(8988) #場地一內到外、場地二
+                send.sendBodySector(8988) #場地一內到外、場地二
                 time.sleep(0.5)
                 send.sendSensorReset(1,1,1)
                 print(THIRD_LINE)
@@ -167,10 +175,10 @@ class WeightLift:
                         self.bar.update(1)
                         self.line.update(2)
                         send.sendContinuousValue(1000, -1000, 0, 0, 0)
-                        while self.bar.center.x >= 163 or self.bar.center.x <= 30 :
+                        while self.bar.center.x >= 160 or self.bar.center.x <= 30 :
                             self.bar.update(1)
                             self.line.update(2)
-                            send.sendContinuousValue(1000, -1100, 0, -1, 0)
+                            send.sendContinuousValue(1000, -1100, 0, 0, 0)
 
                 self.ctrl_status = 'start_line'
                 time.sleep(0.5)
@@ -261,13 +269,13 @@ class WeightLift:
                         send.sendBodySector(8880) #field2/field1外
                         time.sleep(1)
                     elif WIGHT==86:
-                        send.sendBodySector(8680) #field1外
+                        # send.sendBodySector(8680) #field1外
                         time.sleep(1)
                     elif WIGHT==90:
                         time.sleep(1)
                     else:
-                        # send.sendBodySector(6660) #2
-                        send.sendBodySector(6661) #field1外面
+                        send.sendBodySector(6660) #2
+                        # send.sendBodySector(6661) #field1外面
                         time.sleep(1)
                 
                 self.ctrl_status = 'final'
