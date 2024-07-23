@@ -27,7 +27,7 @@ if WIGHT == 80:
     PICK_ONE = 801
     PICK_TWO = 802
     PICK_THREE = 803
-    LIFT = 8041
+    LIFT = 804
 
 elif WIGHT == 40:
     THIRD_LINE = 188
@@ -43,7 +43,7 @@ elif WIGHT == 86:
     PICK_ONE = 861
     PICK_TWO = 862
     PICK_THREE = 863
-    LIFT = 8641
+    LIFT = 8642
 
 elif WIGHT == 90:
     THIRD_LINE = 230
@@ -132,11 +132,11 @@ class WeightLift:
         if self.ctrl_status == 'final':
             if self.speed < 1800:
                 self.speed += 200
-            send.sendContinuousValue(self.speed , 0, 0, self.theta, 0)
+            send.sendContinuousValue(self.speed , -100, 0, self.theta, 0)
         elif self.ctrl_status == 'second_line':
-            send.sendContinuousValue(SPEED , -100, 0, self.theta, 0)
+            send.sendContinuousValue(SPEED , -300, 0, self.theta, 0)
         else:
-            send.sendContinuousValue(SPEED, -400, 0, self.theta, 0)
+            send.sendContinuousValue(SPEED, -600, 0, self.theta, 0)
 
     def main(self):
         if send.is_start:#啟動電源與擺頭
@@ -145,7 +145,7 @@ class WeightLift:
             # rospy.loginfo(self.line.edge_min.y )
             # rospy.loginfo(self.line.edge_max.y )
             if self.ctrl_status == 'head_shake':
-                send.sendBodySector(8988) #場地一內到外、場地二
+                # send.sendBodySector(8988) #場地一內到外、場地二
                 time.sleep(0.5)
                 send.sendSensorReset(1,1,1)
                 print(THIRD_LINE)
