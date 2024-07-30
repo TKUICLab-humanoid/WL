@@ -144,7 +144,7 @@ class WeightLift:
         elif self.ctrl_status == 'second_line':
             send.sendContinuousValue(SPEED , -100, 0, self.theta, 0)
         else:
-            send.sendContinuousValue(SPEED, 0,-300, self.theta, 0)
+            send.sendContinuousValue(SPEED, 0,-100, self.theta, 0)
 
     def main(self):
         if send.is_start:#啟動電源與擺頭
@@ -177,7 +177,7 @@ class WeightLift:
                         while self.bar.center.x <= 145 or self.bar.center.x > 260: #143
                             self.bar.update(1)
                             self.line.update(2)
-                            send.sendContinuousValue(1000, 1100, 0, 1, 0)
+                            send.sendContinuousValue(1000, 700, 0, 1, 0)
                             rospy.loginfo(f"紅色preturn = {self.bar.center.x}")
                     if send.DIOValue == 51:
                         send.sendHeadMotor(2, 1500, 100)
@@ -281,7 +281,7 @@ class WeightLift:
                 if WIGHT==90:
                     time.sleep(10)#90
                 else:
-                    time.sleep(18)#80
+                    time.sleep(17)#80
                 print("x =============================== ",self.real_bar_center)
                 if self.real_bar_center > 165 and self.real_bar_center < 210:
                     count = (self.real_bar_center - 165) // 7
