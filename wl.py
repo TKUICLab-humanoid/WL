@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #coding=utf-8
 import rospy
 import numpy as np
@@ -15,7 +15,7 @@ HEAD_MOTOR_START = 1433    # 初始位置1456
 HEAD_MOTOR_FINISH = 1350    # 舉起前低頭 1263
 # STAND_FIX = True
 
-WIGHT = 80 #change
+WIGHT = 70 #change
 FLAG1 = False
 
 if WIGHT == 80:
@@ -41,6 +41,32 @@ elif WIGHT == 90:
     PICK_TWO = 902
     PICK_THREE = 903
     LIFT = 904
+
+elif WIGHT == 70:
+    THIRD_LINE = 190
+    SPEED = 1800
+    PICK_ONE = 701
+    PICK_TWO = 702
+    PICK_THREE = 703
+    LIFT = 704
+
+elif WIGHT == 60:
+    THIRD_LINE = 175
+    SPEED = 1800
+    PICK_ONE = 601
+    PICK_TWO = 602
+    PICK_THREE = 603
+    LIFT = 604
+
+elif WIGHT == 40:
+    THIRD_LINE = 173
+    SPEED = 1800
+    PICK_ONE = 401
+    PICK_TWO = 402
+    PICK_THREE = 403
+    LIFT = 404
+    #40:165
+    #50:173
     
 else:
     SPEED = 1800
@@ -64,6 +90,7 @@ class WeightLift:
         self.ctrl_status = 'head_shake'
         self.body_auto = False
         self.third_line = False
+        self.pick = False
         self.stop = True
         self.real_bar_center = 160
         self.speed = 0
@@ -102,11 +129,11 @@ class WeightLift:
             send.sendWalkParameter('save'   , walk_mode = 1
                                             , com_y_shift = Y_COM
                                             , y_swing = 4.5
-                                            , period_t = 360
+                                            , period_t = 330
                                             , t_dsp = 0.1
                                             , base_default_z = 2
                                             , right_z_shift = 0
-                                            , base_lift_z = 3
+                                            , base_lift_z = 2
                                             , com_height = 29.5
                                             , stand_height = 23.5
                                             , back_flag = False)    
@@ -121,10 +148,14 @@ class WeightLift:
         if self.ctrl_status == 'final':
             if self.speed < 1800:
                 self.speed += 200
-            send.sendContinuousValue(self.speed , 0, 0, self.theta+1, 0)
+            send.sendContinuousValue(self.speed , 200, 0, self.theta+1, 0)
             
         else:
-            send.sendContinuousValue(SPEED, -100, 0, self.theta, 0)
+            send.sendContinuousValue(SPEED,0, 0, self.theta-1, 0)
+            #40:0
+            #50:0
+            #60:0
+            #70:0
 
     def main(self):
         if send.is_start:#啟動電源與擺頭
@@ -136,7 +167,7 @@ class WeightLift:
                 # send.execute = False
                 # rospy.sleep(1) 
                 # if STAND_FIX:
-                #     send.sendBodySector(290)             #LC基礎站姿調整磁區
+                         #LC基礎站姿調整磁區
                 #     while not send.execute:
                 #         rospy.logdebug("站立姿勢調整")
                 #     send.execute = False
@@ -147,7 +178,8 @@ class WeightLift:
             # rospy.loginfo(self.line.edge_max.y )
             if self.ctrl_status == 'head_shake':
                 print(THIRD_LINE)
-                send.sendBodySector(299)
+                #send.sendBodySector(299)s
+                send.sendBodySector(467)
                 # send.sendBodySector(2999) #LIFT_OPEN
                 time.sleep(1)
                 send.sendSensorReset(1,1,1)
@@ -170,26 +202,26 @@ class WeightLift:
                     self.walk_parameter(1, 0)
                     self.walk_switch()
                     if send.DIOValue == 49:
-                        send.sendHeadMotor(2, 1500, 100)
+                        send.sendHeadMotor(2, HEAD_MOTOR_START, 100)
                         self.bar.update(1)
                         self.line.update(2)
-                        while self.bar.center.x <= 150 or self.bar.center.x > 260:
+                        while self.bar.center.x <= 145 or self.bar.center.x > 260:
                             self.bar.update(1)
                             self.line.update(2)
-                            send.sendContinuousValue(1000, 1200, 0, 1, 0)
+                            send.sendContinuousValue(1000, 1000, 0, 0, 0)
                             rospy.loginfo(f"紅色preturn = {self.bar.center.x}")
                     if send.DIOValue == 51:
-                        send.sendHeadMotor(2, 1500, 100)
+                        send.sendHeadMotor(2, HEAD_MOTOR_START, 100)
                         self.bar.update(1)
                         self.line.update(2)
-                        send.sendContinuousValue(1000, -1000, 0, 0, 0)
-                        while self.bar.center.x >= 165 or self.bar.center.x <= 30 :
+                        #send.sendContinuousValue(1000, -1000, 0, 0, 0)
+                        while self.bar.center.x >= 160 or self.bar.center.x <= 30 :
                             self.bar.update(1)
                             self.line.update(2)
-                            send.sendContinuousValue(1000, -1100, 0, 0, 0)
+                            send.sendContinuousValue(1000, -1000, 0, 0, 0)
                             rospy.loginfo(f"紅色preturn = {self.bar.center.x}")
                             if self.bar.center.x <= 168:
-                                send.sendContinuousValue(1000, -1000, 0, -1, 0)
+                                send.sendContinuousValue(1000, -1000, 0, 0, 0)
 
                 self.ctrl_status = 'start_line'
                 time.sleep(0.5)
@@ -200,17 +232,19 @@ class WeightLift:
                 #rospy.loginfo(f"bbbb = {self.line.edge_max.y}")
             send.sendHeadMotor(2, HEAD_MOTOR_START, 100)
             if self.ctrl_status == 'start_line':
-                if self.bar.center.x > 180:
-                    send.sendContinuousValue(1000, -400, 0, -1, 0)
+                if self.bar.center.x > 140:
+                    send.sendContinuousValue(1000, -500, 0, -1, 0)
                     rospy.loginfo(f"右轉")
-                elif self.bar.center.x < 140 and self.bar.center.x > 0:
-                    send.sendContinuousValue(1000, 400, 0, 1, 0)  
+                elif self.bar.center.x < 165 and self.bar.center.x > 0:
+                    send.sendContinuousValue(1000, 500, 0, 1, 0)  
                     rospy.loginfo(f"左轉")  
                 #change
+                #145~165
+                #70:140~165
                 else:
                     self.walking(1, -1)
                 rospy.loginfo(f"紅色 = {self.bar.center.x}")
-                if self.bar.center.y >= 224 :
+                if self.bar.center.y >= 230 :
                     self.ctrl_status = 'turn_straight'
             elif self.ctrl_status == 'turn_straight':
                 self.theta = self.imu_fix()
@@ -230,22 +264,24 @@ class WeightLift:
                 time.sleep(5)
                 send.sendBodySector(PICK_THREE)
                 print("PICK_3")
-                time.sleep(5.5)  
+                time.sleep(5.5) 
+                self.pick = True 
                 self.bar.update(1)
                 send.sendHeadMotor(2, HEAD_MOTOR_START, 100)
                 time.sleep(1)
                 self.real_bar_center = self.bar.center.x 
                 self.ctrl_status = 'second_line'
             elif self.ctrl_status == 'second_line':
-                self.walking(0, -3)
+                self.walking(0, -2)
                 if self.line.edge_min.y < 95 and self.line.edge_min.y > 75:
                     self.third_line = True 
                 print(self.third_line)
-                rospy.loginfo(f"white_Y = {self.line.edge_max.y}")
-                send.sendHeadMotor(2,1400, 100)
+                rospy.loginfo(f"white_Y_max = {self.line.edge_max.y}")
+                rospy.loginfo(f"white_Y_min = {self.line.edge_min.y}")
+                send.sendHeadMotor(2,1440, 100)
                 if self.line.edge_max.y >= THIRD_LINE and self.third_line :
                     self.ctrl_status = 'rise_up'
-                    time.sleep(3.4)
+                    time.sleep(4.4)
             elif self.ctrl_status == 'rise_up':
                 if self.body_auto:
                     self.walk_switch()
@@ -255,7 +291,7 @@ class WeightLift:
                 if WIGHT==90:
                     time.sleep(10)#90
                 else:
-                    time.sleep(18)#80
+                    time.sleep(19.6)#80
                 print("x =============================== ",self.real_bar_center)
                 if self.real_bar_center > 175 and self.real_bar_center < 210:
                     count = (self.real_bar_center - 165) // 7
@@ -301,6 +337,10 @@ class WeightLift:
                 self.walk_switch()
             if not self.stop:
                 send.sendHeadMotor(2, HEAD_MOTOR_FINISH, 100)
+                if self.pick:
+                    send.sendBodySector(6666) 
+                    time.sleep(1) 
+                    self.pick = False
                 self.init()
                 rospy.loginfo(f'stop')
             # if self.ctrl_status != 'First':
@@ -350,7 +390,7 @@ class ObjectInfo:
 
     def update(self,ID):
         object_idx = self.find_object()
-
+        # print("aa")
         if object_idx is not None:
             self.get_target = True
             self.edge_max.x = send.color_mask_subject_XMax[self.color][object_idx]
@@ -360,7 +400,6 @@ class ObjectInfo:
             self.center.x = send.color_mask_subject_X[self.color][object_idx]
             self.center.y = send.color_mask_subject_Y[self.color][object_idx]
             self.target_size = send.color_mask_subject_size[self.color][object_idx]
-
             # rospy.loginfo(self.edge_max.y)
             # rospy.logdebug(abs(abs(self.edge_max.x - self.edge_min.x) - abs(self.edge_max.y - self.edge_min.y)))
             send.drawImageFunction( ID, 1, self.edge_min.x, self.edge_max.x, self.edge_min.y, self.edge_max.y, 0, 0, 255)
@@ -373,6 +412,7 @@ class ObjectInfo:
             self.center.y = 0
             self.target_size = 0
             self.get_target = False
+            # send.drawImageFunction( ID, 1, self.edge_min.x, self.edge_max.x, self.edge_min.y, self.edge_max.y, 0, 0, 255)
 
 
 if __name__ == '__main__':
