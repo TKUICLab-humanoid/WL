@@ -20,11 +20,16 @@ HEAD_MOTOR_FINISH = 1350    # 舉起前低頭 1263
 #===============================================================================
 
 
-#2025.07.25
+#2025.07.29
 
 
-WIGHT = 90  #change
-FLAG1 =  True     #60 70 80 90 true
+WIGHT =90  #change
+FLAG1 = True    # 70 80 90 true
+
+#60 前 5
+#70 前 10
+#80 後 10
+#90 後 30
 
 if WIGHT == 86:
     THIRD_LINE = 200
@@ -52,7 +57,7 @@ elif WIGHT == 80:
 
 elif WIGHT == 70:
     THIRD_LINE = 223
-    SPEED = 1900
+    SPEED = 1800
     PICK_ONE = 701
     PICK_TWO = 702
     PICK_THREE = 703
@@ -146,17 +151,17 @@ class WeightLift:
         if self.ctrl_status == 'final':
             if self.speed < 1800:
                 self.speed += 200
-            send.sendContinuousValue(self.speed , -150, 0, self.theta, 0)    #二舉-
+            send.sendContinuousValue(self.speed , -250, 0, self.theta, 0)    #二舉-
         elif self.ctrl_status == 'second_line':
-            send.sendContinuousValue(SPEED , -50, 0, self.theta, 0)         #一舉
+            send.sendContinuousValue(SPEED , -100, 0, self.theta, 0)          #一舉
         else:
-            send.sendContinuousValue(SPEED, 0,0, self.theta, 0)          #找竿
+            send.sendContinuousValue(SPEED, 0,0, self.theta, 0)              #找竿
 
     def main(self):
         if send.is_start:#啟動電源與擺頭
             rospy.loginfo(f'ctrl_status : {self.ctrl_status}') #information
             if self.ctrl_status == 'head_shake':
-                send.sendBodySector(1458) #20
+                send.sendBodySector(1458)             #60  #站姿調整
                 time.sleep(1)
                 send.sendSensorReset(1,1,1)
                 print(THIRD_LINE)
@@ -170,7 +175,7 @@ class WeightLift:
                 rospy.loginfo(f'ctrl_status : {self.ctrl_status}')
                 print(send.DIOValue)
                 if not self.body_auto:
-                    self.walk_parameter(1, 0)                               #
+                    self.walk_parameter(1, 0)                               
                     self.walk_switch()
                     if send.DIOValue == 49:                                             #右
                         send.sendHeadMotor(2, 1500, 100)
@@ -216,17 +221,17 @@ class WeightLift:
             if self.ctrl_status == 'start_line':
                 rospy.loginfo(f'imu ========= {send.imu_value_Yaw}')
                 if send.imu_value_Yaw > 1.5 or send.imu_value_Yaw < -1.5:
-                    if self.bar.center.x > 154:
+                    if self.bar.center.x > 162:
                         send.sendContinuousValue(1000, -400, 0, -1, 0)
                         rospy.loginfo(f"右轉")
-                    elif self.bar.center.x < 143 and self.bar.center.x > 0:
+                    elif self.bar.center.x < 140 and self.bar.center.x > 0:
                         send.sendContinuousValue(1000, 200, 0, 1, 0)  
                         rospy.loginfo(f"左轉") 
                 else :
-                    if self.bar.center.x > 154:
+                    if self.bar.center.x > 162:
                         send.sendContinuousValue(1000, -500, 0, 0, 0)
                         rospy.loginfo(f"右平移")
-                    elif self.bar.center.x < 143 and self.bar.center.x > 0:
+                    elif self.bar.center.x < 140 and self.bar.center.x > 0:
                         send.sendContinuousValue(1000, 400, 0, 0, 0)  
                         rospy.loginfo(f"左平移")  
                     else:
@@ -332,8 +337,8 @@ class WeightLift:
             # print("red = ",send.color_mask_subject_size[5])
             print("x =============================== ",self.bar.center.x )
             print("x =============================== ",send.color_mask_subject_X[5][0])
-            rospy.loginfo(f"white_Y = {self.line.edge_max.y}")
-            rospy.loginfo(f"white_Y = {self.line.edge_min.y}")
+            rospy.loginfo(f"white_Y_max = {self.line.edge_max.y}")
+            rospy.loginfo(f"white_Y_min = {self.line.edge_min.y}")
             time.sleep(1)
             if self.body_auto:
                 self.walk_switch()
